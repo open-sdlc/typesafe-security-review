@@ -1,0 +1,1046 @@
+36    AJAX Security Cheat Sheet                                unencoded_output_context                             0.970     
+37    CI CD Security Cheat Sheet                               insufficient_credential_hygiene                      0.970     
+38    Cross Site Scripting Prevention Cheat Sheet              missing_context_aware_output_encoding                0.970     
+39    Deserialization Cheat Sheet                              untrusted_native_deserialization                     0.970     
+40    Django REST Framework Cheat Sheet                        injection                                            0.970     
+41    gRPC Security Cheat Sheet                                input_validation_and_injection_gaps                  0.970     
+42    Secure Code Review Cheat Sheet                           authn_session_management_weakness                    0.970     
+43    Secure Code Review Cheat Sheet                           insecure_deserialization_or_xxe                      0.970     
+44    Symfony Cheat Sheet                                      doctrine_dql_injection                               0.970     
+45    Threat Modeling Cheat Sheet                              information_disclosure_threat                        0.950     
+46    Secrets Management Cheat Sheet                           manual_or_static_secret_rotation                     0.940     
+47    DOM based XSS Prevention Cheat Sheet                     reflected_vs_dom_source_confusion                    0.910     
+48    Server Side Request Forgery Prevention Cheat Sheet       full_url_user_input                                  0.910     
+49    Session Management Cheat Sheet                           weak_session_id_entropy                              0.910     
+50    JAAS Cheat Sheet                                         plaintext_credential_exposure                        0.900     
+51    REST Security Cheat Sheet                                insufficient_input_validation                        0.900     
+52    Cross-Site Request Forgery Prevention Cheat Sheet        xss_undermining_csrf_defenses                        0.880     
+53    Server Side Request Forgery Prevention Cheat Sheet       webhook_callback_url_abuse                           0.880     
+54    Forgot Password Cheat Sheet                              weak_reset_token_generation                          0.840     
+55    Secrets Management Cheat Sheet                           unmanaged_secret_lifecycle                           0.840     
+56    Software Supply Chain Security Cheat Sheet               weak_access_control_credential_handling              0.840     
+57    Infrastructure as Code Security Cheat Sheet              hardcoded_secrets_in_iac                             0.830     
+58    Laravel Cheat Sheet                                      unrestricted_file_upload                             0.820     
+59    Secure Product Design Cheat Sheet                        insecure_default_configuration                       0.820     
+60    Serverless FaaS Security Cheat Sheet                     function_chaining_abuse                              0.790     
+61    Abuse Case Cheat Sheet                                   technical_injection_abuse_case                       0.780     
+62    Logging Cheat Sheet                                      missing_security_event_logging                       0.770     
+63    SQL Injection Prevention Cheat Sheet                     hql_orm_injection                                    0.760     
+64    Threat Modeling Cheat Sheet                              tampering_integrity_threat                           0.760     
+65    File Upload Cheat Sheet                                  unsafe_filename_handling                             0.720     
+66    Cryptographic Storage Cheat Sheet                        hardcoded_or_unprotected_keys                        0.710     
+67    Abuse Case Cheat Sheet                                   unrated_or_untracked_abuse_case                      0.700     
+68    Abuse Case Cheat Sheet                                   missing_countermeasure_mapping                       0.680     
+69    Multi Tenant Security Cheat Sheet                        tenant_impersonation                                 0.680     
+70    Database Security Cheat Sheet                            unencrypted_database_transport                       0.660     
+71    Database Security Cheat Sheet                            weak_or_shared_database_credentials                  0.660     
+72    Docker Security Cheat Sheet                              insecure_secrets_handling                            0.650     
+73    Insecure Direct Object Reference Prevention Cheat Sheet  non_numeric_reference                                0.650     
+74    AI Agent Security Cheat Sheet                            tool_abuse_privilege_escalation                      0.640     
+75    File Upload Cheat Sheet                                  insecure_storage_location                            0.640     
+76    Laravel Cheat Sheet                                      raw_sql_injection                                    0.640     
+77    Virtual Patching Cheat Sheet                             missing_enforcement_layer                            0.640     
+78    DotNet Security Cheat Sheet                              security_misconfiguration                            0.630     
+79    AI Agent Security Cheat Sheet                            sensitive_data_exposure_agent_context                0.610     
+80    Database Security Cheat Sheet                            excessive_database_account_privileges                0.610     
+81    Threat Modeling Cheat Sheet                              unaddressed_threat_response                          0.610     
+82    Credential Stuffing Prevention Cheat Sheet               missing_device_or_connection_fingerprinting          0.600     
+83    Key Management Cheat Sheet                               insecure_key_storage                                 0.590     
+84    Secure Product Design Cheat Sheet                        zero_trust_violation                                 0.590     
+85    Secure Code Review Cheat Sheet                           broken_access_control                                0.590     
+86    Nodejs Security Cheat Sheet                              insufficient_security_logging                        0.580     
+87    Secrets Management Cheat Sheet                           secrets_lingering_in_memory                          0.580     
+88    User Privacy Protection Cheat Sheet                      weak_data_protection_cryptography                    0.580     
+89    User Privacy Protection Cheat Sheet                      absence_of_panic_mode                                0.580     
+90    Password Storage Cheat Sheet                             plaintext_or_reversible_storage                      0.570     
+91    Browser Extension Vulnerabilities Cheat Sheet            extension_dom_xss                                    0.560     
+92    Virtual Patching Cheat Sheet                             unpatched_known_vulnerability                        0.560     
+93    Browser Extension Vulnerabilities Cheat Sheet            insecure_local_storage_of_secrets                    0.550     
+94    Attack Surface Analysis Cheat Sheet                      entry_exit_point_mapping_gap                         0.550     
+95    Error Handling Cheat Sheet                               missing_global_error_handler                         0.550     
+96    File Upload Cheat Sheet                                  missing_upload_authorization                         0.550     
+97    Query Parameterization Cheat Sheet                       orm_query_language_injection                         0.550     
+98    DOM based XSS Prevention Cheat Sheet                     unsafe_dom_population_instead_of_safe_sink           0.540     
+99    Secure Cloud Architecture Cheat Sheet                    excessive_trust_boundary_bypass                      0.540     
+100   Server Side Request Forgery Prevention Cheat Sheet       non_http_scheme_abuse                                0.540     
+101   Server Side Request Forgery Prevention Cheat Sheet       unsafe_redirect_following                            0.540     
+102   Secure Product Design Cheat Sheet                        missing_threat_modeling_context                      0.530     
+103   Microservices based Security Arch Doc Cheat Sheet        missing_architecture_diagram                         0.520     
+104   OS Command Injection Defense Cheat Sheet                 shell_interpretation_ambiguity                       0.520     
+105   Ruby on Rails Cheat Sheet                                activerecord_sql_injection                           0.520     
+106   Attack Surface Analysis Cheat Sheet                      privileged_or_anonymous_user_analysis_gap            0.510     
+107   HTTP Headers Cheat Sheet                                 missing_or_weak_content_security_policy              0.510     
+108   Multifactor Authentication Cheat Sheet                   weak_otp_handling                                    0.510     
+109   Secrets Management Cheat Sheet                           missing_secret_audit_trail                           0.510     
+110   Virtual Patching Cheat Sheet                             overly_permissive_allowlist_rule                     0.510     
+111   Web Service Security Cheat Sheet                         output_encoding_for_clients                          0.510     
+112   Dependency Graph SBOM Cheat Sheet                        missing_vulnerability_triage_workflow                0.500     
+113   Email Validation and Verification Cheat Sheet            insecure_verification_tokens                         0.500     
+114   Error Handling Cheat Sheet                               injection_point_identification_via_errors            0.500     
+115   GraphQL Cheat Sheet                                      injection_via_resolver_input                         0.500     
+116   REST Security Cheat Sheet                                decentralized_missing_access_control                 0.500     
+117   Serverless FaaS Security Cheat Sheet                     cold_start_data_leakage                              0.500     
+118   OS Command Injection Defense Cheat Sheet                 excessive_process_privileges                         0.490     
+119   Threat Modeling Cheat Sheet                              missing_system_decomposition                         0.490     
+120   Bean Validation Cheat Sheet                              missing_field_constraint_annotations                 0.480     
+121   DOM based XSS Prevention Cheat Sheet                     unsafe_html_subcontext_sink                          0.480     
+122   Key Management Cheat Sheet                               missing_key_rotation_or_destruction                  0.470     
+123   Secure Code Review Cheat Sheet                           cryptographic_implementation_flaw                    0.470     
+124   Legacy Application Management Cheat Sheet                weak_authentication_authorization_controls           0.460     
+125   Vulnerability Disclosure Cheat Sheet                     full_disclosure_risk                                 0.450     
+126   Password Storage Cheat Sheet                             missing_pepper_defense_in_depth                      0.440     
+127   Symfony Cheat Sheet                                      twig_output_escaping_bypass                          0.440     
+128   Browser Extension Vulnerabilities Cheat Sheet            dom_based_data_skimming                              0.430     
+129   Access Control Cheat Sheet                               parameter_or_cookie_tampering_for_access             0.430     
+130   Credential Stuffing Prevention Cheat Sheet               missing_multi_factor_authentication                  0.430     
+131   Cross Site Scripting Prevention Cheat Sheet              dangerous_sink_usage                                 0.430     
+132   Denial of Service Cheat Sheet                            application_layer_resource_exhaustion                0.430     
+133   Microservices based Security Arch Doc Cheat Sheet        unclassified_data_assets                             0.430     
+134   Symfony Cheat Sheet                                      insecure_file_upload                                 0.430     
+135   User Privacy Protection Cheat Sheet                      lack_of_certificate_pinning                          0.430     
+136   Zero Trust Architecture Cheat Sheet                      implicit_network_trust                               0.430     
+137   Access Control Cheat Sheet                               exposed_backup_or_metadata                           0.420     
+138   Denial of Service Cheat Sheet                            missing_rate_limiting_or_ingress_controls            0.420     
+139   AI Agent Security Cheat Sheet                            output_validation_bypass                             0.410     
+140   Multi Tenant Security Cheat Sheet                        noisy_neighbor_dos                                   0.410     
+141   Serverless FaaS Security Cheat Sheet                     unvalidated_event_input                              0.410     
+142   Deserialization Cheat Sheet                              unsafe_deserialization_of_domain_objects             0.400     
+143   GitHub Actions Security Cheat Sheet                      script_injection_via_untrusted_context               0.400     
+144   Network Segmentation Cheat Sheet                         cross_service_lateral_movement                       0.400     
+145   Cross Site Scripting Prevention Cheat Sheet              missing_html_sanitization_for_rich_content           0.390     
+146   Django Security Cheat Sheet                              weak_secret_key_management                           0.390     
+147   DotNet Security Cheat Sheet                              insecure_direct_object_reference                     0.390     
+148   RAG Security Cheat Sheet                                 unsafe_tool_invocation_from_rag                      0.390     
+149   Secure Cloud Architecture Cheat Sheet                    missing_threat_modeling                              0.390     
+150   Serverless FaaS Security Cheat Sheet                     excessive_network_egress                             0.390     
+151   Secure Product Design Cheat Sheet                        missing_least_privilege_or_separation_of_duties      0.380     
+152   Abuse Case Cheat Sheet                                   unidentified_business_logic_abuse                    0.370     
+153   Credential Stuffing Prevention Cheat Sheet               missing_attack_degradation_or_metrics                0.370     
+154   Drone Security Cheat Sheet                               logging_and_monitoring_gaps                          0.370     
+155   AI Agent Security Cheat Sheet                            agent_prompt_injection                               0.360     
+156   NoSQL Security Cheat Sheet                               insufficient_db_audit_logging                        0.360     
+157   Server Side Request Forgery Prevention Cheat Sheet       internal_metadata_targeting                          0.360     
+158   Threat Modeling Cheat Sheet                              missing_review_and_validation                        0.360     
+159   Cross-Site Request Forgery Prevention Cheat Sheet        missing_fetch_metadata_or_origin_verification        0.350     
+160   Cookie Theft Mitigation Cheat Sheet                      missing_accept_language_or_client_hints_check        0.350     
+161   File Upload Cheat Sheet                                  malicious_file_content                               0.350     
+162   Mass Assignment Cheat Sheet                              missing_dto_pattern                                  0.350     
+163   Secure Product Design Cheat Sheet                        insufficient_defense_in_depth                        0.350     
+164   AJAX Security Cheat Sheet                                direct_backend_service_access                        0.340     
+165   Denial of Service Cheat Sheet                            missing_graceful_degradation_or_fault_tolerance      0.340     
+166   Legacy Application Management Cheat Sheet                absent_risk_assessment                               0.340     
+167   Mobile Application Security Cheat Sheet                  weak_session_or_biometric_handling                   0.330     
+168   Abuse Case Cheat Sheet                                   missing_cross_functional_threat_review               0.320     
+169   Cookie Theft Mitigation Cheat Sheet                      missing_ip_address_change_detection                  0.320     
+170   File Upload Cheat Sheet                                  public_file_retrieval_risks                          0.320     
+171   Network Segmentation Cheat Sheet                         unrestricted_egress_to_internet                      0.320     
+172   AJAX Security Cheat Sheet                                untrusted_input_source_assumption                    0.310     
+173   Access Control Cheat Sheet                               idor_direct_object_reference                         0.310     
+174   Access Control Cheat Sheet                               vertical_privilege_escalation                        0.310     
+175   Access Control Cheat Sheet                               horizontal_privilege_escalation                      0.310     
+176   Cookie Theft Mitigation Cheat Sheet                      missing_user_agent_change_detection                  0.310     
+177   Authorization Testing Automation Cheat Sheet             missing_authorization_matrix                         0.300     
+178   Denial of Service Cheat Sheet                            single_point_of_failure_or_missing_redundancy        0.300     
+179   DOM Clobbering Prevention Cheat Sheet                    missing_csp_script_src_restriction                   0.300     
+180   PHP Configuration Cheat Sheet                            missing_resource_limits                              0.300     
+181   Threat Modeling Cheat Sheet                              elevation_of_privilege_threat                        0.300     
+182   Unvalidated Redirects and Forwards Cheat Sheet           missing_redirect_target_allowlist                    0.300     
+183   Denial of Service Cheat Sheet                            input_driven_resource_allocation_abuse               0.290     
+184   Multi Tenant Security Cheat Sheet                        cross_tenant_privilege_escalation                    0.290     
+185   Serverless FaaS Security Cheat Sheet                     insufficient_logging_monitoring                      0.290     
+186   AJAX Security Cheat Sheet                                dom_xss_innerhtml                                    0.280     
+187   Insecure Direct Object Reference Prevention Cheat Sheet  missing_object_level_authorization                   0.280     
+188   Mobile Application Security Cheat Sheet                  insufficient_tamper_or_integrity_protection          0.280     
+189   LLM Prompt Injection Prevention Cheat Sheet              indirect_injection                                   0.280     
+190   Ruby on Rails Cheat Sheet                                unsafe_html_output_xss                               0.280     
+191   Transport Layer Protection Cheat Sheet                   missing_hsts_enforcement                             0.280     
+192   Transport Layer Protection Cheat Sheet                   unencrypted_internal_service_traffic                 0.280     
+193   Authentication Cheat Sheet                               insecure_password_comparison_or_storage              0.270     
+194   Credential Stuffing Prevention Cheat Sheet               missing_captcha_challenge                            0.270     
+195   Clickjacking Defense Cheat Sheet                         missing_csp_frame_ancestors                          0.270     
+196   DotNet Security Cheat Sheet                              missing_function_level_authorization                 0.270     
+197   Kubernetes Security Cheat Sheet                          missing_rbac_least_privilege                         0.270     
+198   Logging Cheat Sheet                                      insufficient_log_event_attributes                    0.270     
+199   Network Segmentation Cheat Sheet                         middleware_to_foreign_backend_access                 0.270     
+200   SQL Injection Prevention Cheat Sheet                     excessive_database_account_privilege                 0.270     
+201   Insecure Direct Object Reference Prevention Cheat Sheet  cross_account_access_attempt                         0.260     
+202   Mass Assignment Cheat Sheet                              missing_allowlist_of_bindable_fields                 0.260     
+203   Secure Product Design Cheat Sheet                        fail_insecure_behavior                               0.260     
+204   Session Management Cheat Sheet                           session_hijacking_via_disclosure                     0.260     
+205   AI Agent Security Cheat Sheet                            memory_poisoning                                     0.250     
+206   AI Agent Security Cheat Sheet                            excessive_autonomy_high_impact                       0.250     
+207   Authentication Cheat Sheet                               missing_or_weak_mfa                                  0.250     
+208   Authorization Testing Automation Cheat Sheet             undefined_role_hierarchy                             0.250     
+209   Deserialization Cheat Sheet                              opaque_serialized_payload_indicator                  0.250     
+210   DotNet Security Cheat Sheet                              weak_cryptography_practices                          0.250     
+211   Query Parameterization Cheat Sheet                       unsafe_dynamic_stored_procedure                      0.250     
+212   Server Side Request Forgery Prevention Cheat Sheet       network_layer_segmentation_gap                       0.250     
+213   AJAX Security Cheat Sheet                                client_secret_transmission                           0.240     
+214   Access Control Cheat Sheet                               missing_rate_limit_on_protected_resource             0.240     
+215   Drone Security Cheat Sheet                               sensitive_data_at_rest_exposure                      0.240     
+216   Injection Prevention Cheat Sheet                         scripting_eval_injection                             0.240     
+217   Laravel Cheat Sheet                                      open_redirect                                        0.240     
+218   Mobile Application Security Cheat Sheet                  insecure_data_at_rest                                0.240     
+219   Multi Tenant Security Cheat Sheet                        shared_resource_poisoning                            0.240     
+220   Nodejs Security Cheat Sheet                              missing_brute_force_protection                       0.240     
+221   REST Security Cheat Sheet                                verbose_error_disclosure                             0.240     
+222   REST Assessment Cheat Sheet                              hidden_attack_surface                                0.240     
+223   Secrets Management Cheat Sheet                           decentralized_secrets_sprawl                         0.240     
+224   Security Terminology Cheat Sheet                         encryption_hashing_signature_mismatch                0.240     
+225   Automotive Security Cheat Sheet                          legacy_unpatched_vehicle_systems                     0.230     
+226   Authorization Cheat Sheet                                horizontal_privilege_elevation                       0.230     
+227   Browser Extension Vulnerabilities Cheat Sheet            missing_or_weak_csp                                  0.230     
+228   Denial of Service Cheat Sheet                            missing_captcha_or_functional_abuse_puzzle           0.230     
+229   Django REST Framework Cheat Sheet                        security_misconfiguration                            0.230     
+230   HTTP Strict Transport Security Cheat Sheet               ssl_stripping_mitm_exposure                          0.230     
+231   HTTP Headers Cheat Sheet                                 missing_mime_sniffing_protection                     0.230     
+232   GraphQL Cheat Sheet                                      excessive_field_level_data_exposure                  0.230     
+233   Laravel Cheat Sheet                                      blade_unescaped_output_xss                           0.230     
+234   Securing Cascading Style Sheets Cheat Sheet              malicious_user_supplied_css                          0.230     
+235   Transport Layer Protection Cheat Sheet                   improper_certificate_trust_validation                0.230     
+236   Vulnerability Disclosure Cheat Sheet                     vulnerability_report_contents                        0.230     
+237   Database Security Cheat Sheet                            default_accounts_or_databases_present                0.220     
+238   DOM Clobbering Prevention Cheat Sheet                    clobbering_via_non_script_html_injection             0.220     
+239   Docker Security Cheat Sheet                              runtime_security_gaps                                0.220     
+240   GitHub Actions Security Cheat Sheet                      secrets_exfiltration_risk                            0.220     
+241   Infrastructure as Code Security Cheat Sheet              missing_runtime_monitoring_or_logging                0.220     
+242   OS Command Injection Defense Cheat Sheet                 argument_injection                                   0.220     
+243   OS Command Injection Defense Cheat Sheet                 unvalidated_command_allowlist                        0.220     
+244   Authentication Cheat Sheet                               sensitive_account_on_public_interface                0.210     
+245   Attack Surface Analysis Cheat Sheet                      missing_change_triggered_reassessment                0.210     
+246   Clickjacking Defense Cheat Sheet                         missing_defense_in_depth_for_high_value_action       0.210     
+247   File Upload Cheat Sheet                                  missing_malware_or_content_disarm_scanning           0.210     
+248   Java Security Cheat Sheet                                missing_key_rotation                                 0.210     
+249   Legacy Application Management Cheat Sheet                insufficient_network_or_access_restriction           0.210     
+250   RAG Security Cheat Sheet                                 output_validation_bypass                             0.210     
+251   SQL Injection Prevention Cheat Sheet                     unsafe_dynamic_stored_procedure                      0.210     
+252   Threat Modeling Cheat Sheet                              spoofing_authentication_threat                       0.210     
+253   Transaction Authorization Cheat Sheet                    reused_or_predictable_credentials                    0.210     
+254   Clickjacking Defense Cheat Sheet                         missing_x_frame_options_header                       0.200     
+255   Insecure Direct Object Reference Prevention Cheat Sheet  complex_identifier_as_sole_defense                   0.200     
+256   Logging Cheat Sheet                                      missing_log_monitoring_alerting                      0.200     
+257   NodeJS Docker Cheat Sheet                                container_running_as_root                            0.200     
+258   Security Terminology Cheat Sheet                         authentication_authorization_conflation              0.200     
+259   Virtual Patching Cheat Sheet                             insufficient_audit_logging                           0.200     
+260   Virtual Patching Cheat Sheet                             missing_vulnerability_monitoring_pipeline            0.200     
+261   User Privacy Protection Cheat Sheet                      missing_hsts_support                                 0.200     
+262   Zero Trust Architecture Cheat Sheet                      supply_chain_or_identity_attack                      0.200     
+263   Cross Site Scripting Prevention Cheat Sheet              unsafe_url_protocol_handling                         0.190     
+264   HTTP Headers Cheat Sheet                                 missing_advanced_isolation_headers                   0.190     
+265   Injection Prevention in Java Cheat Sheet                 jpa_injection                                        0.190     
+266   Legacy Application Management Cheat Sheet                unpatched_end_of_life_software                       0.190     
+267   Nextjs Security Cheat Sheet                              unprotected_server_action                            0.190     
+268   Unvalidated Redirects and Forwards Cheat Sheet           open_redirect_via_parameter                          0.190     
+269   Cross Site Scripting Prevention Cheat Sheet              missing_trusted_types_enforcement                    0.180     
+270   Error Handling Cheat Sheet                               verbose_database_error_disclosure                    0.180     
+271   Error Handling Cheat Sheet                               information_leakage_aiding_reconnaissance            0.180     
+272   HTTP Headers Cheat Sheet                                 missing_referrer_policy                              0.180     
+273   Key Management Cheat Sheet                               key_selection_without_requirements                   0.180     
+274   Legacy Application Management Cheat Sheet                missing_migration_change_management_plan             0.180     
+275   Legacy Application Management Cheat Sheet                inadequate_monitoring_or_incident_response           0.180     
+276   Multi Tenant Security Cheat Sheet                        cross_tenant_data_leakage                            0.180     
+277   NoSQL Security Cheat Sheet                               insecure_deserialization                             0.180     
+278   User Privacy Protection Cheat Sheet                      no_remote_session_invalidation                       0.180     
+279   AJAX Security Cheat Sheet                                missing_csrf_protection_ajax                         0.170     
+280   Authorization Testing Automation Cheat Sheet             data_level_filtering_untested                        0.170     
+281   Attack Surface Analysis Cheat Sheet                      negative_access_model_risk                           0.170     
+282   Content Security Policy Cheat Sheet                      unsafe_inline_or_unsafe_eval_usage                   0.170     
+283   Cookie Theft Mitigation Cheat Sheet                      absent_sender_constrained_session_token              0.170     
+284   Input Validation Cheat Sheet                             dangerous_upload_file_types                          0.170     
+285   MCP Security Cheat Sheet                                 confused_deputy_excessive_privilege                  0.170     
+286   MCP Security Cheat Sheet                                 sandbox_escape_local_server                          0.170     
+287   LLM Prompt Injection Prevention Cheat Sheet              data_exfiltration                                    0.170     
+288   REST Assessment Cheat Sheet                              custom_auth_reverse_engineering                      0.170     
+289   REST Assessment Cheat Sheet                              path_vs_parameter_ambiguity                          0.170     
+290   Secure AI Model Ops Cheat Sheet                          unvalidated_third_party_model                        0.170     
+291   Third Party Javascript Management Cheat Sheet            arbitrary_code_execution_via_tag                     0.170     
+292   Authorization Cheat Sheet                                missing_least_privilege_enforcement                  0.160     
+293   Authorization Cheat Sheet                                inconsistent_per_request_authorization               0.160     
+294   Access Control Cheat Sheet                               missing_function_level_access_control                0.160     
+295   Cryptographic Storage Cheat Sheet                        missing_key_rotation_process                         0.160     
+296   GitHub Actions Security Cheat Sheet                      missing_static_analysis_or_branch_protection         0.160     
+297   Mass Assignment Cheat Sheet                              missing_blocklist_of_sensitive_fields                0.160     
+298   NoSQL Security Cheat Sheet                               insecure_network_exposure                            0.160     
+299   LLM Prompt Injection Prevention Cheat Sheet              multi_turn_persistent                                0.160     
+300   REST Security Cheat Sheet                                exposed_management_endpoint                          0.160     
+301   REST Assessment Cheat Sheet                              missing_formal_service_description                   0.160     
+302   Secrets Management Cheat Sheet                           insecure_secret_transmission                         0.160     
+303   Symfony Cheat Sheet                                      open_redirection                                     0.160     
+304   Authentication Cheat Sheet                               missing_risk_based_reauthentication                  0.150     
+305   Attack Surface Analysis Cheat Sheet                      unmanaged_attack_surface_growth                      0.150     
+306   Deserialization Cheat Sheet                              deserialization_denial_of_service                    0.150     
+307   Error Handling Cheat Sheet                               stack_trace_disclosure                               0.150     
+308   Input Validation Cheat Sheet                             denylist_reliance                                    0.150     
+309   Insecure Direct Object Reference Prevention Cheat Sheet  hidden_form_field_reference                          0.150     
+310   Legacy Application Management Cheat Sheet                missing_inventory_documentation                      0.150     
+311   MCP Security Cheat Sheet                                 prompt_injection_via_tool_output                     0.150     
+312   Microservices based Security Arch Doc Cheat Sheet        missing_least_privilege_documentation                0.150     
+313   Microservices based Security Arch Doc Cheat Sheet        unclassified_sensitive_storage                       0.150     
+314   Microservices based Security Arch Doc Cheat Sheet        unmapped_attack_surface                              0.150     
+315   Multi Tenant Security Cheat Sheet                        broken_tenant_isolation                              0.150     
+316   Network Segmentation Cheat Sheet                         flat_network_no_zones                                0.150     
+317   PHP Configuration Cheat Sheet                            unrestricted_file_upload_config                      0.150     
+318   LLM Prompt Injection Prevention Cheat Sheet              html_markdown_injection                              0.150     
+319   Ruby on Rails Cheat Sheet                                ruby_command_injection                               0.150     
+320   Symfony Cheat Sheet                                      missing_or_invalid_csrf_token                        0.150     
+321   Unvalidated Redirects and Forwards Cheat Sheet           phishing_via_trusted_domain_link                     0.150     
+322   User Privacy Protection Cheat Sheet                      lack_of_transparency_disclosure                      0.150     
+323   Zero Trust Architecture Cheat Sheet                      static_or_permanent_access                           0.150     
+324   Authorization Regression Testing Cheat Sheet             undetected_authz_response_anomaly                    0.140     
+325   Browser Extension Vulnerabilities Cheat Sheet            dynamic_remote_code_injection                        0.140     
+326   Attack Surface Analysis Cheat Sheet                      unassessed_new_technology_change                     0.140     
+327   Content Security Policy Cheat Sheet                      missing_frame_ancestors_directive                    0.140     
+328   Credential Stuffing Prevention Cheat Sheet               missing_risk_based_step_up_authentication            0.140     
+329   Deserialization Cheat Sheet                              sensitive_field_exposure_via_serialization           0.140     
+330   Django REST Framework Cheat Sheet                        insufficient_logging_monitoring                      0.140     
+331   Cookie Theft Mitigation Cheat Sheet                      missing_reauthentication_on_suspected_hijack         0.140     
+332   HTTP Headers Cheat Sheet                                 missing_clickjacking_protection                      0.140     
+333   Insecure Direct Object Reference Prevention Cheat Sheet  url_path_object_reference                            0.140     
+334   Legacy Application Management Cheat Sheet                unencrypted_legacy_data_storage                      0.140     
+335   Multi Tenant Security Cheat Sheet                        tenant_idor                                          0.140     
+336   LLM Prompt Injection Prevention Cheat Sheet              rag_poisoning                                        0.140     
+337   Secure Cloud Architecture Cheat Sheet                    missing_network_segmentation                         0.140     
+338   Security Terminology Cheat Sheet                         escaping_vs_sanitization_confusion                   0.140     
+339   Software Supply Chain Security Cheat Sheet               deployment_runtime_compromise                        0.140     
+340   Threat Modeling Cheat Sheet                              denial_of_service_threat                             0.140     
+341   AJAX Security Cheat Sheet                                dynamic_code_evaluation                              0.130     
+342   Bean Validation Cheat Sheet                              unhandled_validation_errors                          0.130     
+343   Abuse Case Cheat Sheet                                   generic_unactionable_security_requirement            0.130     
+344   Attack Surface Analysis Cheat Sheet                      legacy_backward_compatible_interface                 0.130     
+345   Content Security Policy Cheat Sheet                      missing_strict_csp_mechanism                         0.130     
+346   Credential Stuffing Prevention Cheat Sheet               missing_javascript_or_headless_browser_challenge     0.130     
+347   Cross-Site Request Forgery Prevention Cheat Sheet        missing_or_unvalidated_csrf_token                    0.130     
+348   Deserialization Cheat Sheet                              dotnet_typenamehandling_or_binaryformatter_risk      0.130     
+349   Database Security Cheat Sheet                            excessive_network_exposure                           0.130     
+350   DotNet Security Cheat Sheet                              csrf_protection_gaps                                 0.130     
+351   File Upload Cheat Sheet                                  missing_size_and_rate_limits                         0.130     
+352   File Upload Cheat Sheet                                  insecure_filesystem_permissions                      0.130     
+353   Injection Prevention Cheat Sheet                         stored_procedure_injection                           0.130     
+354   Logging Cheat Sheet                                      sensitive_data_in_logs                               0.130     
+355   Ruby on Rails Cheat Sheet                                open_redirect_vulnerability                          0.130     
+356   Serverless FaaS Security Cheat Sheet                     shared_environment_multitenancy_risk                 0.130     
+357   Software Supply Chain Security Cheat Sheet               source_code_integrity_threat                         0.130     
+358   SQL Injection Prevention Cheat Sheet                     unvalidated_identifier_substitution                  0.130     
+359   Authorization Cheat Sheet                                fail_open_default_access                             0.120     
+360   Bean Validation Cheat Sheet                              unvalidated_cross_layer_input                        0.120     
+361   Business Logic Security Cheat Sheet                      missing_ownership_recheck_per_request                0.120     
+362   Authorization Testing Automation Cheat Sheet             manual_only_authorization_verification               0.120     
+363   Choosing and Using Security Questions Cheat Sheet        answer_instability_over_time                         0.120     
+364   Cross Site Scripting Prevention Cheat Sheet              insecure_json_response_content_type                  0.120     
+365   Database Security Cheat Sheet                            missing_patching_or_baseline_hardening               0.120     
+366   DotNet Security Cheat Sheet                              insufficient_transport_encryption                    0.120     
+367   Email Validation and Verification Cheat Sheet            disposable_email_abuse                               0.120     
+368   HTTP Headers Cheat Sheet                                 unsafe_caching_of_sensitive_data                     0.120     
+369   Insecure Direct Object Reference Prevention Cheat Sheet  multi_step_flow_identifier_tampering                 0.120     
+370   Logging Vocabulary Cheat Sheet                           sensitive_data_access_logging                        0.120     
+371   Mobile Application Security Cheat Sheet                  network_transport_weakness                           0.120     
+372   Microservices Security Cheat Sheet                       missing_mutual_authentication                        0.120     
+373   Multifactor Authentication Cheat Sheet                   missing_step_up_for_sensitive_actions                0.120     
+374   Network Segmentation Cheat Sheet                         undocumented_firewall_policy                         0.120     
+375   PHP Configuration Cheat Sheet                            insecure_session_cookie_config                       0.120     
+376   Secure Code Review Cheat Sheet                           business_logic_workflow_bypass                       0.120     
+377   User Privacy Protection Cheat Sheet                      ip_address_leakage_via_embedded_content              0.120     
+378   AI Agent Security Cheat Sheet                            goal_hijacking                                       0.110     
+379   Automotive Security Cheat Sheet                          weak_vehicle_authentication                          0.110     
+380   Authentication Cheat Sheet                               missing_reauthentication_for_sensitive_action        0.110     
+381   Authorization Cheat Sheet                                unattributed_authorization_violation                 0.110     
+382   Business Logic Security Cheat Sheet                      account_existence_enumeration_via_feature            0.110     
+383   Access Control Cheat Sheet                               forced_browsing                                      0.110     
+384   Content Security Policy Cheat Sheet                      missing_object_or_plugin_restriction                 0.110     
+385   Cross Site Scripting Prevention Cheat Sheet              framework_escape_hatch_misuse                        0.110     
+386   Django REST Framework Cheat Sheet                        broken_authentication                                0.110     
+387   Dependency Graph SBOM Cheat Sheet                        missing_or_ad_hoc_sbom_generation                    0.110     
+388   DOM based XSS Prevention Cheat Sheet                     event_handler_or_js_code_subcontext_injection        0.110     
+389   Docker Security Cheat Sheet                              resource_exhaustion_dos                              0.110     
+390   GraphQL Cheat Sheet                                      unauthorized_mutation_access                         0.110     
+391   Injection Prevention Cheat Sheet                         escaping_last_resort_defense                         0.110     
+392   Input Validation Cheat Sheet                             semantic_business_validation                         0.110     
+393   Mobile Application Security Cheat Sheet                  excessive_pii_collection_or_leakage                  0.110     
+394   Microservices Security Cheat Sheet                       missing_defense_in_depth_layers                      0.110     
+395   Multi Tenant Security Cheat Sheet                        tenant_context_injection                             0.110     
+396   NodeJS Docker Cheat Sheet                                missing_multistage_build                             0.110     
+397   Nextjs Security Cheat Sheet                              unprotected_route_handler_or_api_route               0.110     
+398   PHP Configuration Cheat Sheet                            missing_open_basedir_restriction                     0.110     
+399   REST Security Cheat Sheet                                http_method_tampering                                0.110     
+400   REST Assessment Cheat Sheet                              url_segment_parameter_pattern                        0.110     
+401   Ruby on Rails Cheat Sheet                                javascript_uri_link_xss                              0.110     
+402   Ruby on Rails Cheat Sheet                                idor_forceful_browsing                               0.110     
+403   Secure Coding with AI Cheat Sheet                        outdated_vulnerable_dependency_suggestion            0.110     
+404   Serverless FaaS Security Cheat Sheet                     insecure_function_invocation                         0.110     
+405   Software Supply Chain Security Cheat Sheet               missing_sbom_or_lockfile_pinning                     0.110     
+406   Server Side Request Forgery Prevention Cheat Sheet       domain_name_dns_pinning                              0.110     
+407   Threat Modeling Cheat Sheet                              cloud_shared_responsibility_gap                      0.110     
+408   XSS Filter Evasion Cheat Sheet                           event_handler_injection                              0.110     
+409   Authorization Regression Testing Cheat Sheet             idor_regression_gap                                  0.100     
+410   Authorization Regression Testing Cheat Sheet             missing_cicd_authorization_gate                      0.100     
+411   AI Agent Security Cheat Sheet                            denial_of_wallet                                     0.100     
+412   Authentication Cheat Sheet                               account_enumeration_via_responses                    0.100     
+413   Authentication Cheat Sheet                               insecure_credential_transport                        0.100     
+414   Browser Extension Vulnerabilities Cheat Sheet            insecure_http_communication                          0.100     
+415   Authorization Testing Automation Cheat Sheet             inconsistent_access_response_codes                   0.100     
+416   Authorization Testing Automation Cheat Sheet             point_of_view_coverage_gap                           0.100     
+417   C-Based Toolchain Hardening Cheat Sheet                  missing_compiler_warnings_static_analysis            0.100     
+418   CI CD Security Cheat Sheet                               insufficient_flow_control                            0.100     
+419   Cryptographic Storage Cheat Sheet                        insufficient_defense_in_depth_around_encrypted_data  0.100     
+420   Cross-Site Request Forgery Prevention Cheat Sheet        csrf_token_not_bound_to_session                      0.100     
+421   Django REST Framework Cheat Sheet                        improper_assets_management                           0.100     
+422   Dependency Graph SBOM Cheat Sheet                        missing_sbom_policy_or_governance                    0.100     
+423   Database Security Cheat Sheet                            insecure_direct_thick_client_access                  0.100     
+424   Cookie Theft Mitigation Cheat Sheet                      stolen_session_cookie_replay                         0.100     
+425   Django Security Cheat Sheet                              brute_force_protection_gaps                          0.100     
+426   Django Security Cheat Sheet                              missing_https_enforcement                            0.100     
+427   DOM based XSS Prevention Cheat Sheet                     url_attribute_subcontext_injection                   0.100     
+428   GitHub Actions Security Cheat Sheet                      ai_assistant_prompt_injection_in_ci                  0.100     
+429   HTTP Strict Transport Security Cheat Sheet               missing_hsts_header                                  0.100     
+430   HTML5 Security Cheat Sheet                               pii_or_credential_autocomplete_exposure              0.100     
+431   Legacy Application Management Cheat Sheet                loss_of_institutional_knowledge                      0.100     
+432   Mobile Application Security Cheat Sheet                  client_side_trust_violation                          0.100     
+433   Microservices based Security Arch Doc Cheat Sheet        missing_service_inventory                            0.100     
+434   Microservices Security Cheat Sheet                       edge_only_authorization                              0.100     
+435   Query Parameterization Cheat Sheet                       client_side_only_parameterization                    0.100     
+436   LLM Prompt Injection Prevention Cheat Sheet              best_of_n_jailbreak                                  0.100     
+437   REST Security Cheat Sheet                                unrestricted_api_key_usage                           0.100     
+438   Secure Coding with AI Cheat Sheet                        unsandboxed_agent_execution                          0.100     
+439   Third Party Payment Gateway Integration Cheat Sheet      untrusted_redirect_parameter_trust                   0.100     
+440   Threat Modeling Cheat Sheet                              repudiation_accounting_threat                        0.100     
+441   TLS Cipher String Cheat Sheet                            insecure_cipher_preference_order                     0.100     
+442   Transaction Authorization Cheat Sheet                    toctou_transaction_data_tampering                    0.100     
+443   Transaction Authorization Cheat Sheet                    unbounded_credential_validity_window                 0.100     
+444   Session Management Cheat Sheet                           session_id_in_url                                    0.100     
+445   Authorization Regression Testing Cheat Sheet             openapi_contract_authz_drift                         0.090     
+446   AML Sanctions AI Agent Payments Cheat Sheet              broken_tamper_evident_audit_trail                    0.090     
+447   Authentication Cheat Sheet                               predictable_user_identifiers                         0.090     
+448   Authorization Testing Automation Cheat Sheet             untested_release_impact_on_authz                     0.090     
+449   Abuse Case Cheat Sheet                                   account_enumeration_via_flow                         0.090     
+450   Attack Surface Analysis Cheat Sheet                      microservice_cloud_surface_gap                       0.090     
+451   Attack Surface Analysis Cheat Sheet                      unprotected_backup_exposure                          0.090     
+452   Content Security Policy Cheat Sheet                      missing_reporting_endpoint_configuration             0.090     
+453   Credential Stuffing Prevention Cheat Sheet               single_step_login_without_friction                   0.090     
+454   Cryptographic Storage Cheat Sheet                        overly_broad_sensitive_data_retention                0.090     
+455   Deserialization Cheat Sheet                              known_deserialization_gadget_chain                   0.090     
+456   Dependency Graph SBOM Cheat Sheet                        unsigned_sbom_missing_provenance                     0.090     
+457   Cookie Theft Mitigation Cheat Sheet                      false_negative_same_region_attacker                  0.090     
+458   Django Security Cheat Sheet                              xss_via_unsafe_template_rendering                    0.090     
+459   Django Security Cheat Sheet                              clickjacking_protection_gaps                         0.090     
+460   HTTP Headers Cheat Sheet                                 missing_hsts_enforcement                             0.090     
+461   Infrastructure as Code Security Cheat Sheet              lack_of_immutable_infrastructure                     0.090     
+462   File Upload Cheat Sheet                                  extension_validation_bypass                          0.090     
+463   LDAP Injection Prevention Cheat Sheet                    missing_allowlist_validation                         0.090     
+464   Logging Vocabulary Cheat Sheet                           malicious_behavior_detection_logging                 0.090     
+465   Laravel Cheat Sheet                                      column_name_injection                                0.090     
+466   Microservices based Security Arch Doc Cheat Sheet        undocumented_data_flows                              0.090     
+467   Microservices Security Cheat Sheet                       decentralized_hardcoded_authz                        0.090     
+468   Network Segmentation Cheat Sheet                         missing_log_isolation                                0.090     
+469   OAuth2 Cheat Sheet                                       open_redirect_via_redirect_uri                       0.090     
+470   Nodejs Security Cheat Sheet                              missing_request_size_limits                          0.090     
+471   Pinning Cheat Sheet                                      unmanageable_pinset_update_mechanism                 0.090     
+472   Query Parameterization Cheat Sheet                       unbindable_identifier_substitution                   0.090     
+473   Prototype Pollution Prevention Cheat Sheet               unfrozen_builtin_prototypes                          0.090     
+474   REST Assessment Cheat Sheet                              structured_body_fuzzing_scale                        0.090     
+475   Secure Coding with AI Cheat Sheet                        indirect_prompt_injection_via_repo_content           0.090     
+476   Subdomain Takeover Prevention Cheat Sheet                phishing_on_trusted_domain                           0.090     
+477   Third Party Javascript Management Cheat Sheet            tag_manager_container_risk                           0.090     
+478   Transport Layer Protection Cheat Sheet                   sensitive_traffic_over_plain_http                    0.090     
+479   Transaction Authorization Cheat Sheet                    unauthorized_auth_method_change                      0.090     
+480   Transaction Authorization Cheat Sheet                    transaction_state_transition_bypass                  0.090     
+481   Unvalidated Redirects and Forwards Cheat Sheet           unvalidated_forward_privilege_bypass                 0.090     
+482   Web Service Security Cheat Sheet                         coarse_and_fine_grained_authorization                0.090     
+483   Session Management Cheat Sheet                           missing_transport_encryption                         0.090     
+484   Authorization Regression Testing Cheat Sheet             tenant_isolation_regression                          0.080     
+485   AI Agent Security Cheat Sheet                            supply_chain_agent_compromise                        0.080     
+486   Automotive Security Cheat Sheet                          insecure_telematics_cloud_link                       0.080     
+487   Authorization Cheat Sheet                                unreviewed_privilege_creep                           0.080     
+488   Business Logic Security Cheat Sheet                      multi_accounting_abuse                               0.080     
+489   Bot Management and Anti-Automation Cheat Sheet           public_api_abuse_without_keys                        0.080     
+490   C-Based Toolchain Hardening Cheat Sheet                  missing_linker_hardening                             0.080     
+491   Choosing and Using Security Questions Cheat Sheet        socially_discoverable_answers                        0.080     
+492   CI CD Security Cheat Sheet                               insufficient_pipeline_based_access_controls          0.080     
+493   Dependency Graph SBOM Cheat Sheet                        incomplete_sbom_metadata                             0.080     
+494   Dependency Graph SBOM Cheat Sheet                        transitive_dependency_blind_spot                     0.080     
+495   DotNet Security Cheat Sheet                              weak_account_management                              0.080     
+496   Error Handling Cheat Sheet                               sensitive_data_in_error_logs                         0.080     
+497   GitHub Actions Security Cheat Sheet                      excessive_default_permissions                        0.080     
+498   HTTP Strict Transport Security Cheat Sheet               certificate_error_override_risk                      0.080     
+499   Forgot Password Cheat Sheet                              user_enumeration_via_inconsistent_response           0.080     
+500   Infrastructure as Code Security Cheat Sheet              unscanned_open_source_dependencies                   0.080     
+501   Infrastructure as Code Security Cheat Sheet              missing_artifact_signing_or_provenance               0.080     
+502   Injection Prevention Cheat Sheet                         prepared_statement_or_stored_procedure_defense       0.080     
+503   Input Validation Cheat Sheet                             client_side_only_validation                          0.080     
+504   MCP Security Cheat Sheet                                 over_scoped_oauth_credentials                        0.080     
+505   Multi Tenant Security Cheat Sheet                        tenant_audit_compliance_gap                          0.080     
+506   NoSQL Security Cheat Sheet                               nosql_query_injection                                0.080     
+507   Nodejs Security Cheat Sheet                              vulnerable_runtime_or_config                         0.080     
+508   PHP Configuration Cheat Sheet                            dangerous_functions_enabled                          0.080     
+509   LLM Prompt Injection Prevention Cheat Sheet              agent_tool_attack                                    0.080     
+510   Prototype Pollution Prevention Cheat Sheet               downstream_impact_escalation                         0.080     
+511   RAG Security Cheat Sheet                                 missing_source_attribution                           0.080     
+512   REST Security Cheat Sheet                                missing_transport_encryption                         0.080     
+513   REST Assessment Cheat Sheet                              nonstandard_parameter_location                       0.080     
+514   REST Assessment Cheat Sheet                              boundary_value_fuzzing_strategy                      0.080     
+515   Ruby on Rails Cheat Sheet                                dynamic_render_path_injection                        0.080     
+516   Secure AI Model Ops Cheat Sheet                          hardcoded_ml_credentials                             0.080     
+517   Secure Cloud Architecture Cheat Sheet                    sensitive_component_in_public_subnet                 0.080     
+518   Serverless FaaS Security Cheat Sheet                     supply_chain_dependency_risk                         0.080     
+519   Subdomain Takeover Prevention Cheat Sheet                session_cookie_theft_via_subdomain                   0.080     
+520   Third Party Javascript Management Cheat Sheet            sensitive_data_leakage_to_vendor                     0.080     
+521   TLS Cipher String Cheat Sheet                            missing_downgrade_protection                         0.080     
+522   Vulnerability Disclosure Cheat Sheet                     legal_and_authorization_risk                         0.080     
+523   Virtual Patching Cheat Sheet                             delayed_patch_authorization_process                  0.080     
+524   Virtual Patching Cheat Sheet                             unvalidated_patch_effectiveness                      0.080     
+525   Vulnerable Dependency Management Cheat Sheet             cve_based_analysis                                   0.080     
+526   Web Service Security Cheat Sheet                         weak_server_or_client_authentication                 0.080     
+527   Session Management Cheat Sheet                           session_fixation                                     0.080     
+528   XML External Entity Prevention Cheat Sheet               ssrf_via_xml_parsing                                 0.080     
+529   XSS Filter Evasion Cheat Sheet                           javascript_uri_scheme_abuse                          0.080     
+530   Authorization Regression Testing Cheat Sheet             vertical_escalation_regression_gap                   0.070     
+531   Authorization Regression Testing Cheat Sheet             unstructured_authorization_matrix                    0.070     
+532   AML Sanctions AI Agent Payments Cheat Sheet              unscreened_agent_operator                            0.070     
+533   Authentication Cheat Sheet                               weak_password_policy                                 0.070     
+534   Bean Validation Cheat Sheet                              missing_custom_business_constraint                   0.070     
+535   Business Logic Security Cheat Sheet                      self_referral_abuse                                  0.070     
+536   C-Based Toolchain Hardening Cheat Sheet                  missing_stack_protection                             0.070     
+537   C-Based Toolchain Hardening Cheat Sheet                  missing_fortify_source                               0.070     
+538   CI CD Security Cheat Sheet                               insufficient_logging_and_visibility                  0.070     
+539   Content Security Policy Cheat Sheet                      overly_permissive_allowlist                          0.070     
+540   Cryptographic Storage Cheat Sheet                        missing_separation_of_keys_and_data                  0.070     
+541   Deserialization Cheat Sheet                              insecure_third_party_library_configuration           0.070     
+542   Django Security Cheat Sheet                              insecure_cookie_configuration                        0.070     
+543   Docker Security Cheat Sheet                              privileged_container_execution                       0.070     
+544   Docker Security Cheat Sheet                              excessive_linux_capabilities                         0.070     
+545   Docker Security Cheat Sheet                              supply_chain_and_scanning_gaps                       0.070     
+546   Docker Security Cheat Sheet                              host_firewall_bypass_via_port_publishing             0.070     
+547   Forgot Password Cheat Sheet                              account_lockout_denial_of_service                    0.070     
+548   GraphQL Cheat Sheet                                      broken_object_level_authorization                    0.070     
+549   HTML5 Security Cheat Sheet                               dom_based_xss_via_data_evaluation                    0.070     
+550   HTML5 Security Cheat Sheet                               sensitive_data_in_client_storage                     0.070     
+551   Java Security Cheat Sheet                                improper_jca_jce_direct_use                          0.070     
+552   Kubernetes Security Cheat Sheet                          excessive_container_privileges                       0.070     
+553   JSON Web Token Cheat Sheet                               untrusted_key_source_header                          0.070     
+554   Key Management Cheat Sheet                               key_backup_and_escrow_gaps                           0.070     
+555   Mass Assignment Cheat Sheet                              attacker_source_code_field_discovery                 0.070     
+556   Mobile Application Security Cheat Sheet                  vulnerable_third_party_dependency                    0.070     
+557   Nextjs Security Cheat Sheet                              sensitive_data_serialized_to_client                  0.070     
+558   Nextjs Security Cheat Sheet                              unvalidated_rewrite_or_redirect_destination          0.070     
+559   NoSQL Security Cheat Sheet                               weak_or_missing_authentication                       0.070     
+560   PHP Configuration Cheat Sheet                            unsafe_remote_file_wrapper_config                    0.070     
+561   Secrets Management Cheat Sheet                           excessive_human_secret_access                        0.070     
+562   Secure AI Model Ops Cheat Sheet                          unsecured_inference_endpoint                         0.070     
+563   Secure Code Review Cheat Sheet                           race_condition_toctou                                0.070     
+564   Software Supply Chain Security Cheat Sheet               dependency_confusion_or_vulnerable_package           0.070     
+565   Software Supply Chain Security Cheat Sheet               insufficient_logging_monitoring_ssc                  0.070     
+566   Subdomain Takeover Prevention Cheat Sheet                fraudulent_tls_certificate_issuance                  0.070     
+567   Third Party Javascript Management Cheat Sheet            unvalidated_dom_data_access                          0.070     
+568   TLS Cipher String Cheat Sheet                            weak_protocol_version_enabled                        0.070     
+569   Transport Layer Protection Cheat Sheet                   protocol_downgrade_to_http                           0.070     
+570   Transaction Authorization Cheat Sheet                    authorization_credential_brute_forcing               0.070     
+571   Transport Layer Security Cheat Sheet                     deprecated_protocol_version_supported                0.070     
+572   Transport Layer Security Cheat Sheet                     missing_downgrade_attack_protection                  0.070     
+573   Session Management Cheat Sheet                           session_id_information_disclosure                    0.070     
+574   Session Management Cheat Sheet                           framework_default_session_name                       0.070     
+575   XS Leaks Cheat Sheet                                     error_event_status_inference                         0.070     
+576   XS Leaks Cheat Sheet                                     missing_fetch_metadata_isolation                     0.070     
+577   AI Agent Security Cheat Sheet                            cascading_multi_agent_failure                        0.060     
+578   AJAX Security Cheat Sheet                                unsafe_manual_serialization                          0.060     
+579   Automotive Security Cheat Sheet                          inadequate_vehicle_access_control                    0.060     
+580   AML Sanctions AI Agent Payments Cheat Sheet              unverified_agent_identity                            0.060     
+581   Authorization Cheat Sheet                                overreliance_on_framework_authz_defaults             0.060     
+582   Bean Validation Cheat Sheet                              missing_numeric_range_constraints                    0.060     
+583   Abuse Case Cheat Sheet                                   price_or_value_manipulation                          0.060     
+584   Bot Management and Anti-Automation Cheat Sheet           credential_stuffing_automation                       0.060     
+585   C-Based Toolchain Hardening Cheat Sheet                  debug_release_configuration_mixing                   0.060     
+586   Choosing and Using Security Questions Cheat Sheet        security_question_reuse_across_sites                 0.060     
+587   Choosing and Using Security Questions Cheat Sheet        account_enumeration_via_recovery_flow                0.060     
+588   CI CD Security Cheat Sheet                               poisoned_pipeline_execution                          0.060     
+589   Clickjacking Defense Cheat Sheet                         samesite_cookie_gap_for_framing                      0.060     
+590   Cross Site Scripting Prevention Cheat Sheet              csp_used_as_sole_xss_defense                         0.060     
+591   Cryptographic Storage Cheat Sheet                        weak_or_custom_algorithm_usage                       0.060     
+592   Denial of Service Cheat Sheet                            slow_http_attack                                     0.060     
+593   Cross-Site Request Forgery Prevention Cheat Sheet        missing_samesite_cookie_attribute                    0.060     
+594   Django REST Framework Cheat Sheet                        lack_of_rate_limiting                                0.060     
+595   Cookie Theft Mitigation Cheat Sheet                      false_positive_legitimate_environment_change         0.060     
+596   Django Security Cheat Sheet                              missing_authentication_controls                      0.060     
+597   DOM based XSS Prevention Cheat Sheet                     html_attribute_subcontext_encoding_mistake           0.060     
+598   DOM based XSS Prevention Cheat Sheet                     setattribute_type_coercion_hazard                    0.060     
+599   Docker Security Cheat Sheet                              unrestricted_inter_container_networking              0.060     
+600   Docker Security Cheat Sheet                              writable_filesystem_risk                             0.060     
+601   Email Validation and Verification Cheat Sheet            sensitive_email_logging_exposure                     0.060     
+602   Error Handling Cheat Sheet                               inconsistent_http_status_usage                       0.060     
+603   Error Handling Cheat Sheet                               lack_of_standardized_error_format                    0.060     
+604   HTTP Headers Cheat Sheet                                 server_technology_fingerprinting                     0.060     
+605   Infrastructure as Code Security Cheat Sheet              missing_static_analysis_scanning                     0.060     
+606   Infrastructure as Code Security Cheat Sheet              missing_container_image_scanning                     0.060     
+607   Infrastructure as Code Security Cheat Sheet              excessive_iac_permissions                            0.060     
+608   Injection Prevention Cheat Sheet                         ldap_injection                                       0.060     
+609   Injection Prevention Cheat Sheet                         xpath_injection                                      0.060     
+610   Injection Prevention in Java Cheat Sheet                 log_injection_java                                   0.060     
+611   Java Security Cheat Sheet                                log_forging_via_unstructured_logs                    0.060     
+612   Kubernetes Security Cheat Sheet                          missing_network_segmentation                         0.060     
+613   Kubernetes Security Cheat Sheet                          missing_centralized_policy_enforcement               0.060     
+614   Kubernetes Security Cheat Sheet                          service_mesh_mtls_gaps                               0.060     
+615   Key Management Cheat Sheet                               weak_key_strength                                    0.060     
+616   Mass Assignment Cheat Sheet                              sensitive_field_privilege_escalation                 0.060     
+617   MCP Security Cheat Sheet                                 tool_poisoning                                       0.060     
+618   MCP Security Cheat Sheet                                 missing_human_in_the_loop_approval                   0.060     
+619   Logging Cheat Sheet                                      log_injection_via_unsanitized_input                  0.060     
+620   Logging Cheat Sheet                                      log_availability_dos_risk                            0.060     
+621   Logging Cheat Sheet                                      log_confidentiality_or_integrity_attack              0.060     
+622   Microservices based Security Arch Doc Cheat Sheet        undocumented_service_dependencies                    0.060     
+623   Multifactor Authentication Cheat Sheet                   incomplete_mfa_coverage                              0.060     
+624   Network Segmentation Cheat Sheet                         direct_frontend_to_backend_access                    0.060     
+625   OAuth2 Cheat Sheet                                       insecure_token_transport                             0.060     
+626   NPM Security Cheat Sheet                                 secret_leakage_via_publish                           0.060     
+627   NPM Security Cheat Sheet                                 missing_supply_chain_provenance                      0.060     
+628   Query Parameterization Cheat Sheet                       excessive_stored_procedure_privilege                 0.060     
+629   LLM Prompt Injection Prevention Cheat Sheet              encoding_obfuscation                                 0.060     
+630   LLM Prompt Injection Prevention Cheat Sheet              typoglycemia                                         0.060     
+631   Prototype Pollution Prevention Cheat Sheet               proto_property_injection                             0.060     
+632   RAG Security Cheat Sheet                                 document_poisoning                                   0.060     
+633   RAG Security Cheat Sheet                                 access_control_inheritance_failure                   0.060     
+634   REST Security Cheat Sheet                                out_of_order_workflow_execution                      0.060     
+635   Secure Coding with AI Cheat Sheet                        out_of_scope_agent_edit                              0.060     
+636   Secure AI Model Ops Cheat Sheet                          missing_monitoring_or_orphaned_deployment            0.060     
+637   Secure Product Design Cheat Sheet                        unvetted_component_selection                         0.060     
+638   Secure Cloud Architecture Cheat Sheet                    insecure_bastion_or_dev_access                       0.060     
+639   Security Terminology Cheat Sheet                         encoding_treated_as_security_control                 0.060     
+640   Security Terminology Cheat Sheet                         missing_digital_signature_for_authenticity           0.060     
+641   Subdomain Takeover Prevention Cheat Sheet                mx_record_email_interception                         0.060     
+642   SQL Injection Prevention Cheat Sheet                     reliance_on_manual_escaping                          0.060     
+643   Third Party Javascript Management Cheat Sheet            vendor_server_compromise                             0.060     
+644   Third Party Payment Gateway Integration Cheat Sheet      insufficient_payment_logging_monitoring              0.060     
+645   Transaction Authorization Cheat Sheet                    client_side_authorization_enforcement                0.060     
+646   Vulnerability Disclosure Cheat Sheet                     researcher_organization_conduct                      0.060     
+647   Virtual Patching Cheat Sheet                             negative_security_evasion_risk                       0.060     
+648   Vulnerable Dependency Management Cheat Sheet             vendor_delay_mitigation                              0.060     
+649   Vulnerable Dependency Management Cheat Sheet             suppression_vs_remediation                           0.060     
+650   XML Security Cheat Sheet                                 unrestricted_string_or_pattern_fields                0.060     
+651   XML Security Cheat Sheet                                 element_injection_via_structure                      0.060     
+652   XSS Filter Evasion Cheat Sheet                           non_script_tag_vectors                               0.060     
+653   AI Agent Security Cheat Sheet                            decision_approval_manipulation                       0.050     
+654   Automotive Security Cheat Sheet                          vehicle_data_privacy_leakage                         0.050     
+655   AML Sanctions AI Agent Payments Cheat Sheet              agent_rate_limit_gaps                                0.050     
+656   Authorization Cheat Sheet                                rbac_insufficient_granularity                        0.050     
+657   Bean Validation Cheat Sheet                              weak_pattern_constraint                              0.050     
+658   Browser Extension Vulnerabilities Cheat Sheet            vulnerable_third_party_dependency                    0.050     
+659   Business Logic Security Cheat Sheet                      workflow_step_skipping                               0.050     
+660   Bot Management and Anti-Automation Cheat Sheet           single_bucket_rate_limit_flaw                        0.050     
+661   Choosing and Using Security Questions Cheat Sheet        insecure_answer_storage_or_comparison                0.050     
+662   CI CD Security Cheat Sheet                               improper_artifact_integrity_validation               0.050     
+663   Content Security Policy Cheat Sheet                      report_only_mode_without_enforcement                 0.050     
+664   Credential Stuffing Prevention Cheat Sheet               credential_stuffing_or_password_spraying_attempt     0.050     
+665   Credential Stuffing Prevention Cheat Sheet               predictable_username_enables_credential_reuse        0.050     
+666   Clickjacking Defense Cheat Sheet                         sandboxed_iframe_js_restriction_bypass               0.050     
+667   Denial of Service Cheat Sheet                            session_or_state_resource_exhaustion                 0.050     
+668   Django REST Framework Cheat Sheet                        broken_object_level_authorization                    0.050     
+669   Django REST Framework Cheat Sheet                        broken_function_level_authorization                  0.050     
+670   Dependency Graph SBOM Cheat Sheet                        missing_sbom_versioning_or_retention                 0.050     
+671   Django Security Cheat Sheet                              csrf_protection_gaps                                 0.050     
+672   DOM Clobbering Prevention Cheat Sheet                    trusting_builtin_document_properties_unvalidated     0.050     
+673   DotNet Security Cheat Sheet                              ldap_injection                                       0.050     
+674   Email Validation and Verification Cheat Sheet            unicode_homoglyph_spoofing                           0.050     
+675   Email Validation and Verification Cheat Sheet            account_enumeration_risk                             0.050     
+676   Email Validation and Verification Cheat Sheet            password_reset_flow_weaknesses                       0.050     
+677   Email Validation and Verification Cheat Sheet            email_change_workflow_weaknesses                     0.050     
+678   GitHub Actions Security Cheat Sheet                      dangerous_workflow_triggers                          0.050     
+679   GitHub Actions Security Cheat Sheet                      self_hosted_runner_exposure                          0.050     
+680   HTTP Strict Transport Security Cheat Sheet               missing_include_subdomains                           0.050     
+681   HTTP Strict Transport Security Cheat Sheet               insecure_cookies_without_secure_flag                 0.050     
+682   Forgot Password Cheat Sheet                              missing_rate_limiting_on_reset_requests              0.050     
+683   Forgot Password Cheat Sheet                              insecure_reset_url_handling                          0.050     
+684   Forgot Password Cheat Sheet                              insufficient_post_reset_confirmation                 0.050     
+685   HTML5 Security Cheat Sheet                               missing_iframe_sandboxing_or_frame_protection        0.050     
+686   HTML5 Security Cheat Sheet                               unvalidated_websocket_or_sse_origin                  0.050     
+687   File Upload Cheat Sheet                                  content_type_spoofing                                0.050     
+688   Injection Prevention Cheat Sheet                         allowlist_validation_defense                         0.050     
+689   Injection Prevention Cheat Sheet                         legacy_closed_source_remediation                     0.050     
+690   Injection Prevention in Java Cheat Sheet                 nosql_injection_java                                 0.050     
+691   Input Validation Cheat Sheet                             free_form_unicode_text_validation                    0.050     
+692   Insecure Direct Object Reference Prevention Cheat Sheet  identifier_encryption_antipattern                    0.050     
+693   JAAS Cheat Sheet                                         subject_commit_handling                              0.050     
+694   Java Security Cheat Sheet                                unverified_public_key_exchange                       0.050     
+695   Kubernetes Security Cheat Sheet                          weak_api_server_authentication                       0.050     
+696   Kubernetes Security Cheat Sheet                          untrusted_or_unscanned_container_images              0.050     
+697   JSON Web Token Cheat Sheet                               alg_none_acceptance                                  0.050     
+698   JSON Web Token Cheat Sheet                               missing_claim_validation                             0.050     
+699   Key Management Cheat Sheet                               compromise_recovery_planning                         0.050     
+700   Key Management Cheat Sheet                               perfect_forward_secrecy                              0.050     
+701   LDAP Injection Prevention Cheat Sheet                    dn_injection                                         0.050     
+702   LDAP Injection Prevention Cheat Sheet                    excessive_ldap_bind_privileges                       0.050     
+703   Laravel Cheat Sheet                                      missing_csrf_protection                              0.050     
+704   Mass Assignment Cheat Sheet                              unintended_field_binding                             0.050     
+705   MCP Security Cheat Sheet                                 rug_pull_definition_change                           0.050     
+706   MCP Security Cheat Sheet                                 message_tampering_or_replay                          0.050     
+707   Microservices Security Cheat Sheet                       unsigned_identity_propagation                        0.050     
+708   Microservices Security Cheat Sheet                       custom_authorization_solution_risk                   0.050     
+709   Multifactor Authentication Cheat Sheet                   insecure_mfa_reset_or_recovery                       0.050     
+710   Multifactor Authentication Cheat Sheet                   deprecated_weak_factor_reliance                      0.050     
+711   NodeJS Docker Cheat Sheet                                oversized_base_image                                 0.050     
+712   OAuth2 Cheat Sheet                                       excessive_token_privilege_or_audience                0.050     
+713   OAuth2 Cheat Sheet                                       weak_client_authentication                           0.050     
+714   OAuth2 Cheat Sheet                                       refresh_token_replay_risk                            0.050     
+715   NoSQL Security Cheat Sheet                               unencrypted_backup_exposure                          0.050     
+716   NPM Security Cheat Sheet                                 insecure_registry_or_proxy_config                    0.050     
+717   Password Storage Cheat Sheet                             missing_or_reused_salt                               0.050     
+718   Password Storage Cheat Sheet                             static_work_factor_never_upgraded                    0.050     
+719   Prototype Pollution Prevention Cheat Sheet               constructor_prototype_injection                      0.050     
+720   RAG Security Cheat Sheet                                 embedding_manipulation_or_privacy_leak               0.050     
+721   RAG Security Cheat Sheet                                 context_window_injection                             0.050     
+722   RAG Security Cheat Sheet                                 query_injection_reconnaissance                       0.050     
+723   REST Security Cheat Sheet                                content_type_confusion                               0.050     
+724   Ruby on Rails Cheat Sheet                                csrf_protection_gap                                  0.050     
+725   Secure Coding with AI Cheat Sheet                        test_fabrication_or_deletion                         0.050     
+726   Secure Cloud Architecture Cheat Sheet                    overly_broad_iam_credential                          0.050     
+727   Software Supply Chain Security Cheat Sheet               unvetted_third_party_component                       0.050     
+728   Server Side Request Forgery Prevention Cheat Sheet       ip_address_validation_bypass                         0.050     
+729   Symfony Cheat Sheet                                      outdated_vulnerable_dependencies                     0.050     
+730   Third Party Payment Gateway Integration Cheat Sheet      unauthenticated_callback_spoofing                    0.050     
+731   Third Party Payment Gateway Integration Cheat Sheet      callback_replay_attack                               0.050     
+732   TLS Cipher String Cheat Sheet                            non_forward_secret_key_exchange                      0.050     
+733   TLS Cipher String Cheat Sheet                            cbc_mode_cipher_risk                                 0.050     
+734   Transport Layer Protection Cheat Sheet                   mixed_content_on_page                                0.050     
+735   Transport Layer Security Cheat Sheet                     outdated_or_vulnerable_tls_library                   0.050     
+736   Unvalidated Redirects and Forwards Cheat Sheet           missing_redirect_confirmation_page                   0.050     
+737   User Privacy Protection Cheat Sheet                      anonymity_network_access_blocked                     0.050     
+738   XML External Entity Prevention Cheat Sheet               external_entity_resolution                           0.050     
+739   XML External Entity Prevention Cheat Sheet               external_dtd_or_schema_fetching                      0.050     
+740   XML External Entity Prevention Cheat Sheet               legacy_or_default_parser_config                      0.050     
+741   WebSocket Security Cheat Sheet                           message_injection_payloads                           0.050     
+742   XSS Filter Evasion Cheat Sheet                           script_tag_variant_injection                         0.050     
+743   XSS Filter Evasion Cheat Sheet                           whitespace_and_tag_syntax_tricks                     0.050     
+744   XSS Filter Evasion Cheat Sheet                           polyglot_multi_context_payload                       0.050     
+745   Zero Trust Architecture Cheat Sheet                      legacy_system_compatibility_gap                      0.050     
+746   Zero Trust Architecture Cheat Sheet                      insufficient_monitoring_and_logging                  0.050     
+747   AJAX Security Cheat Sheet                                json_array_hijacking                                 0.040     
+748   Automotive Security Cheat Sheet                          software_supply_chain_vulnerability                  0.040     
+749   Automotive Security Cheat Sheet                          insecure_system_integration                          0.040     
+750   AML Sanctions AI Agent Payments Cheat Sheet              fail_open_on_screening_failure                       0.040     
+751   Browser Extension Vulnerabilities Cheat Sheet            data_leakage_to_external_server                      0.040     
+752   Browser Extension Vulnerabilities Cheat Sheet            malicious_update_channel                             0.040     
+753   Browser Extension Vulnerabilities Cheat Sheet            prototype_pollution_data_skimming                    0.040     
+754   Business Logic Security Cheat Sheet                      race_condition_check_then_act                        0.040     
+755   Business Logic Security Cheat Sheet                      replay_of_completed_one_time_action                  0.040     
+756   Business Logic Security Cheat Sheet                      unrated_value_dispensing_feature_abuse               0.040     
+757   Access Control Cheat Sheet                               cors_misconfiguration                                0.040     
+758   AI-Powered Advertising Systems Security Cheat Sheet      prompt_injection_ad_pipeline                         0.040     
+759   Bot Management and Anti-Automation Cheat Sheet           content_or_price_scraping                            0.040     
+760   Bot Management and Anti-Automation Cheat Sheet           fake_account_creation                                0.040     
+761   C-Based Toolchain Hardening Cheat Sheet                  missing_aslr_pie                                     0.040     
+762   Choosing and Using Security Questions Cheat Sheet        weak_guessable_question_answers                      0.040     
+763   Choosing and Using Security Questions Cheat Sheet        missing_lockout_on_repeated_question_changes         0.040     
+764   CI CD Security Cheat Sheet                               dependency_chain_abuse                               0.040     
+765   Credential Stuffing Prevention Cheat Sheet               insufficient_ip_reputation_or_rate_controls          0.040     
+766   Clickjacking Defense Cheat Sheet                         multi_domain_framing_policy_gap                      0.040     
+767   Cryptographic Storage Cheat Sheet                        unreliable_uuid_based_randomness                     0.040     
+768   Denial of Service Cheat Sheet                            network_volumetric_attack                            0.040     
+769   Cross-Site Request Forgery Prevention Cheat Sheet        csrf_token_transmitted_or_leaked_insecurely          0.040     
+770   Cross-Site Request Forgery Prevention Cheat Sheet        csrf_token_reused_indefinitely                       0.040     
+771   Dependency Graph SBOM Cheat Sheet                        non_standard_or_incomplete_sbom_format               0.040     
+772   Dependency Graph SBOM Cheat Sheet                        unvetted_supplier_or_third_party_sbom                0.040     
+773   Database Security Cheat Sheet                            unprotected_backups_or_transaction_logs              0.040     
+774   DOM Clobbering Prevention Cheat Sheet                    missing_html_sanitizer_named_property_protection     0.040     
+775   DOM Clobbering Prevention Cheat Sheet                    missing_type_checking_before_use                     0.040     
+776   Docker Security Cheat Sheet                              exposed_docker_daemon_socket                         0.040     
+777   Email Validation and Verification Cheat Sheet            email_as_weak_authentication_factor                  0.040     
+778   Drone Security Cheat Sheet                               insecure_communication_link                          0.040     
+779   GitHub Actions Security Cheat Sheet                      github_token_write_permission_abuse                  0.040     
+780   GitHub Actions Security Cheat Sheet                      actions_cache_poisoning                              0.040     
+781   HTTP Strict Transport Security Cheat Sheet               insufficient_max_age                                 0.040     
+782   HTTP Strict Transport Security Cheat Sheet               incomplete_https_rollout                             0.040     
+783   gRPC Security Cheat Sheet                                missing_mutual_tls                                   0.040     
+784   gRPC Security Cheat Sheet                                missing_method_level_authorization                   0.040     
+785   gRPC Security Cheat Sheet                                missing_rate_limiting_or_timeouts                    0.040     
+786   gRPC Security Cheat Sheet                                verbose_error_disclosure                             0.040     
+787   HTTP Headers Cheat Sheet                                 insecure_cookie_attributes                           0.040     
+788   HTTP Headers Cheat Sheet                                 overly_permissive_cors_headers                       0.040     
+789   Forgot Password Cheat Sheet                              inconsistent_password_policy_enforcement             0.040     
+790   GraphQL Cheat Sheet                                      missing_rate_limiting                                0.040     
+791   GraphQL Cheat Sheet                                      verbose_error_disclosure                             0.040     
+792   HTML5 Security Cheat Sheet                               tabnabbing_via_unprotected_links                     0.040     
+793   Infrastructure as Code Security Cheat Sheet              insecure_decommissioning                             0.040     
+794   Injection Prevention in Java Cheat Sheet                 xpath_injection_java                                 0.040     
+795   Injection Prevention in Java Cheat Sheet                 ldap_injection_java                                  0.040     
+796   Input Validation Cheat Sheet                             structured_field_syntactic_validation                0.040     
+797   JAAS Cheat Sheet                                         logout_cleanup                                       0.040     
+798   JAAS Cheat Sheet                                         weak_login_module_flag                               0.040     
+799   Java Security Cheat Sheet                                custom_cryptography_implementation                   0.040     
+800   Kubernetes Security Cheat Sheet                          unrestricted_kubelet_access                          0.040     
+801   JSON Web Token Cheat Sheet                               weak_or_reused_secret                                0.040     
+802   JSON Web Token Cheat Sheet                               sensitive_data_in_claims                             0.040     
+803   Key Management Cheat Sheet                               trust_store_integrity                                0.040     
+804   LDAP Injection Prevention Cheat Sheet                    search_filter_injection                              0.040     
+805   LDAP Injection Prevention Cheat Sheet                    string_concatenated_ldap_query                       0.040     
+806   LDAP Injection Prevention Cheat Sheet                    anonymous_or_unauthenticated_bind                    0.040     
+807   MCP Security Cheat Sheet                                 tool_shadowing_cross_server                          0.040     
+808   MCP Security Cheat Sheet                                 supply_chain_compromise                              0.040     
+809   Logging Cheat Sheet                                      insecure_log_storage_or_transmission                 0.040     
+810   Mobile Application Security Cheat Sheet                  deep_link_or_shortcut_auth_bypass                    0.040     
+811   Microservices Security Cheat Sheet                       raw_access_token_passthrough                         0.040     
+812   Microservices Security Cheat Sheet                       centralized_pdp_bottleneck                           0.040     
+813   Multifactor Authentication Cheat Sheet                   insecure_factor_change_process                       0.040     
+814   Network Segmentation Cheat Sheet                         overly_broad_cicd_or_monitoring_access               0.040     
+815   NodeJS Docker Cheat Sheet                                missing_node_env_production                          0.040     
+816   NodeJS Docker Cheat Sheet                                improper_signal_handling                             0.040     
+817   Nextjs Security Cheat Sheet                              middleware_only_authorization                        0.040     
+818   OAuth2 Cheat Sheet                                       unconstrained_bearer_token_reuse                     0.040     
+819   NoSQL Security Cheat Sheet                               exposed_management_interface                         0.040     
+820   NoSQL Security Cheat Sheet                               vulnerable_driver_or_odm_dependency                  0.040     
+821   NPM Security Cheat Sheet                                 missing_lockfile_enforcement                         0.040     
+822   NPM Security Cheat Sheet                                 malicious_lifecycle_scripts                          0.040     
+823   NPM Security Cheat Sheet                                 missing_2fa_on_publish_account                       0.040     
+824   Password Storage Cheat Sheet                             fast_hash_algorithm_misuse                           0.040     
+825   Pinning Cheat Sheet                                      root_ca_pinning_overreach                            0.040     
+826   Pinning Cheat Sheet                                      undisclosed_interception_proxy_allowlist             0.040     
+827   LLM Prompt Injection Prevention Cheat Sheet              direct_injection                                     0.040     
+828   LLM Prompt Injection Prevention Cheat Sheet              multimodal_injection                                 0.040     
+829   Prototype Pollution Prevention Cheat Sheet               unsafe_recursive_merge                               0.040     
+830   Prototype Pollution Prevention Cheat Sheet               missing_null_prototype                               0.040     
+831   RAG Security Cheat Sheet                                 tenant_or_classification_isolation_failure           0.040     
+832   RAG Security Cheat Sheet                                 vector_index_integrity_tampering                     0.040     
+833   Secure Coding with AI Cheat Sheet                        malicious_or_compromised_mcp_server                  0.040     
+834   Secure AI Model Ops Cheat Sheet                          adversarial_input_evasion                            0.040     
+835   Secure AI Model Ops Cheat Sheet                          llm_prompt_injection_abuse                           0.040     
+836   Securing Cascading Style Sheets Cheat Sheet              global_stylesheet_information_disclosure             0.040     
+837   Secure Cloud Architecture Cheat Sheet                    public_object_storage_exposure                       0.040     
+838   Secure Cloud Architecture Cheat Sheet                    insecure_signed_url_generation                       0.040     
+839   Serverless FaaS Security Cheat Sheet                     over_permissioned_function                           0.040     
+840   Software Supply Chain Security Cheat Sheet               build_environment_compromise                         0.040     
+841   Software Supply Chain Security Cheat Sheet               unvetted_development_tooling                         0.040     
+842   Subdomain Takeover Prevention Cheat Sheet                dangling_dns_record                                  0.040     
+843   Subdomain Takeover Prevention Cheat Sheet                csp_bypass_via_trusted_wildcard                      0.040     
+844   Subdomain Takeover Prevention Cheat Sheet                oauth_sso_redirect_hijack                            0.040     
+845   Symfony Cheat Sheet                                      cors_misconfiguration                                0.040     
+846   Third Party Payment Gateway Integration Cheat Sheet      premature_order_fulfillment                          0.040     
+847   Third Party Payment Gateway Integration Cheat Sheet      amount_currency_order_mismatch                       0.040     
+848   TLS Cipher String Cheat Sheet                            null_or_anonymous_cipher_enabled                     0.040     
+849   TLS Cipher String Cheat Sheet                            export_grade_cipher_enabled                          0.040     
+850   Transaction Authorization Cheat Sheet                    insufficient_transaction_data_confirmation           0.040     
+851   Transaction Authorization Cheat Sheet                    authentication_authorization_conflation              0.040     
+852   Transport Layer Security Cheat Sheet                     weak_cipher_suite_configuration                      0.040     
+853   Transport Layer Security Cheat Sheet                     tls_compression_enabled                              0.040     
+854   Transport Layer Security Cheat Sheet                     risky_wildcard_certificate_sharing                   0.040     
+855   Transport Layer Security Cheat Sheet                     untrusted_or_unrestricted_ca_issuance                0.040     
+856   Unvalidated Redirects and Forwards Cheat Sheet           continued_execution_after_redirect_header            0.040     
+857   Vulnerable Dependency Management Cheat Sheet             early_lifecycle_scanning                             0.040     
+858   Web Service Security Cheat Sheet                         transport_confidentiality_gaps                       0.040     
+859   Web Service Security Cheat Sheet                         schema_and_content_validation                        0.040     
+860   Web Service Security Cheat Sheet                         resource_exhaustion_availability                     0.040     
+861   Session Management Cheat Sheet                           missing_secure_cookie_attribute                      0.040     
+862   XML Security Cheat Sheet                                 schema_poisoning                                     0.040     
+863   XML External Entity Prevention Cheat Sheet               xinclude_processing                                  0.040     
+864   XSS Filter Evasion Cheat Sheet                           character_encoding_obfuscation                       0.040     
+865   XS Leaks Cheat Sheet                                     missing_framing_protection                           0.040     
+866   AJAX Security Cheat Sheet                                client_side_security_reliance                        0.030     
+867   Automotive Security Cheat Sheet                          insecure_ota_updates                                 0.030     
+868   Automotive Security Cheat Sheet                          physical_access_exploit                              0.030     
+869   AML Sanctions AI Agent Payments Cheat Sheet              screening_bypass_or_threshold_tamper                 0.030     
+870   AML Sanctions AI Agent Payments Cheat Sheet              unsigned_screening_result_tampering                  0.030     
+871   AML Sanctions AI Agent Payments Cheat Sheet              excessive_data_to_third_party_screener               0.030     
+872   Bean Validation Cheat Sheet                              deprecated_unsafe_constraint_usage                   0.030     
+873   Bean Validation Cheat Sheet                              missing_cascading_validation                         0.030     
+874   Browser Extension Vulnerabilities Cheat Sheet            insecure_message_passing                             0.030     
+875   Business Logic Security Cheat Sheet                      client_trusted_price_manipulation                    0.030     
+876   AI-Powered Advertising Systems Security Cheat Sheet      corpus_rag_poisoning                                 0.030     
+877   AI-Powered Advertising Systems Security Cheat Sheet      model_extraction_via_scoring                         0.030     
+878   AI-Powered Advertising Systems Security Cheat Sheet      forged_outcome_event_fraud                           0.030     
+879   AI-Powered Advertising Systems Security Cheat Sheet      cross_tenant_cache_leak                              0.030     
+880   AI-Powered Advertising Systems Security Cheat Sheet      supply_chain_model_provenance                        0.030     
+881   Bot Management and Anti-Automation Cheat Sheet           card_testing_or_gift_card_cracking                   0.030     
+882   Bot Management and Anti-Automation Cheat Sheet           ad_click_fraud_or_metric_skew                        0.030     
+883   C-Based Toolchain Hardening Cheat Sheet                  insecure_autotools_makefile_config                   0.030     
+884   C-Based Toolchain Hardening Cheat Sheet                  test_build_overexposure                              0.030     
+885   Choosing and Using Security Questions Cheat Sheet        user_authored_question_weakness                      0.030     
+886   CI CD Security Cheat Sheet                               inadequate_identity_access_management                0.030     
+887   CI CD Security Cheat Sheet                               insecure_system_configuration                        0.030     
+888   CI CD Security Cheat Sheet                               ungoverned_third_party_services                      0.030     
+889   Content Security Policy Cheat Sheet                      csp_delivered_only_via_meta_tag                      0.030     
+890   Content Security Policy Cheat Sheet                      obsolete_legacy_csp_header_usage                     0.030     
+891   Content Security Policy Cheat Sheet                      hash_nonce_implementation_mistake                    0.030     
+892   Clickjacking Defense Cheat Sheet                         obsolete_allow_from_reliance                         0.030     
+893   Clickjacking Defense Cheat Sheet                         frame_busting_script_bypass                          0.030     
+894   Cryptographic Storage Cheat Sheet                        insecure_cipher_mode                                 0.030     
+895   Cryptographic Storage Cheat Sheet                        missing_random_padding_for_asymmetric_encryption     0.030     
+896   Denial of Service Cheat Sheet                            data_link_layer_attack                               0.030     
+897   Django REST Framework Cheat Sheet                        excessive_data_exposure                              0.030     
+898   Django REST Framework Cheat Sheet                        mass_assignment                                      0.030     
+899   Django Security Cheat Sheet                              debug_mode_exposure                                  0.030     
+900   Django Security Cheat Sheet                              admin_panel_and_deploy_check_exposure                0.030     
+901   DOM based XSS Prevention Cheat Sheet                     css_attribute_subcontext_injection                   0.030     
+902   DOM Clobbering Prevention Cheat Sheet                    id_name_attribute_namespace_collision                0.030     
+903   DOM Clobbering Prevention Cheat Sheet                    sensitive_object_not_frozen                          0.030     
+904   DOM Clobbering Prevention Cheat Sheet                    implicit_or_global_variable_declaration              0.030     
+905   Drone Security Cheat Sheet                               companion_computer_exposure                          0.030     
+906   HTTP Strict Transport Security Cheat Sheet               hsts_based_user_tracking                             0.030     
+907   HTTP Strict Transport Security Cheat Sheet               browser_hsts_support_gaps                            0.030     
+908   gRPC Security Cheat Sheet                                missing_transport_encryption                         0.030     
+909   gRPC Security Cheat Sheet                                weak_authentication_tokens                           0.030     
+910   gRPC Security Cheat Sheet                                unbounded_message_size_dos                           0.030     
+911   gRPC Security Cheat Sheet                                reflection_service_exposure                          0.030     
+912   gRPC Security Cheat Sheet                                insecure_service_discovery                           0.030     
+913   Forgot Password Cheat Sheet                              premature_account_modification                       0.030     
+914   Forgot Password Cheat Sheet                              weak_pin_based_reset                                 0.030     
+915   Forgot Password Cheat Sheet                              overreliance_on_security_questions                   0.030     
+916   GraphQL Cheat Sheet                                      missing_query_cost_or_timeout_controls               0.030     
+917   GraphQL Cheat Sheet                                      batching_brute_force_attack                          0.030     
+918   HTML5 Security Cheat Sheet                               overly_permissive_cors_configuration                 0.030     
+919   Input Validation Cheat Sheet                             file_upload_type_and_size_validation                 0.030     
+920   Input Validation Cheat Sheet                             email_address_validation                             0.030     
+921   JAAS Cheat Sheet                                         failed_login_abort_handling                          0.030     
+922   Java Security Cheat Sheet                                nonce_or_iv_reuse                                    0.030     
+923   Kubernetes Security Cheat Sheet                          exposed_dashboard_or_etcd                            0.030     
+924   Kubernetes Security Cheat Sheet                          outdated_kubernetes_version                          0.030     
+925   JSON Web Token Cheat Sheet                               stateless_session_without_revocation                 0.030     
+926   JSON Web Token Cheat Sheet                               revocation_list_malleability                         0.030     
+927   Key Management Cheat Sheet                               key_reuse_across_purposes                            0.030     
+928   LDAP Injection Prevention Cheat Sheet                    missing_ldap_encoding_function                       0.030     
+929   Logging Vocabulary Cheat Sheet                           cryptographic_operation_failure_logging              0.030     
+930   Logging Vocabulary Cheat Sheet                           input_validation_failure_logging                     0.030     
+931   Laravel Cheat Sheet                                      debug_mode_enabled_in_production                     0.030     
+932   Laravel Cheat Sheet                                      insecure_session_cookie_config                       0.030     
+933   Laravel Cheat Sheet                                      mass_assignment_vulnerability                        0.030     
+934   Mass Assignment Cheat Sheet                              unguarded_model_or_forcefill_bypass                  0.030     
+935   Logging Cheat Sheet                                      inadequate_log_retention_or_disposal                 0.030     
+936   Multi Tenant Security Cheat Sheet                        insecure_tenant_lifecycle                            0.030     
+937   Multifactor Authentication Cheat Sheet                   single_factor_masquerading_as_mfa                    0.030     
+938   NodeJS Docker Cheat Sheet                                floating_base_image_tag                              0.030     
+939   NodeJS Docker Cheat Sheet                                dev_dependencies_in_production_image                 0.030     
+940   NodeJS Docker Cheat Sheet                                unpatched_dependency_vulnerabilities                 0.030     
+941   Nextjs Security Cheat Sheet                              draft_mode_privilege_bypass                          0.030     
+942   Nextjs Security Cheat Sheet                              cache_audience_confusion                             0.030     
+943   OAuth2 Cheat Sheet                                       missing_pkce_or_csrf_binding                         0.030     
+944   OAuth2 Cheat Sheet                                       resource_owner_password_credentials_usage            0.030     
+945   NPM Security Cheat Sheet                                 unvetted_vulnerable_dependencies                     0.030     
+946   NPM Security Cheat Sheet                                 unrestricted_ci_publish_tokens                       0.030     
+947   Password Storage Cheat Sheet                             weak_work_factor_configuration                       0.030     
+948   Nodejs Security Cheat Sheet                              callback_ordering_race_condition                     0.030     
+949   Nodejs Security Cheat Sheet                              event_loop_blocking_dos                              0.030     
+950   Pinning Cheat Sheet                                      diy_pin_validation_implementation                    0.030     
+951   PHP Configuration Cheat Sheet                            verbose_error_disclosure                             0.030     
+952   LLM Prompt Injection Prevention Cheat Sheet              jailbreak_roleplay                                   0.030     
+953   Prototype Pollution Prevention Cheat Sheet               object_literal_over_set_map                          0.030     
+954   REST Security Cheat Sheet                                jwt_validation_weakness                              0.030     
+955   SAML Security Cheat Sheet                                incomplete_protocol_message_fields                   0.030     
+956   SAML Security Cheat Sheet                                weak_signature_or_key_selection                      0.030     
+957   SAML Security Cheat Sheet                                replay_or_stolen_assertion                           0.030     
+958   SAML Security Cheat Sheet                                unsolicited_idp_initiated_sso_risk                   0.030     
+959   Secure Coding with AI Cheat Sheet                        hallucinated_package_dependency                      0.030     
+960   Secure Coding with AI Cheat Sheet                        persistent_rules_file_tampering                      0.030     
+961   Secure AI Model Ops Cheat Sheet                          training_data_poisoning                              0.030     
+962   Secure AI Model Ops Cheat Sheet                          open_artifact_or_tooling_exposure                    0.030     
+963   Secure AI Model Ops Cheat Sheet                          weak_runtime_or_tenant_isolation                     0.030     
+964   Securing Cascading Style Sheets Cheat Sheet              descriptive_selector_feature_mapping                 0.030     
+965   Securing Cascading Style Sheets Cheat Sheet              missing_role_based_css_isolation                     0.030     
+966   Subdomain Takeover Prevention Cheat Sheet                ns_delegation_takeover                               0.030     
+967   Third Party Javascript Management Cheat Sheet            uncontrolled_third_party_code_change                 0.030     
+968   Third Party Javascript Management Cheat Sheet            missing_subresource_integrity                        0.030     
+969   Third Party Payment Gateway Integration Cheat Sheet      client_side_price_tampering                          0.030     
+970   TLS Cipher String Cheat Sheet                            weak_diffie_hellman_parameters                       0.030     
+971   Transport Layer Protection Cheat Sheet                   weak_certificate_key_or_hash                         0.030     
+972   Transport Layer Protection Cheat Sheet                   session_cookie_missing_secure_flag                   0.030     
+973   Transport Layer Security Cheat Sheet                     weak_private_key_or_certificate_hash                 0.030     
+974   Transport Layer Security Cheat Sheet                     certificate_domain_name_mismatch                     0.030     
+975   Unvalidated Redirects and Forwards Cheat Sheet           redirect_target_enumeration                          0.030     
+976   Vulnerability Disclosure Cheat Sheet                     security_contact_discovery                           0.030     
+977   Vulnerability Disclosure Cheat Sheet                     cve_and_advisory_publication                         0.030     
+978   Vulnerable Dependency Management Cheat Sheet             transitive_dependency_handling                       0.030     
+979   Web Service Security Cheat Sheet                         message_integrity_and_confidentiality                0.030     
+980   Web Service Security Cheat Sheet                         malware_in_attachments                               0.030     
+981   Web Service Security Cheat Sheet                         message_size_dos                                     0.030     
+982   XML Security Cheat Sheet                                 coercive_parsing_dos                                 0.030     
+983   XML Security Cheat Sheet                                 schema_validation_gaps                               0.030     
+984   XML Security Cheat Sheet                                 jumbo_payload_dos                                    0.030     
+985   XML External Entity Prevention Cheat Sheet               doctype_declaration_not_disabled                     0.030     
+986   XML External Entity Prevention Cheat Sheet               billion_laughs_entity_expansion                      0.030     
+987   WebSocket Security Cheat Sheet                           cross_site_websocket_hijacking                       0.030     
+988   WebSocket Security Cheat Sheet                           service_tunneling_exposure                           0.030     
+989   XSS Filter Evasion Cheat Sheet                           filter_bypass_via_alternate_rendering                0.030     
+990   Zero Trust Architecture Cheat Sheet                      flat_network_lateral_movement                        0.030     
+991   XS Leaks Cheat Sheet                                     element_id_focus_leak                                0.030     
+992   XS Leaks Cheat Sheet                                     cache_timing_leak                                    0.030     
+993   XS Leaks Cheat Sheet                                     missing_coop_corp_isolation                          0.030     
+994   Automotive Security Cheat Sheet                          weak_can_bus_protocol                                0.020     
+995   AML Sanctions AI Agent Payments Cheat Sheet              stale_cached_screening_results                       0.020     
+996   Browser Extension Vulnerabilities Cheat Sheet            permissions_overreach                                0.020     
+997   Business Logic Security Cheat Sheet                      coupon_or_discount_stacking                          0.020     
+998   AI-Powered Advertising Systems Security Cheat Sheet      consent_bypass_ai_targeting                          0.020     
+999   AI-Powered Advertising Systems Security Cheat Sheet      protected_category_ad_targeting                      0.020     
+1000  AI-Powered Advertising Systems Security Cheat Sheet      adversarial_creative_evasion                         0.020     
+1001  Bot Management and Anti-Automation Cheat Sheet           inventory_scalping_or_hoarding                       0.020     
+1002  Bot Management and Anti-Automation Cheat Sheet           captcha_overreliance                                 0.020     
+1003  C-Based Toolchain Hardening Cheat Sheet                  improper_assert_ndebug_usage                         0.020     
+1004  Choosing and Using Security Questions Cheat Sheet        non_universal_applicability                          0.020     
+1005  Choosing and Using Security Questions Cheat Sheet        sole_or_primary_authentication_factor_reliance       0.020     
+1006  Clickjacking Defense Cheat Sheet                         meta_tag_framing_protection_mistake                  0.020     
+1007  Cross-Site Request Forgery Prevention Cheat Sheet        naive_double_submit_cookie_weakness                  0.020     
+1008  Email Validation and Verification Cheat Sheet            inconsistent_email_canonicalization                  0.020     
+1009  Email Validation and Verification Cheat Sheet            weak_format_validation                               0.020     
+1010  Drone Security Cheat Sheet                               gps_spoofing_or_replay                               0.020     
+1011  Drone Security Cheat Sheet                               wifi_authentication_weaknesses                       0.020     
+1012  Drone Security Cheat Sheet                               physical_and_supply_chain_tampering                  0.020     
+1013  Drone Security Cheat Sheet                               firmware_and_boot_integrity_gaps                     0.020     
+1014  Drone Security Cheat Sheet                               sensor_data_manipulation                             0.020     
+1015  Drone Security Cheat Sheet                               protocol_specific_weaknesses                         0.020     
+1016  GitHub Actions Security Cheat Sheet                      untrusted_or_unpinned_third_party_actions            0.020     
+1017  HTTP Strict Transport Security Cheat Sheet               unsafe_preload_submission                            0.020     
+1018  GraphQL Cheat Sheet                                      unbounded_query_depth_or_amount_dos                  0.020     
+1019  GraphQL Cheat Sheet                                      insecure_introspection_or_graphiql_exposure          0.020     
+1020  HTML5 Security Cheat Sheet                               unsafe_postmessage_origin_handling                   0.020     
+1021  HTML5 Security Cheat Sheet                               insecure_service_worker_registration                 0.020     
+1022  HTML5 Security Cheat Sheet                               web_worker_abuse                                     0.020     
+1023  Infrastructure as Code Security Cheat Sheet              poor_inventory_and_tagging                           0.020     
+1024  Input Validation Cheat Sheet                             regex_redos_risk                                     0.020     
+1025  JAAS Cheat Sheet                                         callback_credential_collection                       0.020     
+1026  JSON Web Token Cheat Sheet                               key_type_confusion                                   0.020     
+1027  Logging Vocabulary Cheat Sheet                           authentication_event_logging                         0.020     
+1028  Logging Vocabulary Cheat Sheet                           authorization_event_logging                          0.020     
+1029  Logging Vocabulary Cheat Sheet                           file_upload_event_logging                            0.020     
+1030  Multifactor Authentication Cheat Sheet                   third_party_mfa_dependency_risk                      0.020     
+1031  Nextjs Security Cheat Sheet                              unprotected_cache_invalidation                       0.020     
+1032  OAuth2 Cheat Sheet                                       deprecated_implicit_grant_usage                      0.020     
+1033  Password Storage Cheat Sheet                             bcrypt_length_or_prehash_mishandling                 0.020     
+1034  Pinning Cheat Sheet                                      inappropriate_pinning_decision                       0.020     
+1035  Pinning Cheat Sheet                                      missing_backup_pin                                   0.020     
+1036  Pinning Cheat Sheet                                      weak_pin_target_selection                            0.020     
+1037  PHP Configuration Cheat Sheet                            outdated_unsupported_php_version                     0.020     
+1038  LLM Prompt Injection Prevention Cheat Sheet              system_prompt_extraction                             0.020     
+1039  SAML Security Cheat Sheet                                missing_transport_confidentiality                    0.020     
+1040  SAML Security Cheat Sheet                                xml_signature_wrapping                               0.020     
+1041  SAML Security Cheat Sheet                                certificate_and_key_management_weakness              0.020     
+1042  Ruby on Rails Cheat Sheet                                insecure_cookie_session_store                        0.020     
+1043  Secure AI Model Ops Cheat Sheet                          model_inversion_or_extraction                        0.020     
+1044  Securing Cascading Style Sheets Cheat Sheet              unobfuscated_css_build_output                        0.020     
+1045  Security Terminology Cheat Sheet                         federated_identity_role_confusion                    0.020     
+1046  Third Party Javascript Management Cheat Sheet            expired_or_abandoned_vendor_domain                   0.020     
+1047  Third Party Payment Gateway Integration Cheat Sheet      race_condition_duplicate_processing                  0.020     
+1048  Transport Layer Security Cheat Sheet                     weak_diffie_hellman_group                            0.020     
+1049  Vulnerability Disclosure Cheat Sheet                     coordinated_disclosure_timeline                      0.020     
+1050  Vulnerability Disclosure Cheat Sheet                     bug_bounty_scope                                     0.020     
+1051  Vulnerability Disclosure Cheat Sheet                     vendor_unresponsiveness_handling                     0.020     
+1052  Vulnerable Dependency Management Cheat Sheet             patched_version_upgrade                              0.020     
+1053  Vulnerable Dependency Management Cheat Sheet             unfixable_vendor_response                            0.020     
+1054  Vulnerable Dependency Management Cheat Sheet             backporting_fix                                      0.020     
+1055  Vulnerable Dependency Management Cheat Sheet             risk_acceptance_governance                           0.020     
+1056  Vulnerable Dependency Management Cheat Sheet             dependency_scanning_tooling                          0.020     
+1057  Web Service Security Cheat Sheet                         xml_dos_entity_expansion                             0.020     
+1058  XML Security Cheat Sheet                                 malformed_document_handling                          0.020     
+1059  XML Security Cheat Sheet                                 numeric_data_type_abuse                              0.020     
+1060  XML External Entity Prevention Cheat Sheet               parser_specific_hardening_config                     0.020     
+1061  WebSocket Security Cheat Sheet                           missing_origin_validation                            0.020     
+1062  WebSocket Security Cheat Sheet                           unencrypted_websocket_transport                      0.020     
+1063  WebSocket Security Cheat Sheet                           session_and_token_management                         0.020     
+1064  WebSocket Security Cheat Sheet                           message_level_authorization                          0.020     
+1065  WebSocket Security Cheat Sheet                           websocket_dos_resource_exhaustion                    0.020     
+1066  WebSocket Security Cheat Sheet                           replay_attack_on_messages                            0.020     
+1067  WebSocket Security Cheat Sheet                           insufficient_websocket_logging                       0.020     
+1068  Zero Trust Architecture Cheat Sheet                      weak_or_phishable_mfa                                0.020     
+1069  Zero Trust Architecture Cheat Sheet                      device_posture_and_compliance                        0.020     
+1070  Zero Trust Architecture Cheat Sheet                      dynamic_risk_based_policy                            0.020     
+1071  XS Leaks Cheat Sheet                                     postmessage_wildcard_leak                            0.020     
+1072  XS Leaks Cheat Sheet                                     missing_samesite_cookie_attribute                    0.020     
+1073  Bot Management and Anti-Automation Cheat Sheet           excessive_or_undisclosed_fingerprinting              0.010     
+1074  JAAS Cheat Sheet                                         login_module_configuration                           0.010     
+1075  JAAS Cheat Sheet                                         multi_module_shared_state                            0.010     
+1076  Logging Vocabulary Cheat Sheet                           excessive_use_rate_limit_logging                     0.010     
+1077  Logging Vocabulary Cheat Sheet                           mcp_security_event_logging                           0.010     
+1078  Logging Vocabulary Cheat Sheet                           privilege_change_logging                             0.010     
+1079  XS Leaks Cheat Sheet                                     frame_counting_leak                                  0.010     
+
+1079 finding(s) with confidence > 0.0 out of 122 cheat sheets checked.
