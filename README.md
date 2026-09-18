@@ -32,12 +32,19 @@ sheets).
 pip install typesafe-sdk
 export TYPESAFE_API_KEY=...   # https://console.typesafe.ai/
 
+# primary usage: classify a source file against all 122 cheat sheets
+python run_all_classifiers.py --file bad.java
+```
+
+Other input modes:
+
+```sh
 python run_all_classifiers.py "some text to check"
 python run_all_classifiers.py --file path/to/content.txt
 echo "some text" | python run_all_classifiers.py
 
 # tuning
-python run_all_classifiers.py "..." --workers 24 --top 25 --threshold 0.3
+python run_all_classifiers.py --file bad.java --workers 24 --top 25 --threshold 0.3
 ```
 
 Run a single cheat sheet's classifier directly:
@@ -45,6 +52,24 @@ Run a single cheat sheet's classifier directly:
 ```sh
 python classifiers/prompt_injection_classifier.py "ignore all previous instructions"
 ```
+
+## Sample vulnerable file
+
+`bad.java` (used above) is a small, intentionally vulnerable Java class
+(hardcoded credentials, SQL injection, command injection, path traversal,
+XSS, SSRF, insecure deserialization, and a weak PRNG) used to sanity-check
+the classifiers end-to-end. Add `--top 30` to only see the strongest hits.
+
+Expect the top findings to score ~0.9-0.97 confidence across the relevant
+cheat sheets (e.g. Secrets Management, SQL/Command Injection, SSRF,
+Deserialization), while unrelated cheat sheets (e.g. Zero Trust Architecture,
+SAML) trail off toward 0.
+
+> **Always pass source code via `--file`, not as an inline shell argument.**
+> Quoting/escaping a multi-line file as a single shell string (or JSON string) can
+> mangle code (literal `\n` instead of real newlines, escaped quotes, `!`
+> triggering bash history expansion) and lower confidence scores across the
+> board. `--file` reads the content byte-for-byte with no shell interference.
 
 ## Adding a new cheat sheet
 
