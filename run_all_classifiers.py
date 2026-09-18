@@ -14,11 +14,17 @@ classifiers/_TEMPLATE.py.txt):
     CATEGORIES: dict[str, str]              # category -> description
     classify_with_nouls(text: str) -> dict[str, float]   # category -> probability
 
+Before classifying, a routing pass (router.py) asks one Noul per cheat sheet
+whether it's even relevant to the input (e.g. skip Django/Laravel/Ruby on
+Rails classifiers for a plain .java file) so only relevant classifiers are
+actually run. Use --no-route to disable this and always run all classifiers.
+
 Usage:
     python run_all_classifiers.py "some text to classify"
     python run_all_classifiers.py --file path/to/content.txt
     echo "some text" | python run_all_classifiers.py
     python run_all_classifiers.py "..." --workers 24 --top 25
+    python run_all_classifiers.py --file path/to/content.txt --no-route
 """
 
 import argparse
@@ -27,6 +33,8 @@ import sys
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
+
+import router
 
 CLASSIFIERS_DIR = Path(__file__).resolve().parent / "classifiers"
 REQUIRED_ATTRS = ("CHEATSHEET_NAME", "CHEATSHEET_URL", "CATEGORIES", "classify_with_nouls")
@@ -62,6 +70,25 @@ def load_all_classifiers(paths):
         except Exception as exc:  # noqa: BLE001 - report and continue
             load_errors.append((path.name, str(exc)))
     return modules, load_errors
+
+
+def route_modules(modules, text: str, threshold: float):
+    """Filter `modules` down to those router.py judges relevant to `text`.
+
+    Returns (kept_modules, route_scores, error). On any failure (e.g. missing
+    API key), returns (modules, {}, error) so the caller can fall back to
+    running everything unfiltered instead of crashing.
+    """
+    try:
+        route_scores = router.route(text)
+    except Exception as exc:  # noqa: BLE001 - fall back to running everything
+        return modules, {}, str(exc)
+
+    kept = [
+        m for m in modules
+        if route_scores.get(Path(m.__file__).stem, 1.0) >= threshold
+    ]
+    return kept, route_scores, None
 
 
 def classify_one(module, text: str):
@@ -151,6 +178,17 @@ def main() -> int:
     )
     parser.add_argument("--top", type=int, default=None, help="Only show the top N findings")
     parser.add_argument("--quiet", action="store_true", help="Suppress the live progress line")
+    parser.add_argument(
+        "--no-route",
+        action="store_true",
+        help="Skip the router.py relevance pre-filter and run all classifiers unconditionally",
+    )
+    parser.add_argument(
+        "--route-threshold",
+        type=float,
+        default=0.35,
+        help="Minimum router.py relevance probability for a classifier to run (default: 0.35)",
+    )
     args = parser.parse_args()
 
     if args.file:
@@ -175,7 +213,22 @@ def main() -> int:
         for name, err in load_errors:
             print(f"  - {name}: {err}", file=sys.stderr)
 
-    print(f"Loaded {len(modules)} cheat sheet classifiers. Classifying input ({len(text)} chars)...", file=sys.stderr)
+    print(f"Loaded {len(modules)} cheat sheet classifiers.", file=sys.stderr)
+
+    total_loaded = len(modules)
+    if not args.no_route:
+        print("Routing: checking which cheat sheets are relevant to the input...", file=sys.stderr)
+        modules, route_scores, route_error = route_modules(modules, text, threshold=args.route_threshold)
+        if route_error:
+            print(f"WARNING: routing failed ({route_error}); running all classifiers instead.", file=sys.stderr)
+        else:
+            print(
+                f"Routing selected {len(modules)}/{total_loaded} classifiers "
+                f"(threshold {args.route_threshold}).",
+                file=sys.stderr,
+            )
+
+    print(f"Classifying input ({len(text)} chars) against {len(modules)} classifier(s)...", file=sys.stderr)
 
     start = time.time()
     findings, run_errors = run_all(modules, text, workers=args.workers, quiet=args.quiet)
@@ -200,7 +253,8 @@ def main() -> int:
     print_table(("#", "cheat_sheet", "category", "confidence"), rows)
 
     print(f"\n{len(findings)} finding(s) with confidence > {args.threshold} "
-          f"out of {len(modules)} cheat sheets checked.")
+          f"out of {len(modules)} cheat sheets checked "
+          f"({total_loaded} available; use --no-route to check all).")
 
     if run_errors:
         print(f"\n{len(run_errors)} classifier(s) failed during classification:", file=sys.stderr)

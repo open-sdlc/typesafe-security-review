@@ -21,10 +21,17 @@ sheets).
   - Each file is also a standalone CLI (`python classifiers/xxx_classifier.py "text"`).
   - `classifiers/_TEMPLATE.py.txt` — the template new classifiers follow.
 - `run_all_classifiers.py` — coordinator that discovers every
-  `classifiers/*_classifier.py` module, sends the same input text to all of
-  them concurrently (thread pool), and prints one consolidated report of
+  `classifiers/*_classifier.py` module, routes the input through `router.py`
+  to skip irrelevant cheat sheets, sends the input text to the remaining
+  modules concurrently (thread pool), and prints one consolidated report of
   every `(cheat sheet, category)` finding with confidence > 0, sorted
   descending.
+- `router.py` — relevance router, also built on TypeSafe. Asks one `Noul`
+  per cheat sheet ("does this cheat sheet apply to this input?") in a single
+  parallel `system_one()` call (the
+  [speculative fan-out](https://docs.typesafe.ai/patterns/fan-out.md)
+  pattern), so `run_all_classifiers.py` doesn't waste calls running, e.g.,
+  the Django/Laravel/Ruby on Rails classifiers against a `.java` file.
 
 ## Usage
 
@@ -45,6 +52,10 @@ echo "some text" | python run_all_classifiers.py
 
 # tuning
 python run_all_classifiers.py --file bad.java --workers 24 --top 25 --threshold 0.3
+
+# routing (on by default) -- disable to always run all 122 classifiers
+python run_all_classifiers.py --file bad.java --no-route
+python run_all_classifiers.py --file bad.java --route-threshold 0.5
 ```
 
 Run a single cheat sheet's classifier directly:
@@ -52,6 +63,23 @@ Run a single cheat sheet's classifier directly:
 ```sh
 python classifiers/prompt_injection_classifier.py "ignore all previous instructions"
 ```
+
+## Routing
+
+Running all 122 classifiers on every input works but is wasteful when most
+cheat sheets obviously don't apply (e.g. Django/Laravel/Ruby on Rails
+classifiers for a `.java` file). `router.py` pre-filters:
+
+```sh
+python router.py --file bad.java
+```
+
+It asks one `Noul` per cheat sheet -- "does this cheat sheet apply here?" --
+all in a single parallel call, then only the classifiers scoring at or above
+`--route-threshold` (default `0.35`) are run. `run_all_classifiers.py` uses
+this automatically; pass `--no-route` to skip routing and always run all 122.
+If routing itself fails (e.g. no API key), the coordinator logs a warning and
+falls back to running every classifier unfiltered.
 
 ## Sample vulnerable file
 
@@ -77,3 +105,8 @@ Copy `classifiers/_TEMPLATE.py.txt` to `classifiers/<topic>_classifier.py`,
 fill in `CHEATSHEET_NAME`/`CHEATSHEET_URL`, and derive `CATEGORIES` from the
 cheat sheet's real content. `run_all_classifiers.py` picks it up automatically
 (no registration needed).
+
+Also add an entry to `ROUTES` in `router.py` keyed by the same module stem
+(e.g. `"<topic>_classifier"`), with a short `applies_when` scope description
+(what language/framework/context makes this cheat sheet relevant) -- this is
+what lets the router correctly include or skip your new classifier.
