@@ -1,0 +1,19 @@
+import csv
+
+FORMULA_TRIGGERS = ("=", "+", "-", "@", "\t", "\r")
+
+def neutralize(value):
+    if value and value.startswith(FORMULA_TRIGGERS):
+        return "'" + value
+    return value
+
+def export_contacts(contacts, response):
+    writer = csv.writer(response)
+    writer.writerow(["Name", "Email", "Notes"])
+    for contact in contacts:
+        writer.writerow([
+            neutralize(contact.name),
+            neutralize(contact.email),
+            neutralize(contact.notes),
+        ])
+    return response

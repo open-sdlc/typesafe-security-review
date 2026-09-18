@@ -1,0 +1,11 @@
+Dependency Alert Triage Notes - lodash 4.17.15 (CVE-2020-8203, prototype pollution)
+
+`npm audit` flagged lodash 4.17.15 as vulnerable to prototype pollution. We
+upgraded to lodash 4.17.21, the patched release, and updated the two
+internal build scripts that depended on the old behavior.
+
+Before merging, we added a regression test that reproduces the
+CVE-2020-8203 payload against `_.zipObjectDeep`: it fails against the
+pinned 4.17.15 install and passes once the upgrade lands, confirming this
+is a real fix rather than a suppressed scanner alert. `npm audit` now
+reports zero known vulnerabilities for the dependency tree.

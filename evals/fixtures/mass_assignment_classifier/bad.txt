@@ -1,0 +1,11 @@
+const userSchema = new mongoose.Schema({
+  name: String,
+  email: String,
+  isAdmin: { type: Boolean, default: false },
+});
+const User = mongoose.model('User', userSchema);
+
+app.put('/api/users/:id', async (req, res) => {
+  const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true });
+  res.json(user);
+});

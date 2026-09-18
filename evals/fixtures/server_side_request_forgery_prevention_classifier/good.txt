@@ -1,0 +1,32 @@
+const express = require("express");
+const axios = require("axios");
+const dns = require("dns").promises;
+const { isIP } = require("net");
+const app = express();
+
+const ALLOWED_HOSTS = new Set(["images.trusted-cdn.com", "cdn.partner.example.com"]);
+
+function isPrivateOrReserved(ip) {
+  return /^(10\.|127\.|169\.254\.|172\.(1[6-9]|2\d|3[0-1])\.|192\.168\.)/.test(ip);
+}
+
+async function assertSafeExternalUrl(rawUrl) {
+  const parsed = new URL(rawUrl);
+  if (parsed.protocol !== "https:") throw new Error("only https allowed");
+  if (!ALLOWED_HOSTS.has(parsed.hostname)) throw new Error("host not allowlisted");
+  const { address } = await dns.lookup(parsed.hostname);
+  if (isIP(address) && isPrivateOrReserved(address)) {
+    throw new Error("resolved to a private address, rejecting");
+  }
+  return parsed;
+}
+
+app.post("/api/fetch-avatar", async (req, res) => {
+  const safeUrl = await assertSafeExternalUrl(req.body.url);
+  const response = await axios.get(safeUrl.toString(), {
+    responseType: "arraybuffer",
+    maxRedirects: 0,
+  });
+  await saveAvatarBytes(req.body.userId, response.data);
+  res.json({ status: "ok" });
+});

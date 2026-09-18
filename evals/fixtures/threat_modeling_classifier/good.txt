@@ -1,0 +1,30 @@
+Threat Model: Customer Portal Login Service
+
+Identified threats and response decisions:
+
+1. Attacker steals a valid session cookie via XSS and reuses it to
+   impersonate the victim.
+   Response: Mitigate. Requirement: set HttpOnly/Secure/SameSite on session
+   cookies and add CSP headers; ticket SEC-101, owner: platform team.
+
+2. Attacker submits crafted requests that update another user's shipping
+   address without authorization.
+   Response: Mitigate. Requirement: enforce per-object authorization checks
+   server-side on every mutation endpoint; ticket SEC-102, owner: API team.
+
+3. Attacker floods the /login endpoint with failed attempts, locking out
+   legitimate users' accounts.
+   Response: Mitigate. Requirement: rate-limit by IP and account, add
+   CAPTCHA after 5 failures; ticket SEC-103, owner: auth team.
+
+4. Attacker modifies the "role" claim in a JWT to gain admin access.
+   Response: Mitigate. Requirement: sign JWTs with RS256 and verify the
+   signature on every request; ticket SEC-104, owner: auth team.
+
+5. Attacker deletes audit log entries after tampering with an order.
+   Response: Accept for v1, revisit in Q3. Rationale: audit logs are
+   shipped to a write-only external log sink within 5 seconds, limiting
+   the blast radius; documented and signed off by security lead.
+
+All five items above have been reviewed by the security lead and are
+tracked to closure, with SEC-101 through SEC-104 already in this sprint.

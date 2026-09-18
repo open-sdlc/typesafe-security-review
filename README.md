@@ -3,13 +3,20 @@
 Classifiers built on the [TypeSafe](https://typesafe.ai) System One API (via
 `typesafe_sdk`) that score input text against the full
 [OWASP Cheat Sheet Series](https://cheatsheetseries.owasp.org/) (122 cheat
-sheets).
+sheets), plus 9 additional classifiers sourced directly from
+[CWE](https://cwe.mitre.org/) definitions (131 classifiers total) for
+weakness families -- memory safety, path traversal, race conditions, SSTI,
+hardcoded credentials, HTTP request smuggling, unsafe reflection,
+CSV/formula injection, untrusted search path -- that the OWASP series
+doesn't have a dedicated page for.
 
 ## Layout
 
-- `classifiers/` — one module per cheat sheet, named `<topic>_classifier.py`.
-  Each module exposes a standard interface:
-  - `CHEATSHEET_NAME`, `CHEATSHEET_URL` — identifies the source cheat sheet.
+- `classifiers/` — one module per cheat sheet or CWE definition, named
+  `<topic>_classifier.py`. Each module exposes a standard interface:
+  - `CHEATSHEET_NAME`, `CHEATSHEET_URL` — identifies the source (an OWASP
+    cheat sheet, or for the 9 CWE-sourced classifiers, the primary CWE
+    definition page, e.g. `https://cwe.mitre.org/data/definitions/22.html`).
   - `CATEGORIES: dict[str, str]` — 5-12 sub-categories (specific risks,
     attack patterns, or checklist items) drawn from that cheat sheet's own
     content, keyed by a short `snake_case` name.
@@ -39,7 +46,7 @@ sheets).
 pip install typesafe-sdk
 export TYPESAFE_API_KEY=...   # https://console.typesafe.ai/
 
-# primary usage: classify a source file against all 122 cheat sheets
+# primary usage: classify a source file against all 131 classifiers
 python run_all_classifiers.py --file bad.java
 ```
 
@@ -53,7 +60,7 @@ echo "some text" | python run_all_classifiers.py
 # tuning
 python run_all_classifiers.py --file bad.java --workers 24 --top 25 --threshold 0.3
 
-# routing (on by default) -- disable to always run all 122 classifiers
+# routing (on by default) -- disable to always run all 131 classifiers
 python run_all_classifiers.py --file bad.java --no-route
 python run_all_classifiers.py --file bad.java --route-threshold 0.5
 ```
@@ -66,7 +73,7 @@ python classifiers/prompt_injection_classifier.py "ignore all previous instructi
 
 ## Routing
 
-Running all 122 classifiers on every input works but is wasteful when most
+Running all 131 classifiers on every input works but is wasteful when most
 cheat sheets obviously don't apply (e.g. Django/Laravel/Ruby on Rails
 classifiers for a `.java` file). `router.py` pre-filters:
 
@@ -77,7 +84,7 @@ python router.py --file bad.java
 It asks one `Noul` per cheat sheet -- "does this cheat sheet apply here?" --
 all in a single parallel call, then only the classifiers scoring at or above
 `--route-threshold` (default `0.35`) are run. `run_all_classifiers.py` uses
-this automatically; pass `--no-route` to skip routing and always run all 122.
+this automatically; pass `--no-route` to skip routing and always run all 131.
 If routing itself fails (e.g. no API key), the coordinator logs a warning and
 falls back to running every classifier unfiltered.
 
@@ -99,14 +106,71 @@ SAML) trail off toward 0.
 > triggering bash history expansion) and lower confidence scores across the
 > board. `--file` reads the content byte-for-byte with no shell interference.
 
-## Adding a new cheat sheet
+## Scanning a whole repository
+
+`repo_scan.py` runs the same classifier pipeline across an entire
+repository instead of one file at a time. It uses
+[CodeGraph](https://github.com/colbymchenry/codegraph) (an external, local
+code-graph indexer) to find files that actually contain executable code, so
+it skips docs/config/data without a hand-maintained extension list; it
+falls back to a plain file walk if CodeGraph isn't installed.
+
+```sh
+# scan a local checkout
+python repo_scan.py /path/to/repo
+
+# clone and scan a remote repo (shallow clone, cleaned up afterward)
+python repo_scan.py --repo-url https://github.com/org/repo.git
+python repo_scan.py --repo-url git@github.com:org/repo.git --ref main
+
+# tuning
+python repo_scan.py /path/to/repo --max-files 50 --top 30
+python repo_scan.py /path/to/repo --no-codegraph   # force plain file walk
+python repo_scan.py --repo-url https://github.com/org/repo.git --json out.json
+```
+
+Install CodeGraph to enable code-aware file discovery and route-file
+prioritization (optional but recommended):
+
+```sh
+npm install -g @colbymchenry/codegraph
+```
+
+See [`specs/006-full-repo-scan/spec.md`](specs/006-full-repo-scan/spec.md)
+for the full design, including git-URL handling and cleanup semantics.
+
+## Evals
+
+`evals/run_evals.py` sanity-checks each classifier against a `bad`/`good`
+fixture pair, confirming it scores clearly high on an obvious positive and
+stays quiet on a safe counterpart.
+
+```sh
+python evals/run_evals.py                 # run every classifier with fixtures
+python evals/run_evals.py --dry-run        # check fixture coverage only, no API calls
+python evals/run_evals.py --filter "sql*"  # only stems matching a glob
+```
+
+See [`evals/README.md`](evals/README.md) for fixture format and how to add
+fixtures for a new classifier.
+
+## Specs
+
+[`specs/`](specs/) documents the system in detail: architecture, the
+classifier module contract, the router, the coordinator CLI, the full
+classifier catalog, and the full-repo-scan design. See
+[`specs/README.md`](specs/README.md) for the index.
+
+## Adding a new classifier
 
 Copy `classifiers/_TEMPLATE.py.txt` to `classifiers/<topic>_classifier.py`,
-fill in `CHEATSHEET_NAME`/`CHEATSHEET_URL`, and derive `CATEGORIES` from the
-cheat sheet's real content. `run_all_classifiers.py` picks it up automatically
-(no registration needed).
+fill in `CHEATSHEET_NAME`/`CHEATSHEET_URL` (an OWASP cheat sheet page, or a
+CWE definition page such as `https://cwe.mitre.org/data/definitions/<id>.html`
+if the topic isn't covered by an existing OWASP cheat sheet), and derive
+`CATEGORIES` from that source's real content. `run_all_classifiers.py` picks
+it up automatically (no registration needed).
 
 Also add an entry to `ROUTES` in `router.py` keyed by the same module stem
 (e.g. `"<topic>_classifier"`), with a short `applies_when` scope description
-(what language/framework/context makes this cheat sheet relevant) -- this is
+(what language/framework/context makes this classifier relevant) -- this is
 what lets the router correctly include or skip your new classifier.

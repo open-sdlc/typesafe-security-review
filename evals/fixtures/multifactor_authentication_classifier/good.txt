@@ -1,0 +1,18 @@
+def generate_otp(user_id):
+    otp = f"{secrets.randbelow(1_000_000):06d}"
+    otp_store[user_id] = {
+        "code": otp,
+        "expires_at": time.time() + 300,
+        "attempts": 0,
+    }
+    return otp
+
+def verify_otp(user_id, submitted_otp):
+    entry = otp_store.get(user_id)
+    if not entry or time.time() > entry["expires_at"] or entry["attempts"] >= 5:
+        return False
+    entry["attempts"] += 1
+    valid = secrets.compare_digest(entry["code"], submitted_otp)
+    if valid:
+        del otp_store[user_id]
+    return valid

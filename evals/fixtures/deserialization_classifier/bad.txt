@@ -1,0 +1,10 @@
+import pickle
+import base64
+
+@app.route("/api/session/restore", methods=["POST"])
+def restore_session():
+    encoded = request.form["state"]
+    raw = base64.b64decode(encoded)
+    # restore whatever session object the client sent us
+    session_obj = pickle.loads(raw)
+    return jsonify(session_obj.to_dict())

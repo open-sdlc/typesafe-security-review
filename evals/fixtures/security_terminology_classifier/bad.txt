@@ -1,0 +1,14 @@
+Engineering wiki: How we store user passwords
+
+When a user signs up, we encrypt their password using AES-256 before saving
+it to the users table. To check a login attempt, we decrypt the stored
+value and compare it to the password the user just typed in.
+
+The encryption key is stored in the same config file as the database
+connection string, so if we ever need to reset a forgotten password we can
+decrypt it and email the user their original password directly instead of
+making them set a new one.
+
+We chose encryption over other approaches because it lets support staff
+recover a user's exact password if they call in, which hashing would not
+allow.

@@ -1,0 +1,12 @@
+# httpd-ssl.conf for api.example.com
+
+SSLEngine on
+SSLProtocol -all +TLSv1.2 +TLSv1.3
+SSLCipherSuite ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384
+SSLHonorCipherOrder on
+SSLCertificateFile /etc/ssl/certs/api.example.com.crt
+SSLCertificateKeyFile /etc/ssl/private/api.example.com.key
+
+# Certificate generated with:
+#   openssl req -x509 -newkey rsa:3072 -keyout key.pem -out cert.pem \
+#       -sha256 -days 398 -subj "/CN=api.example.com"

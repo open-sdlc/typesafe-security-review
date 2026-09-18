@@ -1,0 +1,32 @@
+const { Mutex } = require('async-mutex');
+const requestCountMutex = new Mutex();
+let requestCount = 0;
+
+async function handleRequest(req, res) {
+  const release = await requestCountMutex.acquire();
+  let count;
+  try {
+    requestCount += 1;
+    count = requestCount;
+  } finally {
+    release();
+  }
+  if (count > MAX_REQUESTS) {
+    return res.status(429).send('rate limited');
+  }
+  process(req, res);
+}
+
+function writeUserFile(path, data) {
+  try {
+    // O_CREAT|O_EXCL atomically fails if the file already exists,
+    // closing the check-then-use window
+    const fd = fs.openSync(path, 'wx');
+    fs.writeSync(fd, data);
+    fs.closeSync(fd);
+    return { ok: true };
+  } catch (err) {
+    if (err.code === 'EEXIST') return { error: 'file already exists' };
+    throw err;
+  }
+}

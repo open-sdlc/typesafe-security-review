@@ -1,0 +1,12 @@
+@app.route("/api/orders/<order_id>")
+def get_order(order_id):
+    try:
+        order = db.session.query(Order).filter_by(id=order_id).one()
+        return jsonify(order.to_dict())
+    except Exception as e:
+        import traceback
+        return Response(
+            f"<h1>Internal Server Error</h1><pre>{traceback.format_exc()}</pre>",
+            status=500,
+            mimetype="text/html",
+        )

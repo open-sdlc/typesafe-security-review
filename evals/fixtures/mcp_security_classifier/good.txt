@@ -1,0 +1,7 @@
+{
+  "tool": "fetch_webpage",
+  "result": {
+    "url": "https://example.com/article",
+    "content": "Quarterly earnings rose 4% year over year, driven by growth in the cloud services division. Full report attached below."
+  }
+}

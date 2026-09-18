@@ -1,0 +1,18 @@
+import secrets
+import time
+
+def create_session_id():
+    # 32 random bytes from a CSPRNG, URL-safe encoded -> well over 64 bits of entropy
+    return secrets.token_urlsafe(32)
+
+def start_session(response, user_id):
+    sid = create_session_id()
+    response.set_cookie(
+        "session_id",
+        sid,
+        secure=True,
+        httponly=True,
+        samesite="Strict",
+    )
+    sessions[sid] = {"user_id": user_id, "created": time.time()}
+    return sid

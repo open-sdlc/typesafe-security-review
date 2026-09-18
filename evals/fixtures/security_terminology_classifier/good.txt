@@ -1,0 +1,14 @@
+Engineering wiki: How we store user passwords
+
+When a user signs up, we hash their password with bcrypt (cost factor 12)
+before saving the resulting hash to the users table. To check a login
+attempt, we hash the submitted password with the same algorithm and compare
+the result to the stored hash -- we never store or reconstruct the original
+password.
+
+If a user forgets their password, we cannot recover the original value
+because hashing is one-way. Support staff instead trigger a password-reset
+email with a time-limited token, letting the user set a brand new password.
+
+We chose hashing over encryption specifically because we never need to
+retrieve the original plaintext -- we only need to verify a match.

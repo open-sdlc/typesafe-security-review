@@ -1,11 +1,13 @@
-"""Coordinator for the OWASP Cheat Sheet Series classifiers.
+"""Coordinator for the security classifiers.
 
 Loads every `*_classifier.py` module under `classifiers/` (one module per
-OWASP Cheat Sheet, each built on the TypeSafe System One API -- see
-https://cheatsheetseries.owasp.org/), sends the same input text to all of
-them in parallel, and produces a single consolidated report listing every
-finding (cheat sheet + sub-category) whose confidence score is greater
-than 0.
+OWASP Cheat Sheet -- see https://cheatsheetseries.owasp.org/ -- plus a
+smaller set of modules sourced from CWE definitions at
+https://cwe.mitre.org/ for weakness families the OWASP series doesn't have
+a dedicated page for, each built on the TypeSafe System One API), sends the
+same input text to all of them in parallel, and produces a single
+consolidated report listing every finding (source + sub-category) whose
+confidence score is greater than 0.
 
 Each classifier module is expected to expose the standard interface (see
 classifiers/_TEMPLATE.py.txt):
@@ -239,7 +241,7 @@ def main() -> int:
     if args.top:
         findings = findings[: args.top]
 
-    print(f"\n=== OWASP Cheat Sheet Series -- Findings Report ({elapsed:.1f}s) ===\n")
+    print(f"\n=== Security Classifier Findings Report ({elapsed:.1f}s) ===\n")
 
     rows = [
         (

@@ -1,0 +1,12 @@
+app.get('/download', (req, res) => {
+  const filename = req.query.file;
+  const filePath = './uploads/' + filename;
+  res.sendFile(path.resolve(filePath));
+});
+
+app.get('/view', (req, res) => {
+  const page = req.query.page;
+  fs.readFile('/var/www/templates/' + page, 'utf8', (err, data) => {
+    res.send(data);
+  });
+});

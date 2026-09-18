@@ -1,0 +1,10 @@
+void handle_request(const char *client_input) {
+    char buffer[64];
+    if (strlen(client_input) >= sizeof(buffer)) {
+        log_and_reject("input too long");
+        return;
+    }
+    strncpy(buffer, client_input, sizeof(buffer) - 1);
+    buffer[sizeof(buffer) - 1] = '\0';
+    process(buffer);
+}

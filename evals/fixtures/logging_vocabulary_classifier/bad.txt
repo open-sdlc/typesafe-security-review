@@ -1,0 +1,10 @@
+Logging design notes -- Identity Service
+
+Every login attempt emits an AUTHN_login_success or AUTHN_login_failure
+event with the username, source IP, and timestamp. After five
+consecutive AUTHN_login_failure events for the same account within ten
+minutes, an AUTHN_login_lock event is emitted and the account is
+locked. Password changes emit AUTHN_password_change, and a login from
+a country more than 1,000 km from the account's previous login within
+an implausible time window emits AUTHN_impossible_travel so the fraud
+team can review it.

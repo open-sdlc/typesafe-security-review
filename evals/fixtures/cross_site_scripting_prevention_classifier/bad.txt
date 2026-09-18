@@ -1,0 +1,14 @@
+function renderComment(comment) {
+  const container = document.getElementById("comments");
+  container.innerHTML += "<div class='comment'>" + comment.author + ": " + comment.text + "</div>";
+}
+
+function showSearchResults(query) {
+  document.getElementById("results-heading").innerHTML =
+    "Results for: " + query;
+}
+
+app.get("/profile", (req, res) => {
+  const bio = req.query.bio;
+  res.send(`<div class="bio">${bio}</div>`);
+});

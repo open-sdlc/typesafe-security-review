@@ -1,0 +1,21 @@
+name: Comment Triage
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@main
+      - name: Handle comment
+        run: |
+          echo "Processing comment: ${{ github.event.comment.body }}"
+          ./scripts/triage.sh "${{ github.event.comment.body }}"
+        env:
+          DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}

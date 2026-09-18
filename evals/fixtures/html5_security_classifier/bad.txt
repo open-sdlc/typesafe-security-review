@@ -1,0 +1,11 @@
+<script>
+  // Widget embedded on partner sites; listens for size updates from the parent
+  window.addEventListener("message", function (event) {
+    var el = document.getElementById("widget-content");
+    el.innerHTML = event.data.html;
+  });
+
+  function notifyParent(payload) {
+    window.parent.postMessage(payload, "*");
+  }
+</script>

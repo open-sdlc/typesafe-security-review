@@ -1,0 +1,17 @@
+function renderComment(comment) {
+  const container = document.getElementById("comments");
+  const div = document.createElement("div");
+  div.className = "comment";
+  div.textContent = `${comment.author}: ${comment.text}`;
+  container.appendChild(div);
+}
+
+function showSearchResults(query) {
+  document.getElementById("results-heading").textContent =
+    "Results for: " + query;
+}
+
+app.get("/profile", (req, res) => {
+  const bio = req.query.bio;
+  res.type("html").send(`<div class="bio">${escapeHtml(bio)}</div>`);
+});

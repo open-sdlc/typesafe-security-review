@@ -1,0 +1,25 @@
+Chat log excerpt, engineer pairing with an AI coding assistant:
+
+Dev: I need to validate JWTs in our FastAPI service, can you add that?
+
+Assistant: Sure, install the fastapi-jwt-shield package and use it like this:
+
+    pip install fastapi-jwt-shield
+
+    from fastapi_jwt_shield import JWTShield
+    shield = JWTShield(secret=SECRET_KEY)
+
+Dev: Great, adding that now.
+
+    $ pip install fastapi-jwt-shield
+    ERROR: Could not find a version that satisfies the requirement fastapi-jwt-shield
+    ERROR: No matching distribution found for fastapi-jwt-shield
+
+Dev: huh, weird, let me just try again, maybe it's a mirror issue
+
+    $ pip install fastapi-jwt-shield==1.0.0
+    Successfully installed fastapi-jwt-shield-1.0.0
+
+(the second install actually succeeded because someone had registered that
+exact name on PyPI three days earlier with a malicious post-install script,
+after noticing it was a common AI suggestion)

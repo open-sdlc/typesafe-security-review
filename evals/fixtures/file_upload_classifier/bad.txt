@@ -1,0 +1,13 @@
+UPLOAD_DIR = "/var/www/html/uploads"
+BLOCKED_EXTENSIONS = {".exe", ".sh"}
+
+@app.route("/upload", methods=["POST"])
+def upload_avatar():
+    file = request.files["avatar"]
+    filename = file.filename
+    ext = os.path.splitext(filename)[1].lower()
+    if ext in BLOCKED_EXTENSIONS:
+        return jsonify({"error": "File type not allowed"}), 400
+    save_path = os.path.join(UPLOAD_DIR, filename)
+    file.save(save_path)
+    return jsonify({"url": f"/uploads/{filename}"}), 200

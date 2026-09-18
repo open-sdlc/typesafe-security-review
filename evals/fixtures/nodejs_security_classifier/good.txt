@@ -1,0 +1,31 @@
+const escapeHtml = require('escape-html');
+const rateLimit = require('express-rate-limit');
+const { z } = require('zod');
+
+const loginLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 5 });
+
+const greetSchema = z.object({ name: z.string().min(1).max(50) });
+
+app.get('/greet', (req, res) => {
+  const parsed = greetSchema.safeParse(req.query);
+  if (!parsed.success) return res.status(400).send('invalid input');
+  res.send('<h1>Welcome, ' + escapeHtml(parsed.data.name) + '!</h1>');
+});
+
+app.post('/lookup', (req, res) => {
+  const userId = parseInt(req.body.id, 10);
+  if (!Number.isInteger(userId)) return res.status(400).send('invalid id');
+  db.query('SELECT * FROM users WHERE id = ?', [userId], (err, rows) => {
+    res.json(rows);
+  });
+});
+
+app.post('/login', loginLimiter, async (req, res) => {
+  const user = users.find(u => u.username === req.body.username);
+  const ok = user && await bcrypt.compare(req.body.password, user.passwordHash);
+  if (ok) {
+    res.json({ token: issueToken(user) });
+  } else {
+    res.status(401).send('invalid');
+  }
+});

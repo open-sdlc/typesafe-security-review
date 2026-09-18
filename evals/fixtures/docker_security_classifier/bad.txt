@@ -1,0 +1,16 @@
+FROM ubuntu:latest
+
+RUN apt-get update && apt-get install -y python3 python3-pip
+
+COPY . /app
+WORKDIR /app
+RUN pip3 install -r requirements.txt
+
+ENV DB_PASSWORD=hunter2prod
+
+EXPOSE 8080
+
+CMD ["python3", "app.py"]
+
+# Run in production with:
+# docker run --privileged -v /var/run/docker.sock:/var/run/docker.sock -p 0.0.0.0:8080:8080 myapp:latest

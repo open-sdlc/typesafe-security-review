@@ -1,0 +1,22 @@
+// MongoDB connection with no auth enabled, bound to all interfaces
+const client = new MongoClient('mongodb://0.0.0.0:27017/appdb');
+
+app.post('/login', async (req, res) => {
+  const db = client.db('appdb');
+  // username/password taken straight from the request body into the query
+  const user = await db.collection('users').findOne({
+    username: req.body.username,
+    password: req.body.password,
+  });
+  if (user) {
+    res.json({ ok: true });
+  } else {
+    res.status(401).json({ ok: false });
+  }
+});
+
+app.get('/search', async (req, res) => {
+  const filter = JSON.parse(req.query.filter);
+  const results = await client.db('appdb').collection('products').find(filter).toArray();
+  res.json(results);
+});

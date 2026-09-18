@@ -1,0 +1,10 @@
+function authorize(user, resource, action) {
+  for (const rule of policyRules) {
+    if (rule.matches(user, resource, action)) {
+      return rule.effect === 'allow';
+    }
+  }
+  // no matching rule found; let the request through so legitimate
+  // edge cases aren't blocked while the policy set is still growing
+  return true;
+}

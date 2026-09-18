@@ -1,0 +1,14 @@
+## Release Process
+
+1. Bump the version in `package.json`.
+2. Run `npm run build`.
+3. Generate the SBOM automatically as part of CI:
+   `syft packages dir:. -o cyclonedx-json=sbom-v2.4.0.json`.
+   The SBOM includes component versions, package URLs (purl), checksums,
+   supplier metadata, license data, and direct-vs-transitive relationships.
+4. Sign the SBOM and build artifact with Cosign/Sigstore:
+   `cosign sign-blob --output-signature sbom-v2.4.0.sig sbom-v2.4.0.json`.
+5. Tag the release, push the image, and upload both the SBOM and its
+   signature to the versioned artifact store for audit/retention.
+6. CVE triage runs against the archived SBOM to flag any newly disclosed
+   vulnerabilities in direct or transitive components.

@@ -1,0 +1,8 @@
+def generate_otp(user_id):
+    otp = str(random.randint(100000, 999999))
+    otp_store[user_id] = otp
+    logger.info(f"Generated OTP {otp} for user {user_id}")
+    return otp
+
+def verify_otp(user_id, submitted_otp):
+    return otp_store.get(user_id) == submitted_otp

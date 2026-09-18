@@ -1,0 +1,14 @@
+function startLogin() {
+  const authUrl = 'https://auth.example.com/authorize'
+    + '?response_type=token'
+    + '&client_id=spa-client-123'
+    + '&redirect_uri=' + window.location.origin + '/callback'
+    + '&scope=openid profile email';
+  window.location.href = authUrl;
+}
+
+function handleCallback() {
+  const fragment = new URLSearchParams(window.location.hash.slice(1));
+  const accessToken = fragment.get('access_token');
+  localStorage.setItem('access_token', accessToken);
+}

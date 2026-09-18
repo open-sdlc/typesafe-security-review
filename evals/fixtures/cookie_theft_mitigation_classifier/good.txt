@@ -1,0 +1,32 @@
+def create_session(user_id, request):
+    session_id = str(uuid.uuid4())
+    sessions[session_id] = {
+        "user_id": user_id,
+        "created_at": time.time(),
+        "ip_address": request.remote_addr,
+        "user_agent": request.headers.get("User-Agent"),
+    }
+    return session_id
+
+
+def get_current_user(request):
+    session_id = request.cookies.get("session_id")
+    session = sessions.get(session_id)
+    if session is None:
+        return None
+
+    ip_changed = session["ip_address"] != request.remote_addr
+    ua_changed = session["user_agent"] != request.headers.get("User-Agent")
+    if ip_changed or ua_changed:
+        invalidate_session(session_id)
+        flag_for_step_up_auth(session["user_id"])
+        return None
+
+    return session["user_id"]
+
+
+def handle_request(request):
+    user_id = get_current_user(request)
+    if user_id is None:
+        return redirect_to_login(require_reauth=True)
+    return render_account_page(user_id)

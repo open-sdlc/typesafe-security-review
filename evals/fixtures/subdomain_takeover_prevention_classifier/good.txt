@@ -1,0 +1,16 @@
+Decommissioning ticket INFRA-4821: retire the "promo-fall2022" marketing microsite
+
+Steps completed:
+1. Removed the DNS records first, before touching the underlying resource:
+       promo.acme.com.        (CNAME record deleted)
+       fall2022.acme.com.     (CNAME record deleted)
+2. Verified with `dig` that both hostnames now return NXDOMAIN.
+3. Took down the Heroku app `acme-promo-fall2022` (heroku apps:destroy).
+4. Archived the git repo.
+5. Notified the marketing team the campaign is over.
+
+Our decommission checklist requires DNS cleanup as the first, mandatory
+step for any project involving a subdomain CNAME, specifically so no
+dangling record is ever left pointing at a resource we no longer control.
+
+Ticket closed.

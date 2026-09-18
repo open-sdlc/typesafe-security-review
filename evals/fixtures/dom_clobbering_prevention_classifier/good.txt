@@ -1,0 +1,18 @@
+<script>
+  const defaultConfig = Object.freeze({ apiUrl: "https://api.example.com" });
+
+  function loadWidget() {
+    const apiUrl = defaultConfig.apiUrl;
+    if (typeof apiUrl !== "string") {
+      throw new Error("invalid config");
+    }
+    const script = document.createElement("script");
+    script.src = apiUrl + "/widget.js";
+    document.body.appendChild(script);
+  }
+  loadWidget();
+</script>
+
+<div id="comments">
+  <p>Great post, thanks for sharing!</p>
+</div>

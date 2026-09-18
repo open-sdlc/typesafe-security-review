@@ -1,0 +1,25 @@
+import hmac
+import hashlib
+
+WEBHOOK_SECRET = get_secret("payments/webhook_secret")
+
+@app.route("/payments/webhook", methods=["POST"])
+def payment_webhook():
+    signature = request.headers.get("X-Gateway-Signature", "")
+    expected = hmac.new(WEBHOOK_SECRET.encode(), request.data, hashlib.sha256).hexdigest()
+    if not hmac.compare_digest(signature, expected):
+        abort(401)
+
+    payload = request.get_json()
+    order_id = payload["order_id"]
+
+    # verify status server-to-server with the gateway rather than trusting the payload
+    verified = gateway_client.get_payment_status(order_id)
+    if verified.status == "paid" and verified.amount == expected_amount_for(order_id):
+        order = Order.query.get(order_id)
+        if order.status != "fulfilled":
+            order.status = "fulfilled"
+            db.session.commit()
+            ship_order(order)
+
+    return jsonify({"received": True}), 200

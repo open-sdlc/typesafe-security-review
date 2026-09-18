@@ -1,0 +1,15 @@
+# settings.py
+DEBUG = True
+
+SECRET_KEY = "django-insecure-abc123"
+
+ALLOWED_HOSTS = ["*"]
+
+SESSION_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = False
+
+MIDDLEWARE = [
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.middleware.common.CommonMiddleware",
+]

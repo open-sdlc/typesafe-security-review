@@ -1,0 +1,17 @@
+Incident Response Note - CVE-2024-XXXXX (SQLi in /api/search)
+
+A pentest flagged a SQL injection vulnerability in the /api/search endpoint
+on Friday afternoon. The vendor library fix isn't expected until next
+month's release train. Because ModSecurity already sits in front of the
+app tier, we can add a targeted positive-security rule immediately.
+
+The rule allow-lists the "q" parameter to a strict pattern (letters,
+digits, spaces, 64 chars max) and rejects anything else, rather than
+trying to blocklist specific injection keywords that an attacker could
+rephrase or encode around.
+
+The security team maintains a pre-authorized expedited path for emergency
+virtual patches: on-call engineering can deploy a scoped WAF rule same-day
+with sign-off from a single security lead, followed by full request/
+response logging so the rule's false-positive and false-negative rate can
+be reviewed before the permanent code fix ships.

@@ -1,0 +1,10 @@
+def download_firmware_update(update_url):
+    response = requests.get(update_url)  # http://updates.example-motors.com/firmware/latest.bin
+    firmware_path = "/tmp/firmware_latest.bin"
+    with open(firmware_path, "wb") as f:
+        f.write(response.content)
+    return firmware_path
+
+def apply_firmware_update(firmware_path):
+    flash_ecu(firmware_path)
+    log.info("Firmware update applied")

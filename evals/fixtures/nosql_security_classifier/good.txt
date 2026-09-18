@@ -1,0 +1,29 @@
+// MongoDB connection with auth enabled, TLS, and internal-only bind address
+const client = new MongoClient(
+  'mongodb://appuser:REDACTED@10.0.1.15:27017/appdb?tls=true&authSource=appdb',
+  { tls: true }
+);
+
+app.post('/login', async (req, res) => {
+  const username = String(req.body.username);
+  const password = String(req.body.password);
+  const db = client.db('appdb');
+  const user = await db.collection('users').findOne({ username: { $eq: username } });
+  const ok = user && await bcrypt.compare(password, user.passwordHash);
+  if (ok) {
+    res.json({ ok: true });
+  } else {
+    res.status(401).json({ ok: false });
+  }
+});
+
+const ALLOWED_FIELDS = ['name', 'category', 'price'];
+app.get('/search', async (req, res) => {
+  const field = req.query.field;
+  if (!ALLOWED_FIELDS.includes(field)) return res.status(400).json({ error: 'invalid field' });
+  const value = String(req.query.value);
+  const results = await client.db('appdb').collection('products')
+    .find({ [field]: value })
+    .toArray();
+  res.json(results);
+});

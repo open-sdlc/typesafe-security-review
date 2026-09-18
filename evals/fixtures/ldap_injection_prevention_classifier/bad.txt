@@ -1,0 +1,12 @@
+public boolean authenticate(String username, String password) throws NamingException {
+    String filter = "(&(uid=" + username + ")(objectClass=person))";
+    NamingEnumeration<SearchResult> results =
+        ctx.search("ou=people,dc=example,dc=com", filter, new SearchControls());
+    if (results.hasMore()) {
+        SearchResult sr = results.next();
+        ctx.addToEnvironment(Context.SECURITY_PRINCIPAL, sr.getNameInNamespace());
+        ctx.addToEnvironment(Context.SECURITY_CREDENTIALS, password);
+        return true;
+    }
+    return false;
+}

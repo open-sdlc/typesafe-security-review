@@ -1,0 +1,20 @@
+app.get('/greet', (req, res) => {
+  const name = req.query.name;
+  res.send('<h1>Welcome, ' + name + '!</h1>');
+});
+
+app.post('/lookup', (req, res) => {
+  const userId = req.body.id;
+  db.query('SELECT * FROM users WHERE id = ' + userId, (err, rows) => {
+    res.json(rows);
+  });
+});
+
+app.post('/login', (req, res) => {
+  const user = users.find(u => u.username === req.body.username);
+  if (user && user.password === req.body.password) {
+    res.json({ token: 'ok' });
+  } else {
+    res.status(401).send('invalid');
+  }
+});

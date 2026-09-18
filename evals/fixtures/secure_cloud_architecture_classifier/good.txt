@@ -1,0 +1,28 @@
+resource "aws_s3_bucket" "user_uploads" {
+  bucket = "acme-user-uploads"
+}
+
+resource "aws_s3_bucket_public_access_block" "user_uploads" {
+  bucket                  = aws_s3_bucket.user_uploads.id
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
+
+resource "aws_db_instance" "primary" {
+  identifier             = "acme-prod-db"
+  engine                 = "postgres"
+  publicly_accessible    = false
+  db_subnet_group_name   = aws_db_subnet_group.private_subnets.name
+  vpc_security_group_ids = [aws_security_group.db_internal_only.id]
+}
+
+resource "aws_security_group" "db_internal_only" {
+  ingress {
+    from_port       = 5432
+    to_port         = 5432
+    protocol        = "tcp"
+    security_groups = [aws_security_group.app_tier.id]
+  }
+}

@@ -1,0 +1,13 @@
+public List<Order> findOrdersForCustomer(String customerName) throws SQLException {
+    String sql = "SELECT id, total, status FROM orders WHERE customer_name = '"
+        + customerName + "'";
+    try (Statement stmt = connection.createStatement();
+         ResultSet rs = stmt.executeQuery(sql)) {
+        List<Order> orders = new ArrayList<>();
+        while (rs.next()) {
+            orders.add(new Order(
+                rs.getLong("id"), rs.getBigDecimal("total"), rs.getString("status")));
+        }
+        return orders;
+    }
+}

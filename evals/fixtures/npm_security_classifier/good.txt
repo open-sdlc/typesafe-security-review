@@ -1,0 +1,15 @@
+{
+  "name": "internal-billing-service",
+  "version": "1.4.0",
+  "scripts": {
+    "start": "node server.js",
+    "audit:check": "npm audit --audit-level=high"
+  },
+  "dependencies": {
+    "express": "4.19.2"
+  }
+}
+
+# CI install step
+npm ci --ignore-scripts --omit=dev
+

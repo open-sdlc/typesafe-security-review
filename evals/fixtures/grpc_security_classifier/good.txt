@@ -1,0 +1,22 @@
+import grpc
+from concurrent import futures
+import account_pb2_grpc
+
+def load_credentials():
+    with open("server.key", "rb") as f:
+        private_key = f.read()
+    with open("server.crt", "rb") as f:
+        certificate_chain = f.read()
+    with open("ca.crt", "rb") as f:
+        root_ca = f.read()
+    return grpc.ssl_server_credentials(
+        [(private_key, certificate_chain)],
+        root_certificates=root_ca,
+        require_client_auth=True,
+    )
+
+server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
+account_pb2_grpc.add_AccountServiceServicer_to_server(AccountServicer(), server)
+server.add_secure_port("0.0.0.0:50051", load_credentials())
+server.start()
+server.wait_for_termination()

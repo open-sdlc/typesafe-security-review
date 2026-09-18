@@ -1,0 +1,25 @@
+SecureApp {
+    com.sun.security.auth.module.LdapLoginModule sufficient
+        debug=true
+        userProvider="ldap://ldap.internal.example.com:389/ou=people,dc=example,dc=com"
+        useSSL=false;
+    com.example.auth.LegacyPinLoginModule optional
+        debug=true;
+};
+
+public class DebugCallbackHandler implements CallbackHandler {
+    private final String username;
+    private final String password;
+
+    public void handle(Callback[] callbacks) {
+        for (Callback cb : callbacks) {
+            if (cb instanceof NameCallback) {
+                ((NameCallback) cb).setName(username);
+            } else if (cb instanceof PasswordCallback) {
+                PasswordCallback pc = (PasswordCallback) cb;
+                pc.setPassword(password.toCharArray());
+                System.out.println("Authenticating user=" + username + " password=" + password);
+            }
+        }
+    }
+}

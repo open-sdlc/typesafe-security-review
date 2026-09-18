@@ -1,0 +1,16 @@
+app.post('/api/checkout', requireLogin, (req, res) => {
+  const { items, subtotal, discount, shipping, tax, total } = req.body;
+
+  const order = createOrder({
+    userId: req.user.id,
+    items,
+    subtotal,
+    discount,
+    shipping,
+    tax,
+    total,
+  });
+
+  chargeCard(req.user.paymentMethodId, total);
+  res.json({ orderId: order.id, total });
+});

@@ -1,0 +1,13 @@
+public List<Order> findOrdersByUsername(String username) throws SQLException {
+    String query = "SELECT * FROM orders WHERE username = ?";
+    try (PreparedStatement stmt = connection.prepareStatement(query)) {
+        stmt.setString(1, username);
+        try (ResultSet rs = stmt.executeQuery()) {
+            List<Order> orders = new ArrayList<>();
+            while (rs.next()) {
+                orders.add(mapRow(rs));
+            }
+            return orders;
+        }
+    }
+}

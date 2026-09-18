@@ -1,0 +1,17 @@
+Threat Model: Customer Portal Login Service
+
+Identified threats:
+
+1. Attacker steals a valid session cookie via XSS and reuses it to
+   impersonate the victim.
+2. Attacker submits crafted requests that update another user's shipping
+   address without authorization.
+3. Attacker floods the /login endpoint with failed attempts, locking out
+   legitimate users' accounts.
+4. Attacker modifies the "role" claim in a JWT to gain admin access.
+5. Attacker deletes audit log entries after tampering with an order,
+   leaving no trace of the action.
+
+These five threats were identified during the design review meeting on
+March 3rd and recorded here for reference. No further action has been
+assigned yet.

@@ -1,0 +1,21 @@
+function loadComments(postId) {
+  fetch(`/api/posts/${postId}/comments`)
+    .then(res => res.json())
+    .then(comments => {
+      const container = document.getElementById('comments');
+      let html = '';
+      comments.forEach(c => {
+        html += `<div class="comment"><b>${c.author}</b>: ${c.body}</div>`;
+      });
+      container.innerHTML = html;
+    });
+}
+
+function showSearchResults(query) {
+  fetch(`/api/search?q=${query}`)
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById('results').innerHTML =
+        `<p>Showing results for: ${data.originalQuery}</p>` + data.resultsHtml;
+    });
+}

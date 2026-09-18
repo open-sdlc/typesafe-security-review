@@ -1,0 +1,15 @@
+agent:
+  name: ops-assistant
+  model: gpt-ops-4
+  tools:
+    - name: shell
+      permissions: unrestricted
+      allowed_paths: ["/*"]
+    - name: file_write
+      allowed_paths: ["/*"]
+    - name: http_request
+      allowed_hosts: ["*"]
+  task: >
+    Clean up temporary files and restart any failed services on the host
+    whenever disk usage exceeds 90%.
+  approval_required_for: []

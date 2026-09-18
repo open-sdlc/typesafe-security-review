@@ -1,0 +1,18 @@
+app.post("/upload", async (req, res) => {
+  const chunks = [];
+  req.on("data", (chunk) => chunks.push(chunk));
+  req.on("end", () => {
+    const fileBuffer = Buffer.concat(chunks);
+    fs.writeFileSync(`/uploads/${req.query.name}`, fileBuffer);
+    res.send("uploaded");
+  });
+});
+
+app.get("/report", (req, res) => {
+  const size = parseInt(req.query.rows);
+  const rows = [];
+  for (let i = 0; i < size; i++) {
+    rows.push(generateReportRow(i));
+  }
+  res.json(rows);
+});

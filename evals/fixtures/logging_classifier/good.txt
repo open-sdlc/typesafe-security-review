@@ -1,0 +1,7 @@
+def process_login(username, password, card_number):
+    logger.info(f"Login attempt: user={username}")
+    logger.debug(f"Charging card ending in {card_number[-4:]} for user {username}")
+    if not verify_credentials(username, password):
+        logger.warning(f"Failed login for user={username}")
+        return False
+    return True

@@ -1,0 +1,16 @@
+agent:
+  name: ops-assistant
+  model: gpt-ops-4
+  tools:
+    - name: shell
+      permissions: restricted
+      allowed_commands: ["systemctl restart", "systemctl status", "df -h"]
+      allowed_paths: ["/var/log/app/*"]
+    - name: file_write
+      allowed_paths: ["/var/tmp/ops-assistant/*"]
+    - name: http_request
+      allowed_hosts: ["internal-status.example.com"]
+  task: >
+    Clean up temporary files and restart any failed services on the host
+    whenever disk usage exceeds 90%.
+  approval_required_for: ["shell.restart", "file_write.delete"]

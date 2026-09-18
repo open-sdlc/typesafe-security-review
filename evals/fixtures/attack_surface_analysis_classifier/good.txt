@@ -1,0 +1,12 @@
+Infrastructure Notes — Q3 Review
+
+The legacy /admin-legacy panel from the 2019 rewrite was decommissioned this
+quarter after confirming zero traffic in the last 90 days of access logs;
+its route and backing service have been removed entirely. Partner API v1
+was sunset on schedule: it now returns 410 Gone and was undeployed from all
+environments once the partner migration to v2 completed. The bulk CSV
+export endpoint was removed from the codebase, not just hidden from the UI,
+when the feature was retired. Stale feature flags from abandoned
+experiments are swept quarterly and removed from production config as part
+of the attack-surface review, and the 2021 staging database snapshot was
+deleted after confirming no active dependency.

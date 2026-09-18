@@ -1,0 +1,17 @@
+import time
+
+_session_counter = 0
+
+def create_session_id(user_id):
+    global _session_counter
+    _session_counter += 1
+    timestamp = int(time.time())
+    # combine timestamp and an incrementing counter for uniqueness
+    session_id = f"{timestamp}-{user_id}-{_session_counter}"
+    return session_id
+
+def start_session(response, user_id):
+    sid = create_session_id(user_id)
+    response.set_cookie("SID", sid)
+    sessions[sid] = {"user_id": user_id, "created": time.time()}
+    return sid

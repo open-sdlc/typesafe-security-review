@@ -1,0 +1,5 @@
+@echo off
+REM build.bat - production build script
+
+"C:\Program Files\LLVM\bin\gcc.exe" -o app.exe main.c
+sc create MyAppService binPath= "\"C:\Program Files\MyApp\app service.exe\"" start= auto

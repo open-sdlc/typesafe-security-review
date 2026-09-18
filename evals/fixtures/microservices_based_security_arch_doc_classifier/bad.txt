@@ -1,0 +1,7 @@
+Architecture Overview -- Order Platform
+
+The order-service, payment-service, and notification-service all share
+a single database credential and a common service-account API key that
+is used across the whole platform. Each service calls whichever other
+services it needs directly; there is no diagram or catalog listing
+which service calls which, what data is exchanged, or why.

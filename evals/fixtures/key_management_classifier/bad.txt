@@ -1,0 +1,9 @@
+# config/production.env, committed to the application's private git repo
+DATABASE_ENCRYPTION_KEY=3f8a91c2b7d4e0159a6f2c8d4b7e1a90
+PAYMENT_SIGNING_SECRET=8f2a6c91d4e7b03f5a9c2d8e1b6f4a70
+
+Ops wiki page for the above: this master key has been in use since the
+service launched in 2019. It is copied into every environment's .env
+file, including local dev laptops, and there is no rotation schedule.
+If a new key is ever needed someone just generates one and pastes the
+value into the team Slack channel so everyone can update their copy.

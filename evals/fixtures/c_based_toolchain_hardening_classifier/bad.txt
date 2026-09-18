@@ -1,0 +1,8 @@
+CC = gcc
+CFLAGS = -O2 -std=c11
+LDFLAGS =
+
+all: server
+
+server: server.c
+	$(CC) $(CFLAGS) -o server server.c $(LDFLAGS)

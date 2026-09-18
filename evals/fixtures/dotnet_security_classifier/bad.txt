@@ -1,0 +1,28 @@
+public class InvoiceController : Controller
+{
+    private readonly string _connectionString = ConfigurationManager.ConnectionStrings["Default"].ConnectionString;
+
+    [HttpGet]
+    public ActionResult Search(string customerName)
+    {
+        var results = new List<Invoice>();
+        using (var conn = new SqlConnection(_connectionString))
+        {
+            conn.Open();
+            string query = "SELECT * FROM Invoices WHERE CustomerName = '" + customerName + "'";
+            var cmd = new SqlCommand(query, conn);
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    results.Add(new Invoice
+                    {
+                        Id = (int)reader["Id"],
+                        Amount = (decimal)reader["Amount"]
+                    });
+                }
+            }
+        }
+        return View(results);
+    }
+}

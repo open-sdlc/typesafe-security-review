@@ -1,0 +1,12 @@
+@app.route("/forgot-password", methods=["POST"])
+def forgot_password():
+    email = request.form["email"]
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        return jsonify({"error": "no such user"}), 404
+    reset_code = str(random.randint(1000, 9999))
+    user.reset_token = reset_code
+    user.reset_token_expiry = None  # never expires
+    db.session.commit()
+    send_email(user.email, f"Your reset code is {reset_code}")
+    return jsonify({"message": "reset code sent"}), 200

@@ -1,0 +1,22 @@
+app.post('/api/checkout', requireLogin, (req, res) => {
+  const { items } = req.body;
+
+  const subtotal = computeSubtotalFromCatalog(items);
+  const discount = computeEligibleDiscount(req.user.id, items);
+  const shipping = computeShippingCost(req.user.address, items);
+  const tax = computeTax(req.user.address, subtotal - discount);
+  const total = subtotal - discount + shipping + tax;
+
+  const order = createOrder({
+    userId: req.user.id,
+    items,
+    subtotal,
+    discount,
+    shipping,
+    tax,
+    total,
+  });
+
+  chargeCard(req.user.paymentMethodId, total);
+  res.json({ orderId: order.id, total });
+});

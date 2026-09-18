@@ -1,0 +1,14 @@
+Account Recovery Setup
+
+Please choose one security question and provide an answer. This will be
+used to verify your identity if you ever forget your password.
+
+- What is your favorite color?
+- What is your pet's name?
+- What city were you born in?
+- What is your favorite sports team?
+- What is your date of birth?
+
+Answer: ____________________
+
+Your answer will be saved and used to reset your password if needed.

@@ -1,0 +1,17 @@
+<?php
+
+class User extends Model
+{
+    protected $guarded = [];
+}
+
+class UserController extends Controller
+{
+    public function update(Request $request, User $user)
+    {
+        $user->fill($request->all());
+        $user->save();
+
+        return response()->json($user);
+    }
+}

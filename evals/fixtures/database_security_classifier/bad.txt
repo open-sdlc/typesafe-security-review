@@ -1,0 +1,16 @@
+import mysql.connector
+
+# production database on the app's public subnet, bound to 0.0.0.0:3306
+db = mysql.connector.connect(
+    host="db.internal.example.com",
+    port=3306,
+    user="root",
+    password="P@ssw0rd123",
+    database="app_prod",
+    ssl_disabled=True,
+)
+
+def get_user(user_id):
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM users WHERE id = %s", (user_id,))
+    return cursor.fetchone()

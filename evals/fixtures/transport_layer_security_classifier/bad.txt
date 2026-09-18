@@ -1,0 +1,12 @@
+# httpd-ssl.conf for api.example.com
+
+SSLEngine on
+SSLProtocol all -SSLv2
+SSLCipherSuite ALL:!aNULL
+SSLHonorCipherOrder off
+SSLCertificateFile /etc/ssl/certs/api.example.com.crt
+SSLCertificateKeyFile /etc/ssl/private/api.example.com.key
+
+# Certificate generated with:
+#   openssl req -x509 -newkey rsa:1024 -keyout key.pem -out cert.pem \
+#       -sha1 -days 3650 -subj "/CN=api.example.com"

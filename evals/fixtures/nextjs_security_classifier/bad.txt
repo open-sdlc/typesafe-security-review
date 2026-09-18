@@ -1,0 +1,6 @@
+'use server';
+
+export async function deleteAccount(userId: string) {
+  await db.user.delete({ where: { id: userId } });
+  return { success: true };
+}

@@ -1,0 +1,10 @@
+{# templates/profile/show.html.twig #}
+<div class="profile-header">
+  <h1>{{ user.displayName|raw }}</h1>
+  <div class="bio">{{ user.bio|raw }}</div>
+</div>
+
+{# comments.html.twig #}
+{% for comment in comments %}
+  <div class="comment">{{ comment.body|raw }}</div>
+{% endfor %}

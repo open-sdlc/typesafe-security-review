@@ -1,0 +1,22 @@
+@app.route("/account/transfer", methods=["POST"])
+@csrf.protect
+def transfer_funds():
+    if "user_id" not in session:
+        return redirect("/login")
+
+    submitted_token = request.form.get("csrf_token")
+    if not csrf.validate(submitted_token, session["csrf_token"]):
+        return "Invalid CSRF token", 403
+
+    amount = request.form["amount"]
+    to_account = request.form["to_account"]
+
+    db.execute(
+        "UPDATE accounts SET balance = balance - %s WHERE user_id = %s",
+        (amount, session["user_id"]),
+    )
+    db.execute(
+        "UPDATE accounts SET balance = balance + %s WHERE account_number = %s",
+        (amount, to_account),
+    )
+    return redirect("/account/success")

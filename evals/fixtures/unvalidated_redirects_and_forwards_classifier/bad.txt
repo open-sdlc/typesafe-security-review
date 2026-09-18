@@ -1,0 +1,5 @@
+<?php
+// redirect.php - used after login/logout actions
+$target = $_GET['url'];
+header("Location: " . $target);
+exit;

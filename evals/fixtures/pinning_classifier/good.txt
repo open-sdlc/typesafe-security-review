@@ -1,0 +1,20 @@
+// TrustKit configuration for our mobile banking app, using the platform
+// pinning mechanism rather than a hand-rolled validator
+let trustKitConfig = [
+    kTSKSwizzleNetworkDelegates: true,
+    kTSKPinnedDomains: [
+        "api.example.com": [
+            kTSKEnforcePinning: true,
+            kTSKIncludeSubdomains: true,
+            // leaf certificate's public key
+            kTSKPublicKeyHashes: [
+                "primaryLeafKeyHashBase64==",
+                // backup pin: the intermediate CA's key, in case the leaf rotates
+                "backupIntermediateKeyHashBase64==",
+            ],
+            kTSKPublicKeyAlgorithms: [kTSKAlgorithmRsa2048],
+        ]
+    ]
+] as [String: Any]
+
+TrustKit.initSharedInstance(withConfiguration: trustKitConfig)

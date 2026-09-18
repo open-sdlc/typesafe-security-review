@@ -1,0 +1,9 @@
+Network Policy -- Customer Portal
+
+All servers -- the public load balancer, the web application servers,
+and the primary database -- sit on the same 10.0.1.0/24 subnet with no
+firewall rules between them. The load balancer connects directly to
+the database on port 5432 to serve a reporting dashboard, bypassing
+the application tier entirely. There is no separate segment for logs,
+and outbound Internet access from the subnet is unrestricted for every
+host.

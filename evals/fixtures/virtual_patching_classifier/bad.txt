@@ -1,0 +1,15 @@
+Incident Response Note - CVE-2024-XXXXX (SQLi in /api/search)
+
+A pentest flagged a SQL injection vulnerability in the /api/search endpoint
+on Friday afternoon. The vendor library fix isn't expected until next
+month's release train. We have no WAF or reverse-proxy filtering in front
+of the app tier, so the endpoint remains directly reachable while we wait.
+
+Engineering proposed a quick mitigation: reject any request whose "q"
+parameter contains the literal substring "UNION SELECT". This should be
+enough to stop the specific payload the pentester used.
+
+Per policy, any change to production request filtering -- even a temporary
+one -- must go through the standard monthly change advisory board and a
+full regression test cycle before deployment, so the earliest this filter
+can go live is in three weeks.

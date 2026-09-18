@@ -1,0 +1,12 @@
+QA Process — Release Sign-off Checklist
+
+Every build runs an automated authorization integration suite in CI that
+replays each request in the ANONYMOUS / BASIC_USER / SUPPORT / ADMIN
+authorization matrix against every exposed endpoint and asserts the
+expected allow/deny outcome, including the business-data each role is
+entitled to see. A release cannot be promoted to staging unless this suite
+passes. The quarterly manual penetration test now focuses on new attack
+techniques and business-logic edge cases rather than re-verifying baseline
+role/endpoint access, since that is covered continuously by CI. Role
+definitions and their access levels are documented and kept in sync with
+the matrix file the tests consume.

@@ -1,0 +1,10 @@
+def sanitize_username(username):
+    blocked_chars = ["'", '"', ";", "--", "<", ">"]
+    for ch in blocked_chars:
+        if ch in username:
+            username = username.replace(ch, "")
+    return username
+
+def register(username, email):
+    clean_username = sanitize_username(username)
+    save_user(clean_username, email)

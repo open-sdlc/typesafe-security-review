@@ -1,0 +1,11 @@
+@app.route("/login", methods=["POST"])
+def login():
+    email = request.form["email"]
+    password = request.form["password"]
+
+    user = db.query("SELECT * FROM users WHERE email = %s", (email,))
+    if user and check_password_hash(user.password_hash, password):
+        session["user_id"] = user.id
+        return redirect("/dashboard")
+
+    return "Invalid credentials", 401

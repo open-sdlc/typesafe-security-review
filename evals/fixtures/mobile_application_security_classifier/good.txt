@@ -1,0 +1,12 @@
+MasterKey masterKey = new MasterKey.Builder(context)
+    .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+    .build();
+
+EncryptedSharedPreferences prefs = EncryptedSharedPreferences.create(
+    context,
+    "auth_secure",
+    masterKey,
+    EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+    EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM);
+
+prefs.edit().putString("auth_token", authToken).apply();

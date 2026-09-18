@@ -1,0 +1,18 @@
+from flask import Flask, request, Response
+
+app = Flask(__name__)
+
+@app.route('/soap/accounts', methods=['POST'])
+def accounts_service():
+    # SOAP endpoint for partner integrations
+    auth = request.headers.get('Authorization', '')
+    if auth.startswith('Basic '):
+        # base64 user:pass checked against the accounts table
+        if not check_basic_auth(auth):
+            return Response(status=401)
+    # no further authorization check - any authenticated partner can
+    # call any account operation
+    return handle_soap_body(request.data)
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=8080)  # plain HTTP, TLS terminated nowhere

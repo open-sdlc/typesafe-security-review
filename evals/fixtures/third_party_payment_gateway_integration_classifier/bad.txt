@@ -1,0 +1,13 @@
+@app.route("/payments/webhook", methods=["POST"])
+def payment_webhook():
+    payload = request.get_json()
+    order_id = payload["order_id"]
+    status = payload["status"]
+
+    if status == "paid":
+        order = Order.query.get(order_id)
+        order.status = "fulfilled"
+        db.session.commit()
+        ship_order(order)
+
+    return jsonify({"received": True}), 200

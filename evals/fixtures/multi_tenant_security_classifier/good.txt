@@ -1,0 +1,11 @@
+app.get('/api/invoices/:id', async (req, res) => {
+  const tenantId = req.user.tenantId; // resolved server-side from the authenticated session
+  const invoice = await db.query(
+    'SELECT * FROM invoices WHERE id = $1 AND tenant_id = $2',
+    [req.params.id, tenantId]
+  );
+  if (invoice.rows.length === 0) {
+    return res.status(404).json({ error: 'not found' });
+  }
+  res.json(invoice.rows[0]);
+});

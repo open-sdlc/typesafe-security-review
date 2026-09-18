@@ -1,0 +1,13 @@
+// iOS TrustKit-style pin configuration for our mobile banking app
+let pinnedCertificates = [
+    // pinning the DigiCert Global Root CA itself
+    "sha256/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+]
+
+func validateServerTrust(trust: SecTrust) -> Bool {
+    let serverCert = SecTrustGetCertificateAtIndex(trust, 0)
+    let serverCertData = SecCertificateCopyData(serverCert!) as Data
+    let serverHash = sha256(serverCertData)
+    // only one pin, no backup, and it's the root CA
+    return pinnedCertificates.contains("sha256/" + serverHash.base64EncodedString())
+}

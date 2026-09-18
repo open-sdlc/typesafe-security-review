@@ -1,0 +1,25 @@
+import ssl
+from flask import Flask, request, Response
+
+app = Flask(__name__)
+
+@app.route('/soap/accounts', methods=['POST'])
+def accounts_service():
+    # SOAP endpoint for partner integrations - requires a valid mutual-TLS
+    # client certificate presented at the TLS layer
+    client_cert_status = request.environ.get('SSL_CLIENT_VERIFY')
+    if client_cert_status != 'SUCCESS':
+        return Response(status=403)
+
+    partner_id = request.environ.get('SSL_CLIENT_S_DN_CN')
+    if not is_authorized_for_operation(partner_id, request.data):
+        return Response(status=403)
+
+    return handle_soap_body(request.data)
+
+if __name__ == '__main__':
+    ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+    ctx.load_cert_chain('server.crt', 'server.key')
+    ctx.verify_mode = ssl.CERT_REQUIRED
+    ctx.load_verify_locations('partner-ca.crt')
+    app.run(host='0.0.0.0', port=8443, ssl_context=ctx)

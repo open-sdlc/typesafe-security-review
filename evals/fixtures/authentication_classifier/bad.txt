@@ -1,0 +1,18 @@
+import hashlib
+
+def hash_password(password):
+    return hashlib.md5(password.encode()).hexdigest()
+
+def register_user(username, password):
+    db.execute(
+        "INSERT INTO users (username, password_hash) VALUES (?, ?)",
+        (username, hash_password(password)),
+    )
+
+def check_login(username, password):
+    row = db.execute(
+        "SELECT password_hash FROM users WHERE username = ?", (username,)
+    ).fetchone()
+    if row is None:
+        return False
+    return row[0] == hash_password(password)

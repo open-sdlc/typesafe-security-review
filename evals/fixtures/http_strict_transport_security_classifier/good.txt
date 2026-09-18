@@ -1,0 +1,12 @@
+HTTP/1.1 200 OK
+Date: Tue, 17 Sep 2024 14:03:11 GMT
+Content-Type: text/html; charset=UTF-8
+Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+Content-Length: 512
+
+<html>
+  <body>
+    <h1>Welcome to secure-bank.example.com</h1>
+    <p>Please log in below.</p>
+  </body>
+</html>

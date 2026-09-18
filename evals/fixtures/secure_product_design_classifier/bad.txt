@@ -1,0 +1,21 @@
+Design Doc: Vendor Invoice Automation Service v1
+
+Summary
+The new invoicing service lets a single "AccountsBot" service account create
+draft invoices, approve them, and issue the wire transfer to the vendor's
+bank account, all within one automated pipeline.
+
+Proposed roles
+- AccountsBot: creates invoice, sets amount, approves invoice, triggers
+  payment. One account handles the entire lifecycle end to end so we don't
+  need to build an approval UI for v1.
+
+Data access
+AccountsBot's database credential has full read/write access to the
+invoices, vendors, and payments tables so it can perform every step without
+needing separate scoped credentials per stage.
+
+Rollout plan
+Ship v1 with AccountsBot able to both create and approve invoices. We'll
+revisit adding a human-in-the-loop approval step and split accounts in a
+later v2 if finance asks for it.

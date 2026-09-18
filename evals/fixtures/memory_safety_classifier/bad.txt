@@ -1,0 +1,5 @@
+void handle_request(const char *client_input) {
+    char buffer[64];
+    strcpy(buffer, client_input);
+    process(buffer);
+}

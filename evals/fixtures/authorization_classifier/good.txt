@@ -1,0 +1,10 @@
+function authorize(user, resource, action) {
+  for (const rule of policyRules) {
+    if (rule.matches(user, resource, action)) {
+      return rule.effect === 'allow';
+    }
+  }
+  // no matching rule found; deny by default and log for policy review
+  auditLog.record('authz_default_deny', { user: user.id, resource, action });
+  return false;
+}

@@ -1,0 +1,13 @@
+class InvoiceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Invoice
+        exclude = ("internal_notes",)
+
+
+class InvoiceViewSet(viewsets.ModelViewSet):
+    serializer_class = InvoiceSerializer
+    queryset = Invoice.objects.all()
+
+    def get_object(self):
+        invoice_id = self.kwargs["pk"]
+        return Invoice.objects.get(pk=invoice_id)

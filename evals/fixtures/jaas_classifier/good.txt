@@ -1,0 +1,25 @@
+SecureApp {
+    com.sun.security.auth.module.LdapLoginModule required
+        debug=false
+        userProvider="ldaps://ldap.internal.example.com:636/ou=people,dc=example,dc=com"
+        useSSL=true;
+};
+
+public class SecureCallbackHandler implements CallbackHandler {
+    private final String username;
+    private final char[] password;
+
+    public void handle(Callback[] callbacks) {
+        for (Callback cb : callbacks) {
+            if (cb instanceof NameCallback) {
+                ((NameCallback) cb).setName(username);
+            } else if (cb instanceof PasswordCallback) {
+                ((PasswordCallback) cb).setPassword(password);
+            }
+        }
+    }
+
+    public void clearCredentials() {
+        java.util.Arrays.fill(password, ' ');
+    }
+}

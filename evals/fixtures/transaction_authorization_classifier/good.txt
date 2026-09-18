@@ -1,0 +1,16 @@
+Wire Transfer Authorization Flow (v3)
+
+1. User enters destination account number and amount on the transfer form.
+2. The server independently re-validates the amount against the user's
+   daily limit; client-side checks are advisory only and are never trusted
+   for the authorization decision itself.
+3. The server generates a single-use, transaction-specific OTP tied to a
+   hash of the exact destination account and amount, distinct from the OTP
+   used for login. The confirmation screen repeats the destination account
+   number and amount back to the user and requires them to confirm "Send
+   $4,500.00 to account ...4821" before the OTP field is even shown.
+4. The OTP expires 3 minutes after issuance and is rejected if the
+   transaction data changes after issuance, or if it has already been used
+   once.
+5. Only after the server validates the OTP against the exact transaction
+   hash does it execute the transfer.

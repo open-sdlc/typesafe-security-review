@@ -1,0 +1,8 @@
+The orders service publishes a complete OpenAPI 3.0 specification at
+/api/v1/openapi.json, listing every supported route, method, and parameter,
+including GET /api/v1/orders, GET /api/v1/orders/{id}, and
+POST /api/v1/orders/{id}/refund (the latter requires an `admin` scope and
+is documented as internal-only). There are no undocumented parameters or
+hidden debug flags; the client SPA's calls match the spec one-for-one, and
+a nightly job diffs the live service's routes against the spec to catch any
+drift before it ships.

@@ -1,0 +1,9 @@
+Logging design notes -- Nightly Batch Scheduler
+
+Every batch job emits a JOB_started event with the job name and queue
+depth when it begins, and a JOB_completed event with its duration and
+row count when it finishes successfully. If a job runs longer than its
+configured timeout, a JOB_timed_out event is emitted so the on-call
+scheduler dashboard can flag it. None of these events carry user
+identity, permission, or credential information -- they only describe
+internal batch throughput and timing.

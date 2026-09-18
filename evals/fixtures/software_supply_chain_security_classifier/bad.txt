@@ -1,0 +1,16 @@
+Build process notes for the payments-api repo
+
+We don't check in a lockfile for this service -- the Dockerfile just runs
+`npm install` and `pip install -r requirements.txt` at image build time,
+which pulls whatever the latest compatible versions are from the registry
+at that moment. That way we always get the newest patches automatically.
+
+requirements.txt:
+    flask
+    requests
+    stripe
+
+No SBOM is generated as part of the build. If someone asks what's actually
+running in production, we'd have to SSH into a container and run `pip
+freeze` to find out, since the versions aren't recorded anywhere else and
+can differ between builds run on different days.

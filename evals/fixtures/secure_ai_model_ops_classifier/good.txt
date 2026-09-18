@@ -1,0 +1,19 @@
+import openai
+import os
+
+openai.api_key = os.environ["OPENAI_API_KEY"]  # loaded from secrets manager at deploy time
+
+@app.route('/predict', methods=['POST'])
+@require_api_key
+@rate_limit(max_requests=60, window_seconds=60)
+@enforce_tenant_quota
+def predict():
+    prompt = request.json.get('prompt', '')
+    if not prompt or len(prompt) > 4000:
+        return jsonify({"error": "invalid prompt"}), 400
+    response = openai.ChatCompletion.create(
+        model="gpt-4",
+        messages=[{"role": "user", "content": prompt}],
+        max_tokens=500,
+    )
+    return jsonify(response.choices[0].message.content)

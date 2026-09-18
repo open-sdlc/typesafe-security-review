@@ -1,0 +1,19 @@
+const upload = multer({
+  limits: { fileSize: 10 * 1024 * 1024 },
+  storage: diskStorage,
+});
+
+app.post("/upload", uploadRateLimiter, upload.single("file"), (req, res) => {
+  res.send("uploaded");
+});
+
+const MAX_REPORT_ROWS = 500;
+
+app.get("/report", reportRateLimiter, (req, res) => {
+  const size = Math.min(parseInt(req.query.rows) || 50, MAX_REPORT_ROWS);
+  const rows = [];
+  for (let i = 0; i < size; i++) {
+    rows.push(generateReportRow(i));
+  }
+  res.json(rows);
+});

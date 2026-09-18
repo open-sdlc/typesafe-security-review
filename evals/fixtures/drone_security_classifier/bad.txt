@@ -1,0 +1,21 @@
+import socket
+
+# Ground control station link to the drone's flight controller
+TELEMETRY_PORT = 14550
+
+def send_command(drone_ip, command_bytes):
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    # Plain UDP MAVLink heartbeat/command frames, no encryption or signing
+    sock.sendto(command_bytes, (drone_ip, TELEMETRY_PORT))
+    sock.close()
+
+def receive_telemetry(bind_ip="0.0.0.0"):
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    sock.bind((bind_ip, TELEMETRY_PORT))
+    while True:
+        data, addr = sock.recvfrom(4096)
+        # Position, altitude, and battery telemetry accepted from anyone on the network
+        process_telemetry(data)
+
+def arm_motors(drone_ip):
+    send_command(drone_ip, b"\xfe\x09\x00\x00\x00\x01\x01\x00\x00ARM")

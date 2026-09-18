@@ -1,0 +1,23 @@
+data "aws_secretsmanager_secret_version" "db_password" {
+  secret_id = "billing-prod-db-password"
+}
+
+resource "aws_db_instance" "billing" {
+  identifier     = "billing-prod"
+  engine         = "postgres"
+  instance_class = "db.t3.medium"
+  username       = "admin"
+  password       = data.aws_secretsmanager_secret_version.db_password.secret_string
+}
+
+resource "aws_iam_policy" "app_policy" {
+  name = "app-billing-read-write"
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect   = "Allow"
+      Action   = ["dynamodb:GetItem", "dynamodb:PutItem"]
+      Resource = "arn:aws:dynamodb:us-east-1:123456789012:table/Billing"
+    }]
+  })
+}

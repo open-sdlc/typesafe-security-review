@@ -1,0 +1,9 @@
+During manual testing against the mobile app's REST backend, the client UI
+only ever calls GET /api/v1/orders and GET /api/v1/orders/{id}. However,
+capturing raw traffic through a proxy revealed the underlying service also
+accepts an undocumented POST /api/v1/orders/{id}/refund endpoint and a
+hidden `debug=true` query parameter on most GET endpoints that returns
+internal object IDs and unfiltered fields, none of which are exercised by
+the app's own screens or mentioned anywhere in developer docs. There is no
+WSDL, WADL, or OpenAPI spec published for this service, so the only way to
+discover its full surface is by capturing and replaying traffic.

@@ -1,0 +1,20 @@
+FROM ubuntu:22.04
+
+RUN apt-get update && apt-get install -y --no-install-recommends python3 python3-pip \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY . /app
+WORKDIR /app
+RUN pip3 install -r requirements.txt
+
+RUN groupadd -r appuser && useradd -r -g appuser appuser
+USER appuser
+
+EXPOSE 8080
+
+CMD ["python3", "app.py"]
+
+# Run in production with:
+# docker run --read-only --cap-drop all --security-opt=no-new-privileges \
+#   --memory=512m --pids-limit=100 -p 127.0.0.1:8080:8080 \
+#   --env-file /run/secrets/app.env myapp:latest

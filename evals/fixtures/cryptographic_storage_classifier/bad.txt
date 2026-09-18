@@ -1,0 +1,18 @@
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
+
+public class CardStorage {
+    private static final String SECRET_KEY = "myS3cretKey12345";
+
+    public byte[] encryptCardNumber(String cardNumber) throws Exception {
+        SecretKeySpec keySpec = new SecretKeySpec(SECRET_KEY.getBytes(), "AES");
+        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+        cipher.init(Cipher.ENCRYPT_MODE, keySpec);
+        return cipher.doFinal(cardNumber.getBytes());
+    }
+
+    public void saveToDatabase(String userId, byte[] encryptedCard) {
+        db.execute("INSERT INTO cards (user_id, card_data, enc_key) VALUES (?, ?, ?)",
+            userId, encryptedCard, SECRET_KEY);
+    }
+}

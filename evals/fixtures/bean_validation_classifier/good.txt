@@ -1,0 +1,24 @@
+public class UserRegistrationRequest {
+
+    @NotBlank
+    @Size(min = 3, max = 30)
+    @Pattern(regexp = "^[a-zA-Z0-9_]+$")
+    private String username;
+
+    @NotBlank
+    @Email
+    private String email;
+
+    @NotBlank
+    @Size(min = 12, max = 128)
+    private String password;
+
+    @Min(13)
+    @Max(120)
+    private int age;
+
+    @Pattern(regexp = "^\\+?[0-9]{7,15}$")
+    private String phoneNumber;
+
+    // getters and setters omitted
+}

@@ -1,0 +1,12 @@
+@app.route("/forgot-password", methods=["POST"])
+@rate_limit("5/hour")
+def forgot_password():
+    email = request.form["email"]
+    user = User.query.filter_by(email=email).first()
+    if user:
+        reset_token = secrets.token_urlsafe(32)
+        user.reset_token_hash = hash_token(reset_token)
+        user.reset_token_expiry = datetime.utcnow() + timedelta(minutes=15)
+        db.session.commit()
+        send_email(user.email, build_reset_link(reset_token))
+    return jsonify({"message": "If that account exists, a reset link has been sent."}), 200

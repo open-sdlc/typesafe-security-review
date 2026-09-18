@@ -1,0 +1,33 @@
+import socket
+import ssl
+
+# Ground control station link to the drone's flight controller, tunneled over
+# a mutually authenticated DTLS session per MAVLink 2 signing recommendations
+TELEMETRY_PORT = 14550
+
+def _make_secure_socket(cert_file, key_file, ca_file):
+    context = ssl.SSLContext(ssl.PROTOCOL_TLS)
+    context.load_cert_chain(cert_file, key_file)
+    context.load_verify_locations(ca_file)
+    context.verify_mode = ssl.CERT_REQUIRED
+    raw = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    return context.wrap_socket(raw)
+
+def send_command(drone_ip, command_bytes, cert_file, key_file, ca_file):
+    sock = _make_secure_socket(cert_file, key_file, ca_file)
+    sock.connect((drone_ip, TELEMETRY_PORT))
+    sock.sendall(command_bytes)
+    sock.close()
+
+def receive_telemetry(bind_ip, cert_file, key_file, ca_file):
+    context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+    context.load_cert_chain(cert_file, key_file)
+    context.load_verify_locations(ca_file)
+    context.verify_mode = ssl.CERT_REQUIRED
+    raw = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    raw.bind((bind_ip, TELEMETRY_PORT))
+    raw.listen(5)
+    with context.wrap_socket(raw, server_side=True) as secure_sock:
+        conn, addr = secure_sock.accept()
+        data = conn.recv(4096)
+        process_telemetry(data)

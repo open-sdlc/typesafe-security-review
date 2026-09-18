@@ -1,0 +1,15 @@
+; production php.ini
+display_errors = On
+display_startup_errors = On
+expose_php = On
+
+allow_url_fopen = On
+allow_url_include = On
+
+disable_functions =
+
+session.cookie_secure = 0
+session.cookie_httponly = 0
+
+file_uploads = On
+upload_max_filesize = 512M

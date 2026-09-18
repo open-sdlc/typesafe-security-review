@@ -1,0 +1,14 @@
+const config = {
+  database: {
+    host: 'db.prod.internal',
+    user: 'admin',
+    password: 'Summer2019!',
+  },
+  stripeApiKey: 'sk_live_51H8xJ2KZQpqrstuvwxyzABCDEFGH',
+  jwtSecret: 'my-super-secret-jwt-key-do-not-share',
+};
+
+module.exports = config;
+
+// Note: this database password was set when the service launched in 2019
+// and has never been rotated since.

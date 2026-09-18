@@ -1,0 +1,16 @@
+HTTP/1.1 200 OK
+Content-Type: text/html; charset=utf-8
+Content-Security-Policy: object-src 'none'; script-src 'nonce-r4nd0mBase64Val' 'strict-dynamic'; base-uri 'none'; report-to csp-endpoint
+Report-To: {"group":"csp-endpoint","max_age":10886400,"endpoints":[{"url":"https://example.com/csp-reports"}]}
+X-Powered-By: Express
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="/static/dashboard.css">
+</head>
+<body>
+  <script nonce="r4nd0mBase64Val" src="/static/dashboard.js"></script>
+</body>
+</html>

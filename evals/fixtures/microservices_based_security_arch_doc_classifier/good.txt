@@ -1,0 +1,14 @@
+Architecture Overview -- Order Platform
+
+order-service has its own database role granted only SELECT/INSERT on
+the orders schema, and a scoped API key limited to the
+inventory-service's /reserve endpoint. payment-service has a separate
+role scoped to the payments schema and a key limited to the
+notification-service's /send endpoint. The service catalog below lists
+every service, its owning team, its minimal required grants, and the
+data it exchanges with each dependency, alongside a call-graph diagram
+maintained in the architecture wiki.
+
+  order-service   -> inventory-service   : POST /reserve (SKU, qty)
+  order-service   -> payment-service     : POST /charge (order_id, amount)
+  payment-service -> notification-service: POST /send (order_id, status)

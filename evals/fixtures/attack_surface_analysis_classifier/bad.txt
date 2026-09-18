@@ -1,0 +1,13 @@
+Infrastructure Notes — Q3 Review
+
+The /admin-legacy panel from the 2019 rewrite is still deployed on
+api.example.com alongside the current /admin-v2 panel; nobody recalls if
+anything still depends on it, so it hasn't been removed. Both v1 and v2 of
+the partner API are live in production simultaneously to avoid partner
+churn -- v1 has been "deprecated" in the docs for two years but never shut
+off. The old CSV bulk-export feature is disabled in the UI but the backing
+/export/bulk endpoint was never removed and still responds to direct
+requests. Several feature flags from last year's abandoned experiments
+(new_search_ui, beta_referrals) remain toggleable in production config, and
+a staging snapshot of the customer database from 2021 is still mounted on
+one of the older app servers.

@@ -1,0 +1,13 @@
+Personalization Pipeline — Design Notes
+
+User consent for ad personalization is captured at signup and stored in
+`users.ads_consent`, but every downstream consumer re-checks the current
+consent state before use rather than relying on the state at collection
+time. The ranking service calls the consent service on each scoring request
+and excludes any user_id whose consent is false or whose Sec-GPC/GPP
+opt-out signal is set. Ad ID resets and opt-outs invalidate the user's
+cached embeddings and lookalike-segment membership immediately via a
+pub/sub event, rather than waiting for the nightly retrain, so no scoring
+occurs on stale consent state. Employment and credit advertisers are routed
+through a separate, compliance-reviewed targeting path with tighter
+attribute restrictions.

@@ -1,0 +1,18 @@
+function verifyToken(token) {
+  const [headerB64, payloadB64, signatureB64] = token.split('.');
+  const header = JSON.parse(Buffer.from(headerB64, 'base64url').toString());
+
+  if (header.alg === 'none') {
+    return JSON.parse(Buffer.from(payloadB64, 'base64url').toString());
+  }
+
+  const expectedSig = crypto
+    .createHmac('sha256', SECRET)
+    .update(`${headerB64}.${payloadB64}`)
+    .digest('base64url');
+
+  if (expectedSig !== signatureB64) {
+    throw new Error('invalid signature');
+  }
+  return JSON.parse(Buffer.from(payloadB64, 'base64url').toString());
+}

@@ -1,0 +1,18 @@
+<?php
+
+class User extends Model
+{
+    protected $fillable = ['name', 'email', 'bio'];
+    protected $guarded = ['id', 'is_admin', 'role', 'email_verified_at'];
+}
+
+class UserController extends Controller
+{
+    public function update(UpdateUserRequest $request, User $user)
+    {
+        $user->fill($request->validated());
+        $user->save();
+
+        return response()->json($user);
+    }
+}

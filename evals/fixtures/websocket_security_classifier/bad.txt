@@ -1,0 +1,10 @@
+const WebSocket = require('ws');
+const wss = new WebSocket.Server({ port: 8080 });
+
+wss.on('connection', (socket, req) => {
+  // handshake accepted regardless of the Origin header
+  socket.on('message', (data) => {
+    const msg = JSON.parse(data);
+    broadcastToAll(msg);
+  });
+});

@@ -1,0 +1,12 @@
+import json
+
+@app.route("/api/session/restore", methods=["POST"])
+def restore_session():
+    encoded = request.form["state"]
+    try:
+        data = json.loads(encoded)
+    except ValueError:
+        return "Invalid session payload", 400
+
+    session_obj = SessionState.from_validated_dict(data)
+    return jsonify(session_obj.to_dict())

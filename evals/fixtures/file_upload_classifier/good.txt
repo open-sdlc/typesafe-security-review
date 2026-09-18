@@ -1,0 +1,20 @@
+UPLOAD_DIR = "/var/data/uploads"  # outside the webroot
+ALLOWED_EXTENSIONS = {".png", ".jpg", ".jpeg", ".gif"}
+MAX_UPLOAD_BYTES = 5 * 1024 * 1024
+
+@app.route("/upload", methods=["POST"])
+@login_required
+def upload_avatar():
+    file = request.files["avatar"]
+    ext = os.path.splitext(file.filename)[1].lower()
+    if ext not in ALLOWED_EXTENSIONS:
+        return jsonify({"error": "File type not allowed"}), 400
+    file.seek(0, os.SEEK_END)
+    if file.tell() > MAX_UPLOAD_BYTES:
+        return jsonify({"error": "File too large"}), 413
+    file.seek(0)
+    stored_name = f"{uuid.uuid4().hex}{ext}"
+    save_path = os.path.join(UPLOAD_DIR, stored_name)
+    file.save(save_path)
+    File.create(owner_id=current_user.id, storage_key=stored_name)
+    return jsonify({"id": stored_name}), 200

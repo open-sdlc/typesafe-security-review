@@ -1,0 +1,21 @@
+resource "aws_s3_bucket" "user_uploads" {
+  bucket = "acme-user-uploads"
+  acl    = "public-read"
+}
+
+resource "aws_db_instance" "primary" {
+  identifier             = "acme-prod-db"
+  engine                 = "postgres"
+  publicly_accessible    = true
+  db_subnet_group_name   = aws_db_subnet_group.public_subnets.name
+  vpc_security_group_ids = [aws_security_group.allow_all.id]
+}
+
+resource "aws_security_group" "allow_all" {
+  ingress {
+    from_port   = 0
+    to_port     = 65535
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}

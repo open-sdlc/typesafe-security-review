@@ -1,0 +1,20 @@
+const argon2 = require('argon2');
+
+async function hashPassword(password) {
+  return argon2.hash(password, {
+    type: argon2.argon2id,
+    memoryCost: 19456,
+    timeCost: 2,
+    parallelism: 1,
+  });
+}
+
+async function registerUser(username, password) {
+  const passwordHash = await hashPassword(password);
+  db.query('INSERT INTO users (username, password_hash) VALUES (?, ?)', [username, passwordHash]);
+}
+
+async function verifyLogin(username, password) {
+  const row = db.queryOne('SELECT password_hash FROM users WHERE username = ?', [username]);
+  return row && argon2.verify(row.password_hash, password);
+}

@@ -1,0 +1,32 @@
+name: Build and Deploy
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install deps and build
+        run: |
+          npm ci
+          npm run build
+      - name: Run tests
+        run: npm test
+      - name: Log in to registry
+        env:
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+        run: |
+          echo "$DOCKERHUB_TOKEN" | docker login -u deployer --password-stdin
+          docker build -t myapp:${{ github.sha }} .
+          docker push myapp:${{ github.sha }}
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+    steps:
+      - name: Deploy to prod
+        run: ./deploy.sh --env production --image myapp:${{ github.sha }}

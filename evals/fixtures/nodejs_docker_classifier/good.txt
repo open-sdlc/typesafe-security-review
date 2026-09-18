@@ -1,0 +1,16 @@
+FROM node:20.11.1-alpine3.19@sha256:1a4cf83b1f6bd8e9e33e14e7c7f0e0d3a1c6c2c2b8b3a24b9c0f0b9a4b5c6d7e AS build
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev
+
+FROM node:20.11.1-alpine3.19@sha256:1a4cf83b1f6bd8e9e33e14e7c7f0e0d3a1c6c2c2b8b3a24b9c0f0b9a4b5c6d7e
+ENV NODE_ENV=production
+WORKDIR /app
+COPY --from=build --chown=node:node /app/node_modules ./node_modules
+COPY --chown=node:node . .
+
+USER node
+EXPOSE 3000
+
+ENTRYPOINT ["dumb-init", "--"]
+CMD ["node", "server.js"]

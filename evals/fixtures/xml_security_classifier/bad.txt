@@ -1,0 +1,24 @@
+public class OrderImportHandler extends DefaultHandler {
+    private StringBuilder buffer = new StringBuilder();
+    private int quantity;
+    private double unitPrice;
+
+    // Parser factory has no schema attached, so any well-formed XML is
+    // accepted regardless of element structure or field constraints
+    public void configureParser(SAXParserFactory factory) throws Exception {
+        factory.setValidating(false);
+    }
+
+    @Override
+    public void endElement(String uri, String localName, String qName) {
+        if (qName.equals("quantity")) {
+            quantity = Integer.parseInt(buffer.toString().trim());
+        } else if (qName.equals("unitPrice")) {
+            unitPrice = Double.parseDouble(buffer.toString().trim());
+        } else if (qName.equals("item")) {
+            double lineTotal = quantity * unitPrice;
+            ledger.credit(lineTotal);
+        }
+        buffer.setLength(0);
+    }
+}

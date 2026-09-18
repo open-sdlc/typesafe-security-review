@@ -1,0 +1,21 @@
+async function initiatePayment(agentRequest) {
+  const { amount, beneficiary } = agentRequest;
+  const threshold = config.sanctionsMatchThreshold; // server-controlled, not client-supplied
+
+  const screeningResult = await screeningService.screen(beneficiary, threshold);
+  if (!screeningResult.cleared) {
+    throw new PaymentBlockedError(
+      'Sanctions screening did not clear beneficiary',
+      screeningResult.caseId
+    );
+  }
+
+  const payment = await paymentGateway.send({
+    amount,
+    beneficiary,
+    reference: agentRequest.reference,
+    screeningCaseId: screeningResult.caseId,
+  });
+
+  return payment;
+}

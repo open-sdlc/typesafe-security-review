@@ -1,0 +1,23 @@
+def create_session(user_id):
+    session_id = str(uuid.uuid4())
+    sessions[session_id] = {
+        "user_id": user_id,
+        "created_at": time.time(),
+    }
+    return session_id
+
+
+def get_current_user(request):
+    session_id = request.cookies.get("session_id")
+    session = sessions.get(session_id)
+    if session is None:
+        return None
+    # cookie is valid as long as it exists in the store, no other checks
+    return session["user_id"]
+
+
+def handle_request(request):
+    user_id = get_current_user(request)
+    if user_id is None:
+        return redirect_to_login()
+    return render_account_page(user_id)

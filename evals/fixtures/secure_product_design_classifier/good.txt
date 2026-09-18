@@ -1,0 +1,22 @@
+Design Doc: Vendor Invoice Automation Service v1
+
+Summary
+The new invoicing service splits invoice creation from invoice approval and
+payment issuance across two distinct service accounts, enforcing separation
+of duties end to end.
+
+Proposed roles
+- InvoiceDrafterBot: can create draft invoices and set line-item amounts.
+  Cannot approve invoices or initiate payments.
+- PaymentApproverBot: can approve invoices above a threshold only after a
+  human finance reviewer signs off in the UI, and is the only account
+  permitted to call the payment API.
+
+Data access
+InvoiceDrafterBot's database credential has write access only to the
+invoices table. PaymentApproverBot has read access to invoices and write
+access only to the payments table, scoped via least-privilege IAM policies.
+
+Rollout plan
+Ship v1 with both roles and the human approval step in place from day one;
+this is a hard requirement for launch, not a v2 follow-up.

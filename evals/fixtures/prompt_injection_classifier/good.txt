@@ -1,0 +1,1 @@
+Can you help me understand the difference between rate limiting and account lockout for protecting a login endpoint? I'm building a small internal tool and want to pick an approach that balances usability with security. A short comparison with a couple of pros and cons for each would be great.

@@ -1,0 +1,13 @@
+import openai
+
+openai.api_key = "sk-proj-8fJ3kLmN0pQrStUvWxYz1234567890abcdef"
+
+@app.route('/predict', methods=['POST'])
+def predict():
+    # no authentication, no rate limiting, no per-tenant quota
+    prompt = request.json['prompt']
+    response = openai.ChatCompletion.create(
+        model="gpt-4",
+        messages=[{"role": "user", "content": prompt}],
+    )
+    return jsonify(response.choices[0].message.content)

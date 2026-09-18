@@ -1,0 +1,28 @@
+public class OrderImportHandler extends DefaultHandler {
+    private StringBuilder buffer = new StringBuilder();
+    private int quantity;
+    private double unitPrice;
+
+    // orders.xsd constrains quantity to xs:positiveInteger and unitPrice to
+    // a non-negative xs:decimal, so the parser rejects malformed documents
+    // before this handler ever sees the data
+    public void configureParser(SAXParserFactory factory) throws Exception {
+        SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        Schema schema = sf.newSchema(new File("orders.xsd"));
+        factory.setSchema(schema);
+        factory.setValidating(true);
+    }
+
+    @Override
+    public void endElement(String uri, String localName, String qName) {
+        if (qName.equals("quantity")) {
+            quantity = Integer.parseInt(buffer.toString().trim());
+        } else if (qName.equals("unitPrice")) {
+            unitPrice = Double.parseDouble(buffer.toString().trim());
+        } else if (qName.equals("item")) {
+            double lineTotal = quantity * unitPrice;
+            ledger.credit(lineTotal);
+        }
+        buffer.setLength(0);
+    }
+}

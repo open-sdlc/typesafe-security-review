@@ -1,0 +1,9 @@
+CC = gcc
+CFLAGS = -O2 -std=c11 -Wall -Wextra -Wconversion -Wformat=2 \
+         -fstack-protector-all -fPIE -D_FORTIFY_SOURCE=2
+LDFLAGS = -pie -Wl,-z,relro,-z,now,-z,noexecstack
+
+all: server
+
+server: server.c
+	$(CC) $(CFLAGS) -o server server.c $(LDFLAGS)

@@ -1,0 +1,14 @@
+def validate_saml_response(response_xml)
+  doc = REXML::Document.new(response_xml)
+  # signature validation is skipped; assertion accepted at face value
+  assertion = doc.elements['//saml:Assertion']
+  subject = assertion.elements['//saml:Subject/saml:NameID'].text
+
+  # no NotOnOrAfter check, no OneTimeUse tracking, response is cached
+  # and can be replayed indefinitely once captured
+  session[:user] = subject
+  true
+end
+
+# The SSO endpoint itself is served at http://sso.example.com/saml/acs
+# (plain HTTP) with unencrypted assertions.

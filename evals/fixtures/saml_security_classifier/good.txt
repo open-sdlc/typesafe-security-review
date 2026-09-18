@@ -1,0 +1,19 @@
+def validate_saml_response(response_xml)
+  doc = REXML::Document.new(response_xml)
+  raise 'invalid signature' unless saml_signature_valid?(doc, idp_certificate)
+
+  assertion = doc.elements['//saml:Assertion']
+  not_on_or_after = Time.parse(assertion.attributes['NotOnOrAfter'])
+  raise 'assertion expired' if Time.now.utc >= not_on_or_after
+
+  assertion_id = assertion.attributes['ID']
+  raise 'assertion already used' if UsedAssertion.exists?(saml_id: assertion_id)
+  UsedAssertion.create!(saml_id: assertion_id, expires_at: not_on_or_after)
+
+  subject = assertion.elements['//saml:Subject/saml:NameID'].text
+  session[:user] = subject
+  true
+end
+
+# The SSO endpoint is served at https://sso.example.com/saml/acs over TLS 1.2+
+# with encrypted, digitally signed assertions.

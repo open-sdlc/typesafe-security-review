@@ -1,0 +1,19 @@
+resource "aws_db_instance" "billing" {
+  identifier     = "billing-prod"
+  engine         = "postgres"
+  instance_class = "db.t3.medium"
+  username       = "admin"
+  password       = "SuperSecret123!"
+}
+
+resource "aws_iam_policy" "app_policy" {
+  name = "app-full-access"
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect   = "Allow"
+      Action   = "*"
+      Resource = "*"
+    }]
+  })
+}

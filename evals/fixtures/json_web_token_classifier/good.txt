@@ -1,0 +1,9 @@
+const jwt = require('jsonwebtoken');
+
+function verifyToken(token) {
+  return jwt.verify(token, PUBLIC_KEY, {
+    algorithms: ['RS256'],
+    audience: 'api.example.com',
+    issuer: 'https://auth.example.com/',
+  });
+}

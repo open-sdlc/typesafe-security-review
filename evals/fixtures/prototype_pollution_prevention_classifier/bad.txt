@@ -1,0 +1,20 @@
+function merge(target, source) {
+  for (const key in source) {
+    if (typeof source[key] === 'object' && source[key] !== null) {
+      if (!target[key]) target[key] = {};
+      merge(target[key], source[key]);
+    } else {
+      target[key] = source[key];
+    }
+  }
+  return target;
+}
+
+app.post('/settings', (req, res) => {
+  const userSettings = JSON.parse(req.body.settings);
+  const config = {};
+  merge(config, userSettings);
+  res.json({ ok: true });
+});
+
+// attacker payload: {"__proto__": {"isAdmin": true}}

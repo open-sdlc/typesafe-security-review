@@ -1,0 +1,11 @@
+Network Policy -- Customer Portal
+
+The environment is split into three firewalled zones: FRONTEND (load
+balancer, 10.0.1.0/26), MIDDLEWARE (application servers, 10.0.2.0/26),
+and BACKEND (database, 10.0.3.0/26). The load balancer may only reach
+the application servers on port 443; only the application servers may
+reach the database, on port 5432. Outbound Internet access from
+MIDDLEWARE and BACKEND is denied by default except for an explicit
+allow-list of patch-update endpoints. Logs are forwarded in real time
+to a separate append-only log segment that none of the three zones can
+write to directly.

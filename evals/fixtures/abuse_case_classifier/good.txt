@@ -1,0 +1,21 @@
+Abuse Case Register — Checkout Redesign (v3)
+
+AC-014: Held-Cart Price Lock Exploitation
+Feature: Add to Cart / Price Lock
+Scenario: A user adds a high-volatility item to their cart, which locks in
+the displayed price for 15 minutes. The user holds the cart open past a
+scheduled price increase, then completes checkout at the stale, lower price.
+Risk rating: CVSS 6.5 (Medium-High). Business impact: Medium.
+Countermeasure: Re-validate the item price server-side against the live
+catalog at checkout submission, not at add-to-cart time. Reject and re-quote
+if the price has changed by more than 0.5%.
+Countermeasure owner: Checkout API team (server-side enforcement).
+Tracking ID: JIRA-SEC-2291.
+
+AC-015: Discount Code Brute Force at Checkout
+Feature: Promo Code Entry
+Scenario: An attacker scripts repeated submissions of the promo-code field
+to discover valid unissued codes.
+Risk rating: CVSS 5.3 (Medium). Tracking ID: JIRA-SEC-2292.
+Countermeasure: Rate-limit promo code attempts per account and per IP;
+countermeasure lives in the API gateway (infrastructure).

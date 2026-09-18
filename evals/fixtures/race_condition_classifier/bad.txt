@@ -1,0 +1,19 @@
+let requestCount = 0;
+
+function handleRequest(req, res) {
+  requestCount = requestCount + 1;
+  if (requestCount > MAX_REQUESTS) {
+    return res.status(429).send('rate limited');
+  }
+  process(req, res);
+}
+
+function writeUserFile(path, data) {
+  if (fs.existsSync(path)) {
+    return { error: 'file already exists' };
+  }
+  // window between the check and the write below lets another process
+  // create or replace the file first
+  fs.writeFileSync(path, data);
+  return { ok: true };
+}

@@ -1,0 +1,15 @@
+HTTP/1.1 200 OK
+Content-Type: text/html; charset=utf-8
+Set-Cookie: session=8f3a1c9e2b7d; Path=/; HttpOnly; Secure; SameSite=Strict
+Content-Security-Policy: frame-ancestors 'self'
+X-Frame-Options: SAMEORIGIN
+Cross-Origin-Opener-Policy: same-origin
+Cross-Origin-Resource-Policy: same-origin
+
+<!DOCTYPE html>
+<html>
+<body>
+  <h1>Account Settings</h1>
+  <p>Email: user@example.com</p>
+</body>
+</html>

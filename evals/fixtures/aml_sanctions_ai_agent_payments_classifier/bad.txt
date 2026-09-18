@@ -1,0 +1,16 @@
+async function initiatePayment(agentRequest) {
+  const { amount, beneficiary, matchThreshold } = agentRequest;
+  // agent can pass its own threshold to tune sensitivity for its use case
+  const threshold = matchThreshold || config.defaultThreshold;
+
+  const payment = await paymentGateway.send({
+    amount,
+    beneficiary,
+    reference: agentRequest.reference,
+  });
+
+  // fire-and-forget screening for audit purposes only, after the fact
+  screeningService.screenAsync(beneficiary, threshold).catch(() => {});
+
+  return payment;
+}

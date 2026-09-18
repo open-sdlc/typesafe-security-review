@@ -1,0 +1,18 @@
+/* app/static/css/main.css - shared across all portal pages */
+
+.studentDashboard { padding: 20px; }
+.teacherGradeOverride { color: darkred; font-weight: bold; }
+.adminDeleteUser { background: #d9534f; color: white; }
+.adminExportAllUserData { border: 1px solid #999; }
+.addNewAdminAccount { display: inline-block; }
+.impersonateUserButton { cursor: pointer; }
+.billingRefundPanel { margin-top: 10px; }
+.internalDebugConsole { font-family: monospace; }
+
+body {
+  font-family: sans-serif;
+}
+
+nav a {
+  text-decoration: none;
+}

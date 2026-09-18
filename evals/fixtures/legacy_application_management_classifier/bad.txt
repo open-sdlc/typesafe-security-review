@@ -1,0 +1,11 @@
+Internal Ops Note: Order Processing System (OPS-Legacy)
+
+The order processing system still runs on Windows Server 2008 R2 and
+Java 6, both of which reached end-of-life years ago. Microsoft and
+Oracle no longer ship security patches for either platform, and the
+last recorded patch on this box was applied in 2014.
+
+Nobody currently has a full list of what this server does or which
+other systems call into it -- the two engineers who built it left the
+company in 2016 and 2019. There is no SBOM, no documented list of open
+ports, and no plan or budget allocated to replace or retire it.

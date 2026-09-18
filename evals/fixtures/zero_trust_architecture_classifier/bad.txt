@@ -1,0 +1,11 @@
+Corporate Network Access Policy
+
+- Employees connect to the corporate VPN once per week; once connected,
+  the VPN grants access to the entire internal 10.0.0.0/8 network, since
+  anything "inside" the VPN is considered trusted.
+- Engineers are issued standing admin credentials to the production
+  database on their first day and keep them for as long as they're
+  employed, so they don't need to request access every time.
+- Internal services authenticate each other using IP allowlists scoped to
+  the internal subnet; no additional per-request identity check is
+  performed because the network itself is treated as the trust boundary.

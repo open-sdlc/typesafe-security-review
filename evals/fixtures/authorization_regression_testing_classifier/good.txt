@@ -1,0 +1,27 @@
+# tests/test_orders.py
+
+def test_get_order_returns_order_details(client, auth_headers_user_a):
+    resp = client.get('/api/orders/1001', headers=auth_headers_user_a)
+    assert resp.status_code == 200
+    assert resp.json()['id'] == 1001
+
+def test_update_order_status(client, auth_headers_user_a):
+    resp = client.put(
+        '/api/orders/1001', json={'status': 'shipped'}, headers=auth_headers_user_a
+    )
+    assert resp.status_code == 200
+    assert resp.json()['status'] == 'shipped'
+
+def test_user_b_cannot_read_user_a_order(client, auth_headers_user_b):
+    resp = client.get('/api/orders/1001', headers=auth_headers_user_b)
+    assert resp.status_code == 404
+
+def test_user_b_cannot_update_user_a_order(client, auth_headers_user_b):
+    resp = client.put(
+        '/api/orders/1001', json={'status': 'cancelled'}, headers=auth_headers_user_b
+    )
+    assert resp.status_code in (403, 404)
+
+def test_user_b_cannot_cancel_user_a_order(client, auth_headers_user_b):
+    resp = client.post('/api/orders/1001/cancel', headers=auth_headers_user_b)
+    assert resp.status_code in (403, 404)

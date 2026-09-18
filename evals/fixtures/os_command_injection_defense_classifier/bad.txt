@@ -1,0 +1,13 @@
+app.get('/ping', (req, res) => {
+  const host = req.query.host;
+  exec('ping -c 4 ' + host, (err, stdout) => {
+    res.send(stdout);
+  });
+});
+
+app.get('/convert', (req, res) => {
+  const filename = req.query.filename;
+  child_process.exec(`convert ${filename} ${filename}.png`, (err, stdout) => {
+    res.send(stdout);
+  });
+});

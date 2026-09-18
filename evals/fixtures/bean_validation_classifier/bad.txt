@@ -1,0 +1,10 @@
+public class UserRegistrationRequest {
+
+    private String username;
+    private String email;
+    private String password;
+    private int age;
+    private String phoneNumber;
+
+    // getters and setters omitted
+}

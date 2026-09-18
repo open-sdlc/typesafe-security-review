@@ -1,0 +1,23 @@
+; production php.ini
+display_errors = Off
+display_startup_errors = Off
+expose_php = Off
+log_errors = On
+error_log = /var/log/php/error.log
+
+allow_url_fopen = Off
+allow_url_include = Off
+
+disable_functions = exec,system,shell_exec,passthru,popen,proc_open,phpinfo
+
+session.cookie_secure = 1
+session.cookie_httponly = 1
+session.cookie_samesite = "Strict"
+
+file_uploads = Off
+
+open_basedir = /var/www/app:/tmp
+
+memory_limit = 128M
+post_max_size = 8M
+max_execution_time = 30

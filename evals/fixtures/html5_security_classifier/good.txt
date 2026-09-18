@@ -1,0 +1,15 @@
+<script>
+  var TRUSTED_PARENT_ORIGIN = "https://partner.example.com";
+
+  window.addEventListener("message", function (event) {
+    if (event.origin !== TRUSTED_PARENT_ORIGIN) {
+      return;
+    }
+    var el = document.getElementById("widget-content");
+    el.textContent = event.data.text;
+  });
+
+  function notifyParent(payload) {
+    window.parent.postMessage(payload, TRUSTED_PARENT_ORIGIN);
+  }
+</script>

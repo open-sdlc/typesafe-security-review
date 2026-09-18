@@ -1,0 +1,19 @@
+import os
+import requests
+
+DB_HOST = os.environ["DB_HOST"]
+DB_USER = os.environ["DB_USER"]
+DB_PASSWORD = os.environ["DB_PASSWORD"]  # injected at deploy time from the secrets manager
+
+STRIPE_API_KEY = os.environ["STRIPE_API_KEY"]
+
+def get_db_connection():
+    conn_string = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:5432/billing"
+    return psycopg2.connect(conn_string)
+
+def charge_customer(amount, token):
+    return requests.post(
+        "https://api.stripe.com/v1/charges",
+        auth=(STRIPE_API_KEY, ""),
+        data={"amount": amount, "source": token, "currency": "usd"},
+    )

@@ -1,0 +1,12 @@
+Personalization Pipeline — Design Notes
+
+User consent for ad personalization is captured once at account signup via a
+checkbox on the registration form and recorded in the `users.ads_consent`
+column. The lookalike-audience model and the real-time ranking service pull
+directly from the unified user-profile store when scoring impressions, keyed
+only by user_id, and do not re-check the consent flag at model-invocation
+time. If a user later sends Sec-GPC: 1 or resets their Ad ID, the change is
+written to the consent table but the ranking service's cached embeddings and
+existing lookalike segments continue to be used until the next full nightly
+retrain, roughly 24-36 hours later. Employment and credit advertisers are
+onboarded through the same generic targeting console as retail advertisers.

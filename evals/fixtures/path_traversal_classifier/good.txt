@@ -1,0 +1,23 @@
+const UPLOAD_ROOT = path.resolve('./uploads');
+const TEMPLATE_ROOT = path.resolve('/var/www/templates');
+
+app.get('/download', (req, res) => {
+  const filename = path.basename(req.query.file);
+  const filePath = path.join(UPLOAD_ROOT, filename);
+  const resolved = path.resolve(filePath);
+  if (!resolved.startsWith(UPLOAD_ROOT + path.sep)) {
+    return res.status(400).send('invalid file');
+  }
+  res.sendFile(resolved);
+});
+
+const ALLOWED_PAGES = new Set(['home', 'about', 'contact']);
+app.get('/view', (req, res) => {
+  const page = req.query.page;
+  if (!ALLOWED_PAGES.has(page)) {
+    return res.status(400).send('unknown page');
+  }
+  fs.readFile(path.join(TEMPLATE_ROOT, `${page}.html`), 'utf8', (err, data) => {
+    res.send(data);
+  });
+});

@@ -1,0 +1,29 @@
+const resolvers = {
+  Query: {
+    invoice: async (_parent, { id }, context) => {
+      const invoice = await db.query(
+        "SELECT * FROM invoices WHERE id = $1",
+        [id]
+      ).then(r => r.rows[0]);
+      if (!invoice || invoice.owner_id !== context.user.id) {
+        throw new ForbiddenError("Not authorized to view this invoice");
+      }
+      return invoice;
+    },
+  },
+  Mutation: {
+    deleteInvoice: async (_parent, { id }, context) => {
+      const invoice = await db.query(
+        "SELECT owner_id FROM invoices WHERE id = $1",
+        [id]
+      ).then(r => r.rows[0]);
+      if (!invoice || invoice.owner_id !== context.user.id) {
+        throw new ForbiddenError("Not authorized to delete this invoice");
+      }
+      await db.query("DELETE FROM invoices WHERE id = $1", [id]);
+      return true;
+    },
+  },
+};
+
+module.exports = resolvers;

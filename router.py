@@ -1,14 +1,17 @@
-"""Cheat sheet relevance router built on the TypeSafe System One API.
+"""Relevance router built on the TypeSafe System One API.
 
 Given an input (source code, text, a request, etc.), decides which of the
-122 per-cheat-sheet classifiers under `classifiers/` are actually relevant,
-so callers (see run_all_classifiers.py) don't have to run all 122 Noul
-classifiers on every input -- e.g. skip the Django/Laravel/Ruby on Rails
-classifiers entirely for a plain .java file.
+131 classifiers under `classifiers/` are actually relevant, so callers (see
+run_all_classifiers.py) don't have to run all 131 Noul classifiers on every
+input -- e.g. skip the Django/Laravel/Ruby on Rails classifiers entirely for
+a plain .java file. Most classifiers are sourced 1:1 from an OWASP Cheat
+Sheet Series page; a smaller set is sourced from CWE (cwe.mitre.org) entries
+for weakness families the OWASP series has no dedicated page for (e.g.
+memory safety, path traversal, hardcoded credentials).
 
 This follows the "speculative fan-out" pattern
 (https://docs.typesafe.ai/patterns/fan-out.md): every cheat sheet's
-applicability is asked as one Noul question, and all ~122 questions are sent
+applicability is asked as one Noul question, and all ~131 questions are sent
 in a single parallel system_one() call, since parallel questions add
 ~no extra latency. Code (not the model) then decides which classifiers to
 actually run based on each Noul's probability.
@@ -25,10 +28,12 @@ import sys
 from typesafe_sdk import Noul, TypeSafeClient
 
 # --- Registry: classifier module stem -> {name, url, applies_when} -------
-# `applies_when` is a short scope description of when this cheat sheet's
+# `applies_when` is a short scope description of when this classifier's
 # guidance is relevant, used to build each routing Noul's instructions.
 # Keys match classifiers/<stem>.py module stems exactly (see
-# run_all_classifiers.py's discover_classifier_paths()).
+# run_all_classifiers.py's discover_classifier_paths()). Most entries are
+# sourced from an OWASP cheat sheet; entries whose `name` cites a CWE-XXXX
+# ID are sourced from a CWE (cwe.mitre.org) definition instead.
 ROUTES = {
     "abuse_case_classifier": {
         "name": "Abuse Case Cheat Sheet",
@@ -640,6 +645,52 @@ ROUTES = {
         "url": "https://cheatsheetseries.owasp.org/cheatsheets/Zero_Trust_Architecture_Cheat_Sheet.html",
         "applies_when": "network/identity architecture implementing zero-trust principles",
     },
+    # --- CWE-sourced classifiers (gap-fill additions, not from the OWASP series) ---
+    "path_traversal_classifier": {
+        "name": "Path Traversal (CWE-22)",
+        "url": "https://cwe.mitre.org/data/definitions/22.html",
+        "applies_when": "any code that accepts a user-supplied file path, filename, or archive for reading, writing, serving, or extraction",
+    },
+    "memory_safety_classifier": {
+        "name": "Memory Safety Weaknesses (CWE Top 25)",
+        "url": "https://cwe.mitre.org/top25/archive/2025/2025_cwe_top25.html",
+        "applies_when": "C, C++, Rust unsafe blocks, or other memory-unsafe systems-language code doing manual buffer/pointer management",
+    },
+    "race_condition_classifier": {
+        "name": "Race Condition Weaknesses (CWE-362)",
+        "url": "https://cwe.mitre.org/data/definitions/362.html",
+        "applies_when": "any concurrent, multi-threaded, multi-process, or async code sharing state, files, or locks",
+    },
+    "server_side_template_injection_classifier": {
+        "name": "Server-Side Template Injection (CWE-1336)",
+        "url": "https://cwe.mitre.org/data/definitions/1336.html",
+        "applies_when": "server-side code that renders a template engine (Jinja2, Twig, FreeMarker, Velocity, Thymeleaf, ERB, Handlebars) or evaluates an expression language (SpEL, OGNL) with any untrusted input",
+    },
+    "hardcoded_credentials_classifier": {
+        "name": "Use of Hard-coded Credentials (CWE-798)",
+        "url": "https://cwe.mitre.org/data/definitions/798.html",
+        "applies_when": "any source code, configuration file, or script that may embed passwords, API keys, tokens, or connection strings",
+    },
+    "http_request_smuggling_classifier": {
+        "name": "Inconsistent Interpretation of HTTP Requests (CWE-444)",
+        "url": "https://cwe.mitre.org/data/definitions/444.html",
+        "applies_when": "HTTP server, reverse proxy, load balancer, or gateway code/config that parses request boundaries (Content-Length, Transfer-Encoding, chunked encoding)",
+    },
+    "unsafe_reflection_classifier": {
+        "name": "Unsafe Reflection (CWE-470)",
+        "url": "https://cwe.mitre.org/data/definitions/470.html",
+        "applies_when": "code using reflection, dynamic class loading, or dynamic attribute/method access (Java reflection, Python getattr/importlib, PHP dynamic instantiation) with untrusted input",
+    },
+    "csv_formula_injection_classifier": {
+        "name": "CSV/Formula Injection (CWE-1236)",
+        "url": "https://cwe.mitre.org/data/definitions/1236.html",
+        "applies_when": "any feature exporting user-controlled data to CSV, XLSX, or another spreadsheet format",
+    },
+    "untrusted_search_path_classifier": {
+        "name": "Untrusted Search Path (CWE-426)",
+        "url": "https://cwe.mitre.org/data/definitions/426.html",
+        "applies_when": "native applications, installers, or services that load libraries/executables via a search path (Windows DLL loading, PATH/LD_LIBRARY_PATH, service executable paths)",
+    },
 }
 
 
@@ -653,9 +704,9 @@ def route(text: str) -> dict:
             questions={
                 stem: Noul(
                     instructions=(
-                        f"Does the '{info['name']}' OWASP cheat sheet apply to "
-                        f"reviewing this content? It applies when the content "
-                        f"involves: {info['applies_when']}."
+                        f"Does '{info['name']}' apply to reviewing this "
+                        f"content? It applies when the content involves: "
+                        f"{info['applies_when']}."
                     )
                 )
                 for stem, info in ROUTES.items()

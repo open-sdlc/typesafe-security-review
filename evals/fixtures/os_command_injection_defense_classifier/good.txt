@@ -1,0 +1,24 @@
+const dns = require('dns').promises;
+
+app.get('/ping', async (req, res) => {
+  const host = req.query.host;
+  if (!/^[a-zA-Z0-9.-]{1,253}$/.test(host)) {
+    return res.status(400).send('invalid host');
+  }
+  await dns.lookup(host);
+  const result = execFile('ping', ['-c', '4', host]);
+  res.send(await result);
+});
+
+const ALLOWED_EXT = new Set(['jpg', 'png', 'gif']);
+app.get('/convert', (req, res) => {
+  const id = req.query.id;
+  if (!/^[a-zA-Z0-9_-]{1,64}$/.test(id)) {
+    return res.status(400).send('invalid id');
+  }
+  const inputPath = path.join(UPLOAD_DIR, `${id}.jpg`);
+  const outputPath = path.join(UPLOAD_DIR, `${id}.png`);
+  execFile('convert', [inputPath, outputPath], { uid: lowPrivUid }, (err, stdout) => {
+    res.send(stdout);
+  });
+});

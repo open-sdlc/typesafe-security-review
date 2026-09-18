@@ -1,0 +1,13 @@
+def get_user_orders(request):
+    user_id = request.GET.get("user_id")
+    status = request.GET.get("status")
+    query = "SELECT * FROM orders WHERE user_id = " + user_id + \
+            " AND status = '" + status + "'"
+    cursor.execute(query)
+    return cursor.fetchall()
+
+def search_products(request):
+    term = request.GET.get("q")
+    sql = "SELECT id, name, price FROM products WHERE name LIKE '%" + term + "%'"
+    cursor.execute(sql)
+    return cursor.fetchall()

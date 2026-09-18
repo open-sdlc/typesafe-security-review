@@ -1,0 +1,17 @@
+# tests/test_orders.py
+
+def test_get_order_returns_order_details(client, auth_headers):
+    resp = client.get('/api/orders/1001', headers=auth_headers)
+    assert resp.status_code == 200
+    assert resp.json()['id'] == 1001
+
+def test_update_order_status(client, auth_headers):
+    resp = client.put(
+        '/api/orders/1001', json={'status': 'shipped'}, headers=auth_headers
+    )
+    assert resp.status_code == 200
+    assert resp.json()['status'] == 'shipped'
+
+def test_cancel_order(client, auth_headers):
+    resp = client.post('/api/orders/1001/cancel', headers=auth_headers)
+    assert resp.status_code == 200

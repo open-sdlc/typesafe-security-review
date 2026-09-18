@@ -1,0 +1,11 @@
+QA Process — Release Sign-off Checklist
+
+Authorization correctness for each release is verified by the security team
+during the quarterly manual penetration test. Before that engagement, the
+release manager walks through the new features by hand, logging in as an
+admin test account and eyeballing whether restricted pages redirect
+unauthenticated users. No automated test suite currently checks role and
+endpoint combinations; findings from the manual review are filed as tickets
+after the fact, often after the release has already shipped to production.
+Logical roles like BASIC_USER, SUPPORT, and ADMIN are described informally
+in a wiki page that hasn't been updated in over a year.

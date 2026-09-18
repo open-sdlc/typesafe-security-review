@@ -1,0 +1,14 @@
+app.use((req, res, next) => {
+  const token = req.headers.authorization?.split(' ')[1];
+  const decoded = jwt.decode(token); // no signature verification
+  if (decoded) {
+    req.user = decoded;
+    return next();
+  }
+  res.status(401).send('unauthorized');
+});
+
+const server = http.createServer(app);
+server.listen(80, () => {
+  console.log('API listening on plain HTTP port 80');
+});

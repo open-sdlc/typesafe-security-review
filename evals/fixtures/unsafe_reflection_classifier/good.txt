@@ -1,0 +1,17 @@
+public class HandlerFactory {
+
+    private static final Map<String, Supplier<Object>> ALLOWED_HANDLERS = Map.of(
+        "invoice", InvoiceHandler::new,
+        "report", ReportHandler::new,
+        "export", ExportHandler::new
+    );
+
+    public Object createHandler(HttpServletRequest request) {
+        String requested = request.getParameter("handler");
+        Supplier<Object> factory = ALLOWED_HANDLERS.get(requested);
+        if (factory == null) {
+            throw new IllegalArgumentException("Unknown handler: " + requested);
+        }
+        return factory.get();
+    }
+}

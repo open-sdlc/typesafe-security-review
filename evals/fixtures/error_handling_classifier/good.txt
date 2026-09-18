@@ -1,0 +1,10 @@
+@app.route("/api/orders/<order_id>")
+def get_order(order_id):
+    try:
+        order = db.session.query(Order).filter_by(id=order_id).one()
+        return jsonify(order.to_dict())
+    except NoResultFound:
+        return jsonify({"error": "Order not found"}), 404
+    except Exception:
+        logger.exception("Unhandled error while fetching order %s", order_id)
+        return jsonify({"error": "An unexpected error occurred. Please try again later."}), 500

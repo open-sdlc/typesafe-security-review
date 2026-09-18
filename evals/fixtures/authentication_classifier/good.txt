@@ -1,0 +1,18 @@
+import bcrypt
+
+def hash_password(password):
+    return bcrypt.hashpw(password.encode(), bcrypt.gensalt())
+
+def register_user(username, password):
+    db.execute(
+        "INSERT INTO users (username, password_hash) VALUES (?, ?)",
+        (username, hash_password(password)),
+    )
+
+def check_login(username, password):
+    row = db.execute(
+        "SELECT password_hash FROM users WHERE username = ?", (username,)
+    ).fetchone()
+    if row is None:
+        return False
+    return bcrypt.checkpw(password.encode(), row[0])

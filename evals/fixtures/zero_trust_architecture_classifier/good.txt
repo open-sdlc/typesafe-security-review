@@ -1,0 +1,13 @@
+Corporate Network Access Policy
+
+- Every request, whether from inside or outside the office network, must
+  present a valid short-lived device certificate and user token; network
+  location alone grants no trust, and internal traffic is authenticated
+  the same as traffic arriving from the public internet.
+- Production database access is granted just-in-time: an engineer
+  requests elevated access for a specific task, it is approved and
+  auto-expires after 4 hours, and standing admin credentials are not
+  issued to anyone.
+- Internal services authenticate each other via short-lived mTLS
+  certificates tied to a service identity, re-verified on every request,
+  rather than relying on which subnet a connection originated from.

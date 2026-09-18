@@ -1,0 +1,15 @@
+server {
+    listen 443 ssl;
+    server_name shop.example.com;
+
+    ssl_certificate     /etc/nginx/ssl/shop.crt;
+    ssl_certificate_key /etc/nginx/ssl/shop.key;
+
+    ssl_protocols SSLv3 TLSv1 TLSv1.1 TLSv1.2;
+    ssl_ciphers "ALL:eNULL:EXPORT:!aNULL";
+    ssl_prefer_server_ciphers off;
+
+    location / {
+        proxy_pass http://127.0.0.1:8080;
+    }
+}

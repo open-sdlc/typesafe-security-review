@@ -1,0 +1,17 @@
+Account Recovery Setup
+
+For account recovery, we no longer rely on security questions alone. Choose
+at least one of the following, and we will also require a one-time code
+sent to your verified email or phone before granting access:
+
+- Enter the last four digits of a payment method on file (verified against
+  our records, not typed freely).
+- Confirm a randomly selected transaction amount from your last 90 days of
+  account activity.
+- Provide the answer to a question you pre-registered from a vetted,
+  high-entropy list; the answer is stored using the same salted hashing
+  algorithm as your password, never in plaintext.
+
+Recovery cannot be completed using a security-question answer alone; a
+second verified factor is always required, and answers are never reused as
+the sole gate to reset your password.

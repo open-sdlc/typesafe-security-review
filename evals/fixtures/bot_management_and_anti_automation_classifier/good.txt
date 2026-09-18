@@ -1,0 +1,14 @@
+function checkLoginRateLimit(req) {
+  const perUserKey = `login:user:${req.body.username}`;
+  const perIpKey = `login:ip:${req.ip}`;
+
+  const userAttempts = rateLimiter.increment(perUserKey, { windowSeconds: 300 });
+  const ipAttempts = rateLimiter.increment(perIpKey, { windowSeconds: 300 });
+
+  if (userAttempts > 5) {
+    throw new TooManyAttemptsError('Too many attempts for this account');
+  }
+  if (ipAttempts > 20) {
+    throw new TooManyAttemptsError('Too many attempts from this address');
+  }
+}

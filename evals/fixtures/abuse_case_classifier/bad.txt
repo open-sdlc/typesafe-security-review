@@ -1,0 +1,17 @@
+Security Requirements — Checkout Redesign (v3)
+
+Section 4: Security
+The application must be secure and must defend against all OWASP Top 10 attacks.
+All user data must be protected at all times. The system shall not allow any
+unauthorized access under any circumstances. Developers should follow security
+best practices throughout implementation and testing.
+
+Section 5: Non-Functional Requirements
+The system must be resilient against attackers and must not have any
+vulnerabilities. Any security issues found during testing must be fixed
+before release.
+
+Section 6: Sign-off
+Product: approved
+Engineering: approved
+Security: pending review

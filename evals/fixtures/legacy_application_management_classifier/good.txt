@@ -1,0 +1,13 @@
+Internal Ops Note: Order Processing System (OPS-Legacy)
+
+The order processing system runs on Ubuntu 22.04 LTS with the current
+supported Java 21 LTS runtime, both of which receive monthly patches
+tracked in the vulnerability-scanning dashboard. Automated CVE scanning
+runs weekly, and any critical finding triggers an on-call patch within
+72 hours.
+
+A maintained inventory entry lists the server's version, open ports,
+dependent services, and an SBOM generated at every build. A migration
+plan with a 2026 Q4 decommission target and an assigned budget is
+tracked in the platform roadmap, along with a runbook covering the two
+engineers who now own it.

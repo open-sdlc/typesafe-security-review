@@ -1,0 +1,7 @@
+@app.route("/invoices/<invoice_id>")
+@login_required
+def get_invoice(invoice_id):
+    invoice = db.session.query(Invoice).filter_by(id=invoice_id).first()
+    if invoice is None:
+        return jsonify({"error": "Not found"}), 404
+    return jsonify(invoice.to_dict())

@@ -1,0 +1,16 @@
+<?php
+// redirect.php - used after login/logout actions
+$allowed = [
+    'dashboard' => '/dashboard',
+    'profile'   => '/account/profile',
+    'billing'   => '/account/billing',
+];
+
+$key = $_GET['dest'];
+if (!array_key_exists($key, $allowed)) {
+    header("Location: /dashboard");
+    exit;
+}
+
+header("Location: " . $allowed[$key]);
+exit;

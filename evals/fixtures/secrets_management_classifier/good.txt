@@ -1,0 +1,16 @@
+const vaultClient = require('./vault-client');
+
+async function loadConfig() {
+  return {
+    database: {
+      host: 'db.prod.internal',
+      user: 'admin',
+      // short-lived credential minted on demand, auto-rotated every 24h
+      password: await vaultClient.getDynamicSecret('database/creds/app-role'),
+    },
+    stripeApiKey: await vaultClient.getSecret('stripe/api-key'),
+    jwtSecret: await vaultClient.getSecret('jwt/signing-key'),
+  };
+}
+
+module.exports = { loadConfig };

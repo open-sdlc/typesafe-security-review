@@ -1,0 +1,5 @@
+SharedPreferences prefs = getSharedPreferences("auth", MODE_PRIVATE);
+SharedPreferences.Editor editor = prefs.edit();
+editor.putString("auth_token", authToken);
+editor.putString("password", userPassword);
+editor.apply();

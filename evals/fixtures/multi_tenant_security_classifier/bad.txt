@@ -1,0 +1,7 @@
+app.get('/api/invoices/:id', async (req, res) => {
+  const invoice = await db.query(
+    'SELECT * FROM invoices WHERE id = $1',
+    [req.params.id]
+  );
+  res.json(invoice.rows[0]);
+});

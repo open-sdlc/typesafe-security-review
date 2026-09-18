@@ -1,0 +1,8 @@
+public class HandlerFactory {
+
+    public Object createHandler(HttpServletRequest request) throws Exception {
+        String className = request.getParameter("handler");
+        Class<?> clazz = Class.forName(className);
+        return clazz.getDeclaredConstructor().newInstance();
+    }
+}

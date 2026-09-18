@@ -1,0 +1,15 @@
+public List<User> findUsersByName(String name) {
+    String sql = "SELECT * FROM users WHERE name = ? AND active = 1";
+    PreparedStatement stmt = connection.prepareStatement(sql);
+    stmt.setString(1, name);
+    ResultSet rs = stmt.executeQuery();
+    return mapResults(rs);
+}
+
+public void updateEmail(String userId, String newEmail) {
+    String sql = "UPDATE users SET email = ? WHERE id = ?";
+    PreparedStatement stmt = connection.prepareStatement(sql);
+    stmt.setString(1, newEmail);
+    stmt.setInt(2, Integer.parseInt(userId));
+    stmt.executeUpdate();
+}

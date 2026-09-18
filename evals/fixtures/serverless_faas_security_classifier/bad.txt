@@ -1,0 +1,14 @@
+import requests
+
+STRIPE_API_KEY = "sk_live_51H8xJ2eZvKYlo2C9fGh3kLmnOpqRstUvWx"
+SLACK_WEBHOOK_URL = "https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX"
+
+def handler(event, context):
+    order_id = event["order_id"]
+    charge = requests.post(
+        "https://api.stripe.com/v1/charges",
+        headers={"Authorization": f"Bearer {STRIPE_API_KEY}"},
+        data={"amount": event["amount"], "currency": "usd"},
+    )
+    requests.post(SLACK_WEBHOOK_URL, json={"text": f"Order {order_id} charged"})
+    return {"statusCode": 200, "body": charge.json()}

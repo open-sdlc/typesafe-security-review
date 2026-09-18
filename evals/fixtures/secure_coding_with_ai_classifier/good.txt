@@ -1,0 +1,20 @@
+Chat log excerpt, engineer pairing with an AI coding assistant:
+
+Dev: I need to validate JWTs in our FastAPI service, can you add that?
+
+Assistant: You could use python-jose or PyJWT, both are well-established. Let
+me check what's already in requirements.txt first before suggesting a new one.
+
+Dev: python-jose isn't in there yet. Let me verify it before installing.
+
+    $ pip index versions python-jose
+    python-jose (3.3.0)
+    Available versions: 3.3.0, 3.2.0, 3.1.0, ...
+
+Dev: confirmed it exists on PyPI with a real maintainer history and matches
+what's already pinned in our lockfile for other services. Adding it with a
+pinned version and letting the CI dependency scan run against it.
+
+    echo "python-jose[cryptography]==3.3.0" >> requirements.txt
+    pip-compile requirements.txt
+    pip install -r requirements.txt

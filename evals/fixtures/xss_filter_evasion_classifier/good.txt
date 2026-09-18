@@ -1,0 +1,10 @@
+function renderComment(comment) {
+  const container = document.createElement('div');
+  container.className = 'comment';
+  container.textContent = comment;
+  document.getElementById('comments').appendChild(container);
+}
+
+// User-submitted text is only ever inserted via textContent, never
+// innerHTML, so HTML tags and event-handler attributes in a comment are
+// rendered as literal text rather than parsed as markup.

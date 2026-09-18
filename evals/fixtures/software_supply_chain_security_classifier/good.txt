@@ -1,0 +1,17 @@
+Build process notes for the payments-api repo
+
+We pin exact versions in requirements.txt and check in the generated
+lockfile so every build installs byte-for-byte the same dependency tree:
+
+requirements.txt:
+    flask==3.0.3
+    requests==2.32.3
+    stripe==10.12.0
+
+`pip-compile` regenerates the lockfile only when a developer intentionally
+bumps a version, and that change goes through code review like any other.
+
+As part of the Docker build, we run `syft` to generate a CycloneDX SBOM for
+the resulting image and upload it as a build artifact alongside the image
+tag, so we can always answer "what's running in production" by looking up
+the SBOM for that tag instead of shelling into a container.

@@ -1,0 +1,13 @@
+function showWelcomeBanner() {
+  const params = new URLSearchParams(window.location.search);
+  const name = params.get("name");
+  document.getElementById("welcome").innerHTML = "Welcome back, " + name + "!";
+}
+
+function updateGreetingFromHash() {
+  const greeting = decodeURIComponent(window.location.hash.substring(1));
+  document.getElementById("greeting").innerHTML = greeting;
+}
+
+window.addEventListener("load", showWelcomeBanner);
+window.addEventListener("hashchange", updateGreetingFromHash);

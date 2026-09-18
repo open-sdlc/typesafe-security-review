@@ -1,0 +1,14 @@
+Decommissioning ticket INFRA-4821: retire the "promo-fall2022" marketing microsite
+
+Steps completed:
+1. Took down the Heroku app `acme-promo-fall2022` (heroku apps:destroy).
+2. Archived the git repo.
+3. Notified the marketing team the campaign is over.
+
+DNS zone for acme.com (unchanged, left as-is):
+    promo.acme.com.        CNAME   acme-promo-fall2022.herokuapp.com.
+    fall2022.acme.com.     CNAME   acme-promo-fall2022.herokuapp.com.
+
+Ticket closed. The CNAME records were not part of the decommission checklist
+so they were left pointing at the now-deleted Heroku app name, which anyone
+can re-register on Heroku's free tier.

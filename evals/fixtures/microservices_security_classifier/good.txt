@@ -1,0 +1,8 @@
+The API gateway validates the caller's JWT and forwards the request,
+but every internal service also independently verifies the JWT
+signature and claims before acting -- authorization is never granted
+on gateway trust alone. All service-to-service traffic inside the
+cluster runs over mTLS issued by the internal service mesh's
+certificate authority, so order-service, payment-service, and
+ledger-service each authenticate the calling service's certificate on
+every request in addition to re-checking the caller's identity.

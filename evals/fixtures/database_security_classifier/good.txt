@@ -1,0 +1,18 @@
+import os
+import mysql.connector
+
+# db.internal.example.com is reachable only from the app subnet via security-group rules
+db = mysql.connector.connect(
+    host="db.internal.example.com",
+    port=3306,
+    user="app_service",
+    password=os.environ["DB_PASSWORD"],
+    database="app_prod",
+    ssl_verify_cert=True,
+    ssl_ca="/etc/ssl/certs/rds-ca.pem",
+)
+
+def get_user(user_id):
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM users WHERE id = %s", (user_id,))
+    return cursor.fetchone()

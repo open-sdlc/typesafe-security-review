@@ -1,0 +1,24 @@
+@app.route("/login", methods=["POST"])
+@rate_limiter.limit("5 per minute per ip")
+def login():
+    email = request.form["email"]
+    password = request.form["password"]
+    captcha_token = request.form.get("captcha_token")
+
+    if not verify_captcha(captcha_token):
+        return "Captcha verification failed", 400
+
+    user = db.query("SELECT * FROM users WHERE email = %s", (email,))
+    if not user or not check_password_hash(user.password_hash, password):
+        record_failed_login(email, request.remote_addr)
+        return "Invalid credentials", 401
+
+    if is_risky_login(user, request):
+        return start_step_up_challenge(user)
+
+    if user.mfa_enabled:
+        session["pending_mfa_user_id"] = user.id
+        return redirect("/login/mfa")
+
+    session["user_id"] = user.id
+    return redirect("/dashboard")

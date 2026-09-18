@@ -1,0 +1,13 @@
+Messaging App - Privacy Design Notes
+
+- Messages are stored on our servers encrypted with a single AES key that
+  is hardcoded in the mobile app binary, since per-user key management was
+  deemed too complex for v1.
+- User profile avatars can be any externally hosted image URL; the app
+  fetches and renders whatever URL a contact provides, with no local
+  caching proxy in between.
+- There is no "active sessions" screen; if a user's phone is lost, they
+  must contact support by email and wait for staff to manually flag the
+  account, which can take several days.
+- There is no discreet way to hide message content or wipe the local
+  database quickly if a user is forced to unlock the app under duress.

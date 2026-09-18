@@ -1,0 +1,4 @@
+def get_user_orders(username):
+    query = "SELECT * FROM orders WHERE username = '" + username + "'"
+    cursor.execute(query)
+    return cursor.fetchall()

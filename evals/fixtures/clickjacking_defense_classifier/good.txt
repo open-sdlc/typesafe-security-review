@@ -1,0 +1,20 @@
+HTTP/1.1 200 OK
+Date: Tue, 15 Apr 2025 10:22:31 GMT
+Server: nginx/1.24.0
+Content-Type: text/html; charset=utf-8
+Set-Cookie: session=8f3e9c2a1b7d4f6e; Path=/; HttpOnly; Secure; SameSite=Strict
+Cache-Control: no-store
+X-Frame-Options: DENY
+Content-Security-Policy: default-src 'self'; frame-ancestors 'none'
+X-Powered-By: Express
+
+<!DOCTYPE html>
+<html>
+<head><title>Account Settings</title></head>
+<body>
+  <form method="POST" action="/account/delete">
+    <input type="hidden" name="csrf_token" value="a1b2c3d4e5f6">
+    <button type="submit">Delete my account</button>
+  </form>
+</body>
+</html>

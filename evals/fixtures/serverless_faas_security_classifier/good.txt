@@ -1,0 +1,20 @@
+import requests
+import boto3
+import json
+
+_secrets_client = boto3.client("secretsmanager")
+
+def get_secret(name):
+    response = _secrets_client.get_secret_value(SecretId=name)
+    return json.loads(response["SecretString"])
+
+def handler(event, context):
+    secrets = get_secret("prod/payments/stripe")
+    order_id = event["order_id"]
+    charge = requests.post(
+        "https://api.stripe.com/v1/charges",
+        headers={"Authorization": f"Bearer {secrets['stripe_api_key']}"},
+        data={"amount": event["amount"], "currency": "usd"},
+    )
+    requests.post(secrets["slack_webhook_url"], json={"text": f"Order {order_id} charged"})
+    return {"statusCode": 200, "body": charge.json()}

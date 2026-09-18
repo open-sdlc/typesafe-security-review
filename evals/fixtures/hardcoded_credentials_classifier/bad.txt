@@ -1,0 +1,18 @@
+import requests
+
+DB_HOST = "prod-db.internal.example.com"
+DB_USER = "svc_billing"
+DB_PASSWORD = "Str0ngP@ssw0rd!"
+
+STRIPE_API_KEY = "sk_live_51H8x2yLkjhASDFqwer1234567890abcdefgh"
+
+def get_db_connection():
+    conn_string = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:5432/billing"
+    return psycopg2.connect(conn_string)
+
+def charge_customer(amount, token):
+    return requests.post(
+        "https://api.stripe.com/v1/charges",
+        auth=(STRIPE_API_KEY, ""),
+        data={"amount": amount, "source": token, "currency": "usd"},
+    )

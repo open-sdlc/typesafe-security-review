@@ -1,0 +1,17 @@
+Wire Transfer Authorization Flow (v2)
+
+1. User enters destination account number and amount on the transfer form.
+2. The browser JavaScript validates the amount is within the user's daily
+   limit and, if valid, submits the transfer directly to the /transfer
+   endpoint.
+3. A 6-digit OTP is sent to the user's registered phone number. This is the
+   same OTP used to log the user into their account each morning, so
+   support staff can simply ask the user to read back "the code you got
+   this morning" if a session has expired mid-transfer.
+4. The OTP is valid for the remainder of the calendar day and can be
+   re-entered on any transfer initiated during that period.
+5. Once the OTP is accepted, the server executes the transfer using the
+   amount and destination account values sent in step 2 -- the
+   confirmation screen only displays a generic "Transfer submitted"
+   message; it does not repeat the account number or amount back to the
+   user before execution.

@@ -1,0 +1,14 @@
+from flask import Flask, request, render_template
+
+app = Flask(__name__)
+
+@app.route("/greet")
+def greet():
+    name = request.args.get("name", "friend")
+    # name is passed as a data value into a fixed template, never compiled
+    return render_template("greet.html", name=name)
+
+@app.route("/preview")
+def preview():
+    user_bio = request.form.get("bio", "")
+    return render_template("bio_preview.html", bio=user_bio)

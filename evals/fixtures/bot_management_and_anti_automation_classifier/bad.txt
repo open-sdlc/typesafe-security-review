@@ -1,0 +1,7 @@
+function checkLoginRateLimit(req) {
+  const key = `login:${req.ip}:${req.body.username}`;
+  const attempts = rateLimiter.increment(key, { windowSeconds: 300 });
+  if (attempts > 5) {
+    throw new TooManyAttemptsError();
+  }
+}

@@ -1,0 +1,14 @@
+Messaging App - Privacy Design Notes
+
+- Each user's messages are encrypted with a per-user key derived and
+  wrapped via the device's hardware-backed keystore; the app never embeds
+  a shared static key in the binary.
+- Contact avatars and other externally hosted images are proxied through
+  our own media-fetch service, so a contact's server never sees the
+  viewer's real IP address.
+- Users can view all active sessions/devices under Settings > Security and
+  remotely revoke any of them instantly; a revoked device's local session
+  token is invalidated on its next server check.
+- A configurable panic PIN instantly wipes the local message cache and
+  restores the app to a logged-out state if entered instead of the normal
+  unlock PIN.

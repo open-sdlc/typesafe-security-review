@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Checkout - Acme Store</title>
+  <script src="https://cdn.analytics-vendor.com/v2/tracker.js"></script>
+  <script src="https://static.chatwidget.io/embed.js"></script>
+</head>
+<body>
+  <h1>Complete your purchase</h1>
+  <script src="https://cdn.analytics-vendor.com/plugins/checkout-events.js"></script>
+</body>
+</html>

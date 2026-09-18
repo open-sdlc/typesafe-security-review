@@ -1,0 +1,7 @@
+Service-to-service traffic inside the payments cluster is plain HTTP
+between pods on the internal network; only the external API gateway
+terminates TLS and checks the caller's JWT. Once a request passes the
+gateway, order-service, payment-service, and ledger-service all trust
+any request that reaches their internal port without re-checking the
+caller's identity or re-validating the token, and there is no
+certificate-based mutual authentication between any of these services.
