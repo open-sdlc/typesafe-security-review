@@ -211,19 +211,28 @@ npm install --prefix /path/to/repo/.codegraph-cli --no-save @colbymchenry/codegr
 
 Findings left in the ambiguous `Review` band after a scan can optionally be
 sent to an external coding-agent CLI (`copilot`, `claude`, or `codex`) for a
-second opinion, which reclassifies each one to `Pass` or `Failed`. Off by
+second opinion, which reads each flagged file itself (via its own tool
+access) and reclassifies each finding to `Pass` or `Failed`. Off by
 default; enable with `--llm-review`:
 
 ```sh
 # review with the default backend (copilot)
 python repo_scan.py /path/to/repo --llm-review
 
-# choose a backend, tune the timeout, and keep the generated artifacts
+# choose a backend, override the timeout, and keep the generated artifacts
 python repo_scan.py /path/to/repo --llm-review --llm-review-backend claude \
     --llm-review-timeout 600 --keep-llm-review-artifacts \
     --llm-review-prompt-path /tmp/review-prompt.txt \
     --llm-review-response-path /tmp/review-response.txt
 ```
+
+The backend's own progress (tool calls, reasoning, final answer) streams
+live to stderr, prefixed with the backend name (e.g. `[copilot] ...`), so a
+review of many findings doesn't look stuck while it runs. The timeout
+auto-scales with the batch size by default (a 300s floor plus ~20s per
+distinct flagged file and ~5s per finding, since the backend has to open
+and read every file itself) rather than a fixed value that can time out on
+larger batches; pass `--llm-review-timeout` to use a fixed value instead.
 
 This is opt-in because it grants an agentic CLI tool access while it reads
 a possibly-untrusted repo's file content; see

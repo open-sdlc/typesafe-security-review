@@ -33,6 +33,7 @@ import re
 import subprocess
 import sys
 import tempfile
+import threading
 from pathlib import Path
 
 from typesafe_sdk import Noul, TypeSafeClient
@@ -790,18 +791,49 @@ LLM_REVIEW_BACKENDS = {
     # copilot ignores piped stdin whenever `-p` is also given (it treats
     # `-p` as the entire prompt and stdin as absent), so the full prompt is
     # sent purely over stdin -- no `-p`/argv prompt at all -- for this one.
-    "copilot": ["copilot", "-s", "--allow-all-tools"],
+    # No `-s`/`--silent` either: silent mode suppresses copilot's live
+    # tool-call/progress output entirely (only the final answer would be
+    # printed, all at once, at the very end), which is exactly what made a
+    # long-running review look "stuck" with zero visibility. Without `-s`,
+    # progress (e.g. "Read <file>") streams out as it happens; see
+    # run_llm_review_backend, which forwards it live.
+    "copilot": ["copilot", "--allow-all-tools"],
     # claude/codex both support "cat context | backend -p/exec 'instruction'"
     # (stdin becomes additional context for the argv instruction), so give
     # them a short fixed argv instruction and send the real prompt via
-    # stdin instead.
+    # stdin instead. Both already stream progress (codex's `exec` docs:
+    # "streams progress to stderr"; claude likewise), which
+    # run_llm_review_backend forwards live too.
     "claude": ["claude", "-p", _LLM_REVIEW_ARGV_INSTRUCTION],
     "codex": ["codex", "exec", _LLM_REVIEW_ARGV_INSTRUCTION],
 }
 DEFAULT_LLM_REVIEW_BACKEND = "copilot"
+# Base/floor timeout in seconds. Reviewing a "Review" batch means the
+# backend must open and read every distinct flagged file itself (see
+# build_llm_review_prompt), which -- for dozens of files -- can easily take
+# much longer than a small fixed timeout; a flat 300s was observed to time
+# out on a 90-finding batch. When the caller doesn't pass an explicit
+# `timeout` (i.e. `--llm-review-timeout` wasn't set), the effective timeout
+# instead auto-scales with the batch size via compute_llm_review_timeout()
+# below, using this constant only as its floor.
 DEFAULT_LLM_REVIEW_TIMEOUT = 300  # seconds
+LLM_REVIEW_SECONDS_PER_FILE = 20  # extra budget per distinct flagged file
+LLM_REVIEW_SECONDS_PER_FINDING = 5  # extra budget per finding (reasoning, not just reading)
 
 _JSON_BLOCK_RE = re.compile(r"```(?:json)?\s*(\[.*?\])\s*```", re.DOTALL)
+
+
+def compute_llm_review_timeout(review_findings: list) -> int:
+    """Auto-scale the LLM review timeout with batch size: the backend has
+    to read every distinct flagged file itself (one tool call each) plus
+    reason about every finding, so a fixed timeout that's fine for a
+    handful of findings can be far too short for dozens spread across many
+    files. Used whenever the caller doesn't pass an explicit timeout."""
+    num_files = len({finding["file"] for finding in review_findings})
+    return max(
+        DEFAULT_LLM_REVIEW_TIMEOUT,
+        num_files * LLM_REVIEW_SECONDS_PER_FILE + len(review_findings) * LLM_REVIEW_SECONDS_PER_FINDING,
+    )
 
 
 def build_llm_review_prompt(review_findings: list, repo_path) -> str:
@@ -857,7 +889,8 @@ def build_llm_review_prompt(review_findings: list, repo_path) -> str:
     )
 
 
-def run_llm_review_backend(prompt: str, backend: str, repo_path, timeout: int, extra_args=None):
+def run_llm_review_backend(prompt: str, backend: str, repo_path, timeout: int, extra_args=None,
+                            quiet: bool = False):
     """Invoke `backend`'s CLI non-interactively with `prompt`, run with its
     working directory set to `repo_path` (so it can read repo files itself
     exactly like a normal local checkout) and `prompt` always sent over
@@ -867,7 +900,15 @@ def run_llm_review_backend(prompt: str, backend: str, repo_path, timeout: int, e
     (stdout: str, error: str | None) -- never raises; a missing binary,
     non-zero exit, timeout, or other OS-level launch failure is reported as
     an error string so the caller can fail soft (leave findings at
-    "Review") instead of crashing."""
+    "Review") instead of crashing.
+
+    The backend's stdout/stderr are streamed live (line by line, prefixed)
+    to our own stderr as they arrive -- unless `quiet` -- rather than
+    silently buffered until the whole call finishes, so a long-running
+    review (which can legitimately take minutes across many files) shows
+    real progress instead of looking hung. The full text is still
+    accumulated and returned for parsing/saving exactly as before.
+    """
     template = LLM_REVIEW_BACKENDS.get(backend)
     if template is None:
         return "", f"unknown LLM review backend '{backend}' (known: {', '.join(sorted(LLM_REVIEW_BACKENDS))})"
@@ -876,20 +917,65 @@ def run_llm_review_backend(prompt: str, backend: str, repo_path, timeout: int, e
     if extra_args:
         cmd = cmd + list(extra_args)
 
+    prefix = f"  [{backend}] "
+
+    def pump(stream, sink: list) -> None:
+        # Runs in its own thread so stdout and stderr are drained
+        # concurrently -- reading them sequentially risks a deadlock if one
+        # fills its OS pipe buffer while we're blocked reading the other.
+        try:
+            for line in iter(stream.readline, ""):
+                sink.append(line)
+                if not quiet:
+                    print(prefix + line.rstrip("\n"), file=sys.stderr)
+        finally:
+            stream.close()
+
     try:
-        result = subprocess.run(
-            cmd, cwd=str(repo_path), input=prompt, capture_output=True, text=True, timeout=timeout,
+        proc = subprocess.Popen(
+            cmd, cwd=str(repo_path), stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE, text=True, bufsize=1,
         )
     except FileNotFoundError:
         return "", f"'{cmd[0]}' executable not found on PATH"
-    except subprocess.TimeoutExpired:
-        return "", f"'{cmd[0]}' timed out after {timeout}s"
     except OSError as exc:
         return "", f"failed to launch '{cmd[0]}': {exc}"
 
-    if result.returncode != 0:
-        return result.stdout, f"'{cmd[0]}' exited {result.returncode}: {result.stderr.strip()[:500]}"
-    return result.stdout, None
+    stdout_lines: list = []
+    stderr_lines: list = []
+    out_thread = threading.Thread(target=pump, args=(proc.stdout, stdout_lines), daemon=True)
+    err_thread = threading.Thread(target=pump, args=(proc.stderr, stderr_lines), daemon=True)
+    out_thread.start()
+    err_thread.start()
+
+    try:
+        proc.stdin.write(prompt)
+    except (BrokenPipeError, OSError):
+        pass  # the process may have already exited/errored; reflected in returncode below
+    finally:
+        try:
+            proc.stdin.close()
+        except OSError:
+            pass
+
+    try:
+        proc.wait(timeout=timeout)
+        timed_out = False
+    except subprocess.TimeoutExpired:
+        timed_out = True
+        proc.kill()
+        proc.wait()
+
+    out_thread.join(timeout=5)
+    err_thread.join(timeout=5)
+    stdout_text = "".join(stdout_lines)
+    stderr_text = "".join(stderr_lines)
+
+    if timed_out:
+        return stdout_text, f"'{cmd[0]}' timed out after {timeout}s"
+    if proc.returncode != 0:
+        return stdout_text, f"'{cmd[0]}' exited {proc.returncode}: {stderr_text.strip()[:500]}"
+    return stdout_text, None
 
 
 def parse_llm_review_response(raw: str) -> dict:
@@ -933,7 +1019,7 @@ def parse_llm_review_response(raw: str) -> dict:
 
 
 def llm_review_findings(findings: list, repo_path, *, backend: str = DEFAULT_LLM_REVIEW_BACKEND,
-                         timeout: int = DEFAULT_LLM_REVIEW_TIMEOUT, prompt_path=None,
+                         timeout: int = None, prompt_path=None,
                          response_path=None, keep_artifacts: bool = False, extra_args=None,
                          quiet: bool = False):
     """Send every "Review"-level entry of `findings` to `backend` for a
@@ -941,6 +1027,12 @@ def llm_review_findings(findings: list, repo_path, *, backend: str = DEFAULT_LLM
     based on the parsed verdict (findings with no/unparseable verdict stay
     "Review"). Returns (findings, stats) -- `findings` is mutated in place
     and also returned for convenience; `stats` is a dict of counts.
+
+    `timeout=None` (the default) auto-scales the timeout to the batch size
+    via `compute_llm_review_timeout()` -- reading dozens of files itself
+    (one tool call each) can legitimately take much longer than a small
+    fixed timeout. Pass an explicit `timeout` to override this and use
+    that exact value instead.
 
     Genuinely never raises, by design: whatever goes wrong (missing
     binary, timeout, non-zero exit, unparseable response, or any other
@@ -966,6 +1058,7 @@ def llm_review_findings(findings: list, repo_path, *, backend: str = DEFAULT_LLM
     try:
         review_findings = [findings[i] for i in review_idx]
         prompt = build_llm_review_prompt(review_findings, repo_path)
+        effective_timeout = timeout if timeout is not None else compute_llm_review_timeout(review_findings)
 
         if prompt_path:
             prompt_file = Path(prompt_path)
@@ -978,11 +1071,11 @@ def llm_review_findings(findings: list, repo_path, *, backend: str = DEFAULT_LLM
         if not quiet:
             print(
                 f"LLM review: {len(review_idx)} 'Review'-level finding(s) -> prompt saved to "
-                f"{prompt_file}; invoking '{backend}' (timeout {timeout}s)...",
+                f"{prompt_file}; invoking '{backend}' (timeout {effective_timeout}s)...",
                 file=sys.stderr,
             )
 
-        raw, error = run_llm_review_backend(prompt, backend, repo_path, timeout, extra_args)
+        raw, error = run_llm_review_backend(prompt, backend, repo_path, effective_timeout, extra_args, quiet=quiet)
 
         if response_path:
             Path(response_path).write_text(raw or "", encoding="utf-8")
@@ -1036,8 +1129,11 @@ def add_llm_review_args(parser) -> None:
         help=f"Which CLI to use for LLM review (default: {DEFAULT_LLM_REVIEW_BACKEND})",
     )
     parser.add_argument(
-        "--llm-review-timeout", type=int, default=DEFAULT_LLM_REVIEW_TIMEOUT,
-        help=f"Timeout in seconds for the LLM review CLI call (default: {DEFAULT_LLM_REVIEW_TIMEOUT})",
+        "--llm-review-timeout", type=int, default=None,
+        help="Timeout in seconds for the LLM review CLI call (default: auto-scaled to the batch "
+             f"size -- {DEFAULT_LLM_REVIEW_TIMEOUT}s floor + "
+             f"{LLM_REVIEW_SECONDS_PER_FILE}s/file + {LLM_REVIEW_SECONDS_PER_FINDING}s/finding; "
+             "set this to use a fixed value instead)",
     )
     parser.add_argument(
         "--llm-review-prompt-path", default=None,
