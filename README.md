@@ -10,6 +10,45 @@ hardcoded credentials, HTTP request smuggling, unsafe reflection,
 CSV/formula injection, untrusted search path -- that the OWASP series
 doesn't have a dedicated page for.
 
+## Program flow
+
+```mermaid
+flowchart TD
+    A["Input"] -->|single file / text / stdin| B["run_all_classifiers.py"]
+    A -->|local path or --repo-url| C["repo_scan.py"]
+
+    C --> C1["CodeGraph indexes the repo\n(auto-installed per-repo,\nor plain file walk fallback)"]
+    C1 --> C2["Each file, in parallel\n(--file-workers)"]
+    C2 --> B
+
+    B --> D["router.py route_modules()\none Noul per cheat sheet:\n'does this apply here?'\n(skip with --no-route)"]
+    D --> E["Relevant classifiers only,\nrun concurrently (--workers)\nclassifiers/*_classifier.py"]
+    E --> F["Noul scores per category\n(0-1 confidence)"]
+    F --> G["confidence_levels.py buckets\neach finding: Pass / Review / Failed"]
+
+    G -->|Pass| H["Hidden from printed report\n(always kept in --json)"]
+    G -->|Failed| I["Shown in printed report"]
+    G -->|Review, if --llm-review| J["router.llm_review_findings()"]
+
+    J --> J1["build_llm_review_prompt()\nfile paths + finding metadata only\n(no file content embedded)"]
+    J1 --> J2["External coding-agent CLI\ncopilot / claude / codex\ncwd = repo, full tool access,\nprompt sent over stdin"]
+    J2 --> J3["Agent reads each flagged file\nitself and judges pass/fail"]
+    J3 --> J4["parse_llm_review_response()\nstrict fenced JSON verdict array"]
+    J4 -->|verdict: pass| H
+    J4 -->|verdict: fail| I
+    J4 -->|unparseable / CLI error| G2["Stays at Review\n(fail-soft, never raises)"]
+
+    H --> K["Final report\n(printed table + optional --json)"]
+    I --> K
+    G2 --> K
+```
+
+`--llm-review` is opt-in and off by default; without it, `Review`-band
+findings simply stay at `Review` in the final report (the `J`/`J1-J4`
+branch above doesn't run). See
+[Optional LLM-assisted review of "Review"-band findings](#optional-llm-assisted-review-of-review-band-findings)
+below for the full CLI usage.
+
 ## Layout
 
 - `classifiers/` — one module per cheat sheet or CWE definition, named
@@ -63,6 +102,9 @@ python run_all_classifiers.py --file bad.java --workers 24 --top 25 --threshold 
 # routing (on by default) -- disable to always run all 131 classifiers
 python run_all_classifiers.py --file bad.java --no-route
 python run_all_classifiers.py --file bad.java --route-threshold 0.5
+
+# confidence-level thresholds (see "Confidence levels" below)
+python run_all_classifiers.py --file bad.java --failed-threshold 0.7 --review-threshold 0.3
 ```
 
 Run a single cheat sheet's classifier directly:
@@ -88,6 +130,25 @@ this automatically; pass `--no-route` to skip routing and always run all 131.
 If routing itself fails (e.g. no API key), the coordinator logs a warning and
 falls back to running every classifier unfiltered.
 
+## Confidence levels
+
+Every finding from `run_all_classifiers.py` and `repo_scan.py` is bucketed
+into one of three levels based on its confidence score:
+
+| Level | Range | Shown in printed table? |
+|---|---|---|
+| `Failed` | confidence > 0.65 | yes |
+| `Review` | 0.40 <= confidence <= 0.65 | yes |
+| `Pass` | confidence < 0.40 | no (hidden by default) |
+
+`Pass` findings are hidden from the printed table (a summary line reports
+how many were hidden) but are always included in `repo_scan.py --json`
+output, so nothing is silently discarded. Both thresholds are
+configurable via `--failed-threshold`/`--review-threshold` flags or the
+`TSR_FAILED_THRESHOLD`/`TSR_REVIEW_THRESHOLD` environment variables (flag
+> env var > default). See
+[`specs/007-confidence-levels/spec.md`](specs/007-confidence-levels/spec.md).
+
 ## Sample vulnerable file
 
 `bad.java` (used above) is a small, intentionally vulnerable Java class
@@ -112,8 +173,16 @@ SAML) trail off toward 0.
 repository instead of one file at a time. It uses
 [CodeGraph](https://github.com/colbymchenry/codegraph) (an external, local
 code-graph indexer) to find files that actually contain executable code, so
-it skips docs/config/data without a hand-maintained extension list; it
-falls back to a plain file walk if CodeGraph isn't installed.
+it skips docs/config/data without a hand-maintained extension list.
+CodeGraph is now **installed automatically** as a **local, per-repo**
+dependency the first time it's needed -- `npm install --prefix
+<repo>/.codegraph-cli --no-save @colbymchenry/codegraph` -- not a global
+install, and not dependent on `codegraph` being on `PATH`: the binary is
+always invoked by its resolved path under `<repo>/.codegraph-cli/`. If
+`npm` isn't available or the install fails, it falls back to a plain file
+walk with a warning. Files are scanned **in parallel** (`--file-workers`,
+default 25), each still using the existing per-file classifier pool
+(`--workers`, default 16).
 
 ```sh
 # scan a local checkout
@@ -125,16 +194,41 @@ python repo_scan.py --repo-url git@github.com:org/repo.git --ref main
 
 # tuning
 python repo_scan.py /path/to/repo --max-files 50 --top 30
-python repo_scan.py /path/to/repo --no-codegraph   # force plain file walk
+python repo_scan.py /path/to/repo --file-workers 10 --workers 8   # throttle total concurrency
+python repo_scan.py /path/to/repo --no-codegraph   # skip auto-install too; always plain file walk
 python repo_scan.py --repo-url https://github.com/org/repo.git --json out.json
 ```
 
-Install CodeGraph to enable code-aware file discovery and route-file
-prioritization (optional but recommended):
+CodeGraph's local install lives under `<repo>/.codegraph-cli/` (separate
+from its own `.codegraph/` index data) and can be pre-created manually
+ahead of time if preferred (e.g. to pre-warm a CI cache):
 
 ```sh
-npm install -g @colbymchenry/codegraph
+npm install --prefix /path/to/repo/.codegraph-cli --no-save @colbymchenry/codegraph
 ```
+
+### Optional LLM-assisted review of "Review"-band findings
+
+Findings left in the ambiguous `Review` band after a scan can optionally be
+sent to an external coding-agent CLI (`copilot`, `claude`, or `codex`) for a
+second opinion, which reclassifies each one to `Pass` or `Failed`. Off by
+default; enable with `--llm-review`:
+
+```sh
+# review with the default backend (copilot)
+python repo_scan.py /path/to/repo --llm-review
+
+# choose a backend, tune the timeout, and keep the generated artifacts
+python repo_scan.py /path/to/repo --llm-review --llm-review-backend claude \
+    --llm-review-timeout 600 --keep-llm-review-artifacts \
+    --llm-review-prompt-path /tmp/review-prompt.txt \
+    --llm-review-response-path /tmp/review-response.txt
+```
+
+This is opt-in because it grants an agentic CLI tool access while it reads
+a possibly-untrusted repo's file content; see
+[`specs/003-relevance-router/spec.md`](specs/003-relevance-router/spec.md)
+for the full prompt/response contract and security notes.
 
 See [`specs/006-full-repo-scan/spec.md`](specs/006-full-repo-scan/spec.md)
 for the full design, including git-URL handling and cleanup semantics.

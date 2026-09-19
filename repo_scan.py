@@ -6,16 +6,31 @@ time. It uses CodeGraph (https://github.com/colbymchenry/codegraph) --
 an external, local, per-project code-graph indexer -- to find the files
 that actually contain executable code (functions/methods/classes) so
 scanning skips docs, config, data, and other non-code files without a
-hand-maintained extension allowlist. If `codegraph` isn't installed or its
-index can't be built, this falls back to a plain filesystem walk instead
-of failing outright.
+hand-maintained extension allowlist. If `codegraph` isn't already
+installed locally for the target repo, this module attempts to install it
+automatically as a **local, per-repo** dependency (`npm install --prefix
+<repo>/.codegraph-cli --no-save @colbymchenry/codegraph`, unless
+`--no-codegraph` is given) before falling back to a plain filesystem walk.
+This is a project-local install, not a global one, and the resulting
+binary is always invoked by its resolved on-disk path -- no reliance on
+`codegraph` being present on `PATH`.
 
 Every selected file is then classified using the existing, completely
 unmodified pipeline: `router.route_modules()` narrows the classifiers run
 per file (unless --no-route), and `run_all_classifiers.run_all()` does the
-actual parallel classification. This module only decides *what text* to
-feed that pipeline and how to merge many per-file reports into one
-repo-wide report.
+actual parallel classification. Files are themselves scanned concurrently
+(`--file-workers`, spec 006), each still fanning its own classifiers out
+across `--workers` threads. This module only decides *what text* to feed
+that pipeline and how to merge many per-file reports into one repo-wide
+report.
+
+Every finding is also labeled with a confidence `level` -- "Pass",
+"Review", or "Failed" (spec 007, `confidence_levels.py`) -- and the
+printed report hides "Pass"-level findings (`--json` output keeps
+everything). Optionally (`--llm-review`, spec 003), findings left at
+"Review" after scanning can be sent to an external coding-agent CLI
+(copilot/claude/codex) for a second opinion that reclassifies them to
+"Pass" or "Failed".
 
 Usage:
     python repo_scan.py                                   # scan the cwd
@@ -24,7 +39,9 @@ Usage:
     python repo_scan.py --repo-url git@github.com:org/repo.git --ref main
     python repo_scan.py --repo-url https://github.com/org/repo.git --json out.json
     python repo_scan.py /path/to/repo --max-files 50 --top 30
-    python repo_scan.py /path/to/repo --no-codegraph   # force plain file walk
+    python repo_scan.py /path/to/repo --no-codegraph   # force plain file walk, skip auto-install
+    python repo_scan.py /path/to/repo --file-workers 25
+    python repo_scan.py /path/to/repo --llm-review --llm-review-backend claude
 """
 
 import argparse
@@ -36,12 +53,20 @@ import subprocess
 import sys
 import tempfile
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
 import run_all_classifiers as rac
 import router
+import confidence_levels
 
 CODEGRAPH_BIN = "codegraph"
+CODEGRAPH_NPM_PACKAGE = "@colbymchenry/codegraph"
+# Local, per-repo install location -- deliberately NOT global (`npm
+# install -g`) and NOT dependent on `codegraph` being on PATH. A dedicated
+# dot-directory, separate from CodeGraph's own `.codegraph/` index data,
+# so the npm install and the index never interfere with each other.
+CODEGRAPH_LOCAL_DIRNAME = ".codegraph-cli"
 
 # Mirrors the language families CodeGraph itself parses -- used only by the
 # fallback file walk when `codegraph` isn't available/usable at all.
@@ -53,10 +78,11 @@ FALLBACK_EXTENSIONS = {
     ".vue", ".astro", ".liquid", ".pas", ".vb", ".erl", ".ex", ".exs",
 }
 FALLBACK_EXCLUDE_DIRS = {
-    ".git", ".codegraph", "node_modules", "vendor", "venv", ".venv",
-    "dist", "build", "__pycache__", ".tox", "target", "bin", "obj",
-    ".mypy_cache", ".pytest_cache", "coverage",
+    ".git", ".codegraph", CODEGRAPH_LOCAL_DIRNAME, "node_modules", "vendor",
+    "venv", ".venv", "dist", "build", "__pycache__", ".tox", "target",
+    "bin", "obj", ".mypy_cache", ".pytest_cache", "coverage",
 }
+
 
 
 def looks_like_git_url(value: str) -> bool:
@@ -132,15 +158,65 @@ def resolve_target(target: str, repo_url: str, ref: str, clone_dir: str):
     return dest, clone_dir is None
 
 
-def codegraph_available() -> bool:
-    return shutil.which(CODEGRAPH_BIN) is not None
+def codegraph_install_dir(repo_path: Path) -> Path:
+    """Local, per-repo npm install prefix for CodeGraph -- deliberately a
+    dot-directory *inside the target repo*, never the global npm prefix."""
+    return Path(repo_path) / CODEGRAPH_LOCAL_DIRNAME
+
+
+def codegraph_bin_path(repo_path: Path) -> Path:
+    """Resolved on-disk path to the locally-installed `codegraph` binary
+    for `repo_path`. Always invoked by this path -- never by bare name via
+    PATH lookup -- so no global/PATH install is required at all."""
+    return codegraph_install_dir(repo_path) / "node_modules" / ".bin" / CODEGRAPH_BIN
+
+
+def codegraph_available(repo_path: Path) -> bool:
+    return codegraph_bin_path(repo_path).is_file()
+
+
+def install_codegraph(repo_path: Path) -> bool:
+    """Best-effort local install of CodeGraph into
+    `<repo_path>/.codegraph-cli/` (via `npm install --prefix ... --no-save`,
+    NOT `npm install -g`), so a repo scan works out of the box without a
+    prior global install and without requiring `codegraph` on PATH.
+    Returns True if the local binary exists once this returns (whether it
+    was already there or the install succeeded), False otherwise --
+    callers fall back to the plain file walk (Requirement 8), never raise.
+    `--no-save` keeps this from touching the target repo's own
+    package.json/lockfile, in case it has one."""
+    if shutil.which("npm") is None:
+        print(
+            "NOTICE: codegraph not found locally and npm is not on PATH; cannot auto-install "
+            f"(install npm, or install codegraph yourself under {codegraph_install_dir(repo_path)}, "
+            "or pass --no-codegraph to silence this notice).",
+            file=sys.stderr,
+        )
+        return False
+
+    install_dir = codegraph_install_dir(repo_path)
+    install_dir.mkdir(parents=True, exist_ok=True)
+    print(
+        f"codegraph not found locally; installing it into {install_dir} with "
+        f"`npm install --prefix {install_dir} --no-save {CODEGRAPH_NPM_PACKAGE}` ...",
+        file=sys.stderr,
+    )
+    code, _, err = run_cmd(
+        ["npm", "install", "--prefix", str(install_dir), "--no-save", CODEGRAPH_NPM_PACKAGE],
+        timeout=600,
+    )
+    if code != 0:
+        print(f"WARNING: local install of codegraph failed: {err.strip()}", file=sys.stderr)
+        return False
+    return codegraph_available(repo_path)
 
 
 def ensure_codegraph_index(repo_path: Path) -> bool:
     """Build or refresh `.codegraph/` for `repo_path`. Returns True if a
     usable index exists once this returns, False otherwise (caller should
     fall back to a plain file walk)."""
-    code, out, _ = run_cmd([CODEGRAPH_BIN, "status", "--json", str(repo_path)])
+    codegraph_bin = str(codegraph_bin_path(repo_path))
+    code, out, _ = run_cmd([codegraph_bin, "status", "--json", str(repo_path)])
     initialized = False
     if code == 0:
         try:
@@ -149,16 +225,16 @@ def ensure_codegraph_index(repo_path: Path) -> bool:
             initialized = False
 
     if not initialized:
-        code, _, err = run_cmd([CODEGRAPH_BIN, "init", "--yes", str(repo_path)], timeout=1800)
+        code, _, err = run_cmd([codegraph_bin, "init", "--yes", str(repo_path)], timeout=1800)
         if code != 0:
             print(f"WARNING: codegraph init failed: {err.strip()}", file=sys.stderr)
             return False
     else:
         # Keep a repeated scan (e.g. in CI on every commit) accurate against
         # the current working tree rather than a stale prior index.
-        run_cmd([CODEGRAPH_BIN, "sync", str(repo_path)], timeout=1800)
+        run_cmd([codegraph_bin, "sync", str(repo_path)], timeout=1800)
 
-    code, out, _ = run_cmd([CODEGRAPH_BIN, "status", "--json", str(repo_path)])
+    code, out, _ = run_cmd([codegraph_bin, "status", "--json", str(repo_path)])
     if code != 0:
         return False
     try:
@@ -170,8 +246,9 @@ def ensure_codegraph_index(repo_path: Path) -> bool:
 def list_files_via_codegraph(repo_path: Path):
     """Return [{path, language, nodeCount, size}, ...] for every file
     CodeGraph's parser recognizes as source code, or None on failure."""
+    codegraph_bin = str(codegraph_bin_path(repo_path))
     code, out, err = run_cmd(
-        [CODEGRAPH_BIN, "files", "--json", "--path", str(repo_path)], timeout=300
+        [codegraph_bin, "files", "--json", "--path", str(repo_path)], timeout=300
     )
     if code != 0:
         print(f"WARNING: codegraph files failed: {err.strip()}", file=sys.stderr)
@@ -192,8 +269,9 @@ def list_route_files(repo_path: Path) -> set:
     route/handler (Requirement 7a's entry-point priority signal). Returns an
     empty set if unavailable or the repo simply has no detected routes --
     both are treated the same way (no boost), never an error."""
+    codegraph_bin = str(codegraph_bin_path(repo_path))
     code, out, _ = run_cmd(
-        [CODEGRAPH_BIN, "query", "", "--kind", "route", "--json", "--limit", "5000", "--path", str(repo_path)],
+        [codegraph_bin, "query", "", "--kind", "route", "--json", "--limit", "5000", "--path", str(repo_path)],
         timeout=120,
     )
     if code != 0:
@@ -208,6 +286,7 @@ def list_route_files(repo_path: Path) -> set:
         if file_path:
             files.add(file_path)
     return files
+
 
 
 def list_files_fallback(repo_path: Path):
@@ -258,14 +337,18 @@ def read_file_text(repo_path: Path, rel_path: str):
 
 
 def scan_repo(repo_path: Path, *, use_codegraph, include, exclude, max_files,
-              workers, threshold, top_per_file, no_route, route_threshold, quiet):
+              workers, file_workers, threshold, top_per_file, no_route, route_threshold,
+              failed_threshold, review_threshold, quiet):
     """Run the full scan. Returns a result dict; never raises for per-file
     or per-module failures (those are collected, not fatal)."""
     codegraph_used = False
     degraded_reason = None
     files = None
 
-    if use_codegraph and codegraph_available():
+    if use_codegraph and not codegraph_available(repo_path):
+        install_codegraph(repo_path)  # best-effort; falls through to availability check below either way
+
+    if use_codegraph and codegraph_available(repo_path):
         if ensure_codegraph_index(repo_path):
             files = list_files_via_codegraph(repo_path)
             if files is not None:
@@ -273,7 +356,7 @@ def scan_repo(repo_path: Path, *, use_codegraph, include, exclude, max_files,
         if not codegraph_used:
             degraded_reason = "CodeGraph index could not be built/read"
     elif use_codegraph:
-        degraded_reason = "codegraph executable not found on PATH"
+        degraded_reason = "codegraph is not installed locally for this repo and auto-install did not succeed"
 
     if files is None:
         files = list_files_fallback(repo_path)
@@ -317,16 +400,14 @@ def scan_repo(repo_path: Path, *, use_codegraph, include, exclude, max_files,
     run_errors = []
     files_skipped = 0
     start = time.time()
+    done_count = 0
 
-    for i, f in enumerate(files, start=1):
+    def scan_one_file(f):
+        """Classify a single file. Returns (rel_path, findings, file_run_errors, skipped: bool)."""
         rel_path = f["path"]
         text = read_file_text(repo_path, rel_path)
         if not text or not text.strip():
-            files_skipped += 1
-            continue
-
-        if not quiet:
-            print(f"\r[{i}/{len(files)}] {rel_path[:70]:<70}", end="", file=sys.stderr, flush=True)
+            return rel_path, [], [], True
 
         file_modules = modules
         if not no_route:
@@ -334,16 +415,38 @@ def scan_repo(repo_path: Path, *, use_codegraph, include, exclude, max_files,
             if route_error:
                 file_modules = modules  # fail open: run everything for this file
 
-        findings, file_run_errors = rac.run_all(file_modules, text, workers=workers, quiet=True)
-        findings = [f2 for f2 in findings if f2["confidence"] > threshold]
-        findings.sort(key=lambda f2: -f2["confidence"])
+        file_findings, file_run_errors = rac.run_all(
+            file_modules, text, workers=workers, quiet=True,
+            failed_threshold=failed_threshold, review_threshold=review_threshold,
+        )
+        file_findings = [f2 for f2 in file_findings if f2["confidence"] > threshold]
+        file_findings.sort(key=lambda f2: -f2["confidence"])
         if top_per_file:
-            findings = findings[:top_per_file]
-        for finding in findings:
+            file_findings = file_findings[:top_per_file]
+        for finding in file_findings:
             finding["file"] = rel_path
-            all_findings.append(finding)
-        for name, err in file_run_errors:
-            run_errors.append((rel_path, name, err))
+        return rel_path, file_findings, file_run_errors, False
+
+    if not quiet:
+        print(f"Scanning with up to {file_workers} file(s) concurrently...", file=sys.stderr)
+
+    with ThreadPoolExecutor(max_workers=max(1, file_workers)) as executor:
+        future_to_path = {executor.submit(scan_one_file, f): f["path"] for f in files}
+        for future in as_completed(future_to_path):
+            rel_path = future_to_path[future]
+            try:
+                _, file_findings, file_run_errors, skipped = future.result()
+            except Exception as exc:  # noqa: BLE001 - one file's failure must not abort the scan
+                run_errors.append((rel_path, "scan_one_file", str(exc)))
+                skipped, file_findings, file_run_errors = True, [], []
+
+            done_count += 1
+            if skipped:
+                files_skipped += 1
+            all_findings.extend(file_findings)
+            run_errors.extend((rel_path, name, err) for name, err in file_run_errors)
+            if not quiet:
+                print(f"\r[{done_count}/{len(files)}] file(s) scanned", end="", file=sys.stderr, flush=True)
 
     if not quiet:
         print(file=sys.stderr)
@@ -365,21 +468,26 @@ def scan_repo(repo_path: Path, *, use_codegraph, include, exclude, max_files,
 
 def print_report(result: dict, top: int, json_path: str) -> None:
     findings = result["findings"]
+    shown = [f for f in findings if f.get("level") != confidence_levels.LEVEL_PASS]
+    hidden_pass = len(findings) - len(shown)
     if top:
-        findings = findings[:top]
+        shown = shown[:top]
 
     print(f"\n=== Repo Scan Findings Report ({result.get('elapsed', 0):.1f}s) ===\n")
     rows = [
-        (i + 1, f["file"], f["cheatsheet"], f["category"], f"{f['confidence']:.3f}")
-        for i, f in enumerate(findings)
+        (i + 1, f["file"], f["cheatsheet"], f["category"], f"{f['confidence']:.3f}", f.get("level", ""))
+        for i, f in enumerate(shown)
     ]
-    rac.print_table(("#", "file", "cheat_sheet", "category", "confidence"), rows)
+    rac.print_table(("#", "file", "cheat_sheet", "category", "confidence", "level"), rows)
 
     print(
-        f"\n{len(findings)} finding(s) shown (of {len(result['findings'])} total) across "
+        f"\n{len(shown)} finding(s) shown (levels 'Review'/'Failed', of {len(findings)} total) across "
         f"{result['files_scanned']} file(s) scanned "
         f"({'CodeGraph-selected' if result['codegraph_used'] else 'plain file walk'})."
     )
+    if hidden_pass:
+        print(f"{hidden_pass} additional finding(s) at level 'Pass' are hidden from this table "
+              f"(use --json to see everything, including 'Pass').")
     if result.get("files_skipped"):
         print(f"{result['files_skipped']} file(s) skipped (empty or unreadable/binary).")
 
@@ -403,18 +511,21 @@ def main() -> int:
     parser.add_argument("--ref", help="Branch, tag, or commit to check out when cloning")
     parser.add_argument("--clone-dir", help="Clone destination (default: a temp dir, removed after scanning)")
     parser.add_argument("--keep-clone", action="store_true", help="Don't delete the temporary clone afterward")
-    parser.add_argument("--no-codegraph", action="store_true", help="Skip CodeGraph even if installed; always use the plain file walk")
+    parser.add_argument("--no-codegraph", action="store_true", help="Skip CodeGraph entirely (no auto-install attempt); always use the plain file walk")
     parser.add_argument("--max-files", type=int, default=None, help="Scan at most N files (highest-priority first)")
     parser.add_argument("--include", action="append", default=[], help="Glob(s) of files to include (repeatable)")
     parser.add_argument("--exclude", action="append", default=[], help="Glob(s) of files to exclude (repeatable)")
     parser.add_argument("--workers", type=int, default=16, help="Parallel worker threads per file (default: 16)")
+    parser.add_argument("--file-workers", type=int, default=25, help="Number of files scanned concurrently (default: 25)")
     parser.add_argument("--threshold", type=float, default=0.0, help="Minimum confidence to include in the report (default: 0.0)")
     parser.add_argument("--top", type=int, default=None, help="Only show the top N findings overall")
     parser.add_argument("--top-per-file", type=int, default=None, help="Only keep the top N findings per file")
     parser.add_argument("--no-route", action="store_true", help="Run all loaded classifiers on every file, skipping router.py")
     parser.add_argument("--route-threshold", type=float, default=0.35, help="Minimum router relevance to run a classifier on a file (default: 0.35)")
+    confidence_levels.add_threshold_args(parser)
     parser.add_argument("--json", dest="json_path", help="Also write the full findings list as JSON to this path")
     parser.add_argument("--quiet", action="store_true", help="Suppress the live per-file progress output")
+    router.add_llm_review_args(parser)
     args = parser.parse_args()
 
     repo_path, is_temp_clone = resolve_target(args.target, args.repo_url, args.ref, args.clone_dir)
@@ -427,12 +538,38 @@ def main() -> int:
             exclude=args.exclude,
             max_files=args.max_files,
             workers=args.workers,
+            file_workers=args.file_workers,
             threshold=args.threshold,
             top_per_file=args.top_per_file,
             no_route=args.no_route,
             route_threshold=args.route_threshold,
+            failed_threshold=args.failed_threshold,
+            review_threshold=args.review_threshold,
             quiet=args.quiet,
         )
+        if not result.get("error") and args.llm_review:
+            try:
+                result["findings"], llm_stats = router.llm_review_findings(
+                    result["findings"],
+                    repo_path,
+                    backend=args.llm_review_backend,
+                    timeout=args.llm_review_timeout,
+                    prompt_path=args.llm_review_prompt_path,
+                    response_path=args.llm_review_response_path,
+                    keep_artifacts=args.keep_llm_review_artifacts,
+                    extra_args=args.llm_review_arg,
+                    quiet=args.quiet,
+                )
+                result["llm_review"] = llm_stats
+            except Exception as exc:
+                # Defense-in-depth on top of router.llm_review_findings()'s own
+                # fail-soft contract: no matter what goes wrong with the LLM
+                # review step, the scan's Failed/Review report below MUST still
+                # be printed, reflecting whatever levels resulted (unresolved
+                # findings simply remain at "Review").
+                print(f"WARNING: LLM review step failed unexpectedly ({exc}); "
+                      f"reporting findings without further reclassification.", file=sys.stderr)
+                result["llm_review"] = {"error": str(exc)}
     finally:
         if is_temp_clone and not args.keep_clone:
             shutil.rmtree(repo_path, ignore_errors=True)
@@ -444,6 +581,22 @@ def main() -> int:
         return 1
 
     print_report(result, args.top, args.json_path)
+    if result.get("llm_review"):
+        stats = result["llm_review"]
+        if "reviewed" in stats:
+            print(
+                f"\nLLM review ({args.llm_review_backend}): {stats['reviewed']} 'Review'-level finding(s) sent, "
+                f"{stats['reclassified']} reclassified ({stats['to_pass']} -> Pass, {stats['to_failed']} -> Failed), "
+                f"{stats['unresolved']} left at 'Review' (no/unparseable verdict)."
+            )
+            # Surface the actual failure reason even when some/all findings were
+            # left unresolved due to an error (e.g. the backend CLI failing or
+            # timing out), rather than silently looking like a plain parse miss.
+            if stats.get("error"):
+                print(f"  (reason: {stats['error']})", file=sys.stderr)
+        else:
+            print(f"\nLLM review ({args.llm_review_backend}): did not complete ({stats['error']}); "
+                  f"findings reported at their pre-LLM-review levels.")
     return 0
 
 

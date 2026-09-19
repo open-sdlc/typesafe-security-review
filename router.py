@@ -16,6 +16,10 @@ in a single parallel system_one() call, since parallel questions add
 ~no extra latency. Code (not the model) then decides which classifiers to
 actually run based on each Noul's probability.
 
+This module also owns the optional LLM-assisted second-opinion review of
+"Review"-level findings (confidence_levels.py, spec 007): see
+`llm_review_findings()` near the end of this file, used by `repo_scan.py`.
+
 Usage:
     python router.py "some text to route"
     python router.py --file path/to/content.txt
@@ -23,9 +27,17 @@ Usage:
 """
 
 import argparse
+import json
+import os
+import re
+import subprocess
 import sys
+import tempfile
+from pathlib import Path
 
 from typesafe_sdk import Noul, TypeSafeClient
+
+import confidence_levels
 
 # --- Registry: classifier module stem -> {name, url, applies_when} -------
 # `applies_when` is a short scope description of when this classifier's
@@ -719,6 +731,330 @@ def select_relevant(text: str, threshold: float = 0.35) -> dict:
     """Return only the {stem: probability} entries at or above `threshold`."""
     scores = route(text)
     return {stem: prob for stem, prob in scores.items() if prob is not None and prob >= threshold}
+
+
+# --- LLM-assisted review of "Review"-band findings (spec 003) ------------
+#
+# confidence_levels.py (spec 007) buckets every finding into "Pass" /
+# "Review" / "Failed". "Review" is deliberately ambiguous -- this section
+# adds an optional second-opinion pass for exactly that band: bundle every
+# "Review" finding (grouped by file, referencing that file's path) into one
+# prompt, save it to disk, hand it to an external coding-agent CLI the
+# caller already has installed/authenticated (copilot/claude/codex), and
+# parse a strict JSON verdict list back to reclassify each finding to
+# "Pass" or "Failed". Unparsed/unmatched findings stay at "Review"
+# (fail-soft, never raises).
+#
+# This deliberately shells out to a general-purpose local coding-agent CLI
+# rather than asking another Noul/Choice question through the TypeSafe API:
+# the point is a genuinely independent second opinion from a different
+# tool/reasoning pass, not another probability score from the same
+# pipeline that produced the ambiguous score in the first place.
+#
+# The prompt intentionally does NOT embed each flagged file's full text: it
+# only lists file paths plus the candidate findings for each. The backend
+# CLI is invoked with its working directory set to `repo_path` (so it's
+# already "initialized"/checked out there, exactly like a normal local
+# checkout) and with full tool access, so it reads each referenced file
+# itself before judging it. Bundling full file text inline used to make
+# the prompt balloon well past the OS's per-argument size limit (~128KB on
+# Linux, `MAX_ARG_STRLEN`, well below the 2MB total `ARG_MAX`) for any
+# realistically sized batch of "Review" findings, which made `--llm-review`
+# fail with an "Argument list too long" OSError on essentially every real
+# run -- silently, since the final summary line doesn't surface
+# `stats["error"]`. To make doubly sure this class of bug can't recur even
+# as prompts grow with larger batches, the prompt is also always sent to
+# the backend over stdin (see run_llm_review_backend) rather than as a CLI
+# argument, so its size is no longer bounded by OS argv limits at all.
+#
+# Security note: these backends are agentic CLIs with real tool access
+# (file reads/edits, shell commands, etc), and this design deliberately
+# relies on that tool access to read the flagged files. Running one against
+# a possibly untrusted third-party repository carries some inherent
+# prompt-injection / unintended-action risk. Mitigations: this feature is
+# opt-in (off by default), the prompt instructs the backend to only read
+# the specific files listed and make a pass/fail judgement (not to edit
+# anything), Codex's `exec` defaults to a read-only sandbox, and
+# `--llm-review-arg` lets callers pass each backend's own stricter
+# permission flags (e.g. Claude's `--permission-mode`) if desired.
+
+# Short, fixed, argv-safe instruction used for backends (claude/codex) that
+# treat "piped stdin + an argv prompt" as "argv is the instruction, stdin is
+# additional context" rather than reading the whole prompt from stdin.
+_LLM_REVIEW_ARGV_INSTRUCTION = (
+    "Follow the security code review task and finding list piped to you on stdin exactly. "
+    "Respond with ONLY the JSON verdict block it asks for."
+)
+
+LLM_REVIEW_BACKENDS = {
+    # copilot ignores piped stdin whenever `-p` is also given (it treats
+    # `-p` as the entire prompt and stdin as absent), so the full prompt is
+    # sent purely over stdin -- no `-p`/argv prompt at all -- for this one.
+    "copilot": ["copilot", "-s", "--allow-all-tools"],
+    # claude/codex both support "cat context | backend -p/exec 'instruction'"
+    # (stdin becomes additional context for the argv instruction), so give
+    # them a short fixed argv instruction and send the real prompt via
+    # stdin instead.
+    "claude": ["claude", "-p", _LLM_REVIEW_ARGV_INSTRUCTION],
+    "codex": ["codex", "exec", _LLM_REVIEW_ARGV_INSTRUCTION],
+}
+DEFAULT_LLM_REVIEW_BACKEND = "copilot"
+DEFAULT_LLM_REVIEW_TIMEOUT = 300  # seconds
+
+_JSON_BLOCK_RE = re.compile(r"```(?:json)?\s*(\[.*?\])\s*```", re.DOTALL)
+
+
+def build_llm_review_prompt(review_findings: list, repo_path) -> str:
+    """Build one prompt covering every entry in `review_findings` (each a
+    finding dict with a "file" key), grouped by file, plus a stable numeric
+    id per finding (its position in `review_findings`) so the response can
+    be matched back exactly, without fuzzy string matching.
+
+    Deliberately does NOT embed each file's on-disk text inline (that used
+    to make the prompt too large to pass safely to a CLI -- see the module
+    docstring above `LLM_REVIEW_BACKENDS`). Instead this tells the backend
+    to read each file itself: it's invoked with its working directory set
+    to `repo_path` (see run_llm_review_backend), so paths below resolve
+    exactly like a normal local checkout. `repo_path` is accepted for
+    interface symmetry / future use but isn't read from here directly.
+    """
+    by_file = {}
+    for idx, finding in enumerate(review_findings):
+        by_file.setdefault(finding["file"], []).append((idx, finding))
+
+    sections = []
+    for rel_path, entries in by_file.items():
+        findings_desc = "\n".join(
+            f"  - id {idx}: {finding['cheatsheet']} / {finding['category']} "
+            f"(confidence {finding['confidence']:.3f}): {finding.get('description', '')}"
+            for idx, finding in entries
+        )
+        sections.append(
+            f"### File: {rel_path}\nCandidate finding(s) flagged for review in this file:\n"
+            f"{findings_desc}"
+        )
+
+    sections_text = "\n\n".join(sections)
+    all_ids = list(range(len(review_findings)))
+    return (
+        "You are doing a focused security code review. Below is a list of one or more files, "
+        "each with candidate security findings that an automated scanner scored as ambiguous "
+        "(neither a clear pass nor a clear fail) and that need a second opinion.\n\n"
+        "The repository is already checked out at your current working directory. For each file "
+        "listed below, read its current on-disk contents yourself (the path is relative to your "
+        "working directory) before judging the findings in it -- do not guess from the file name "
+        "or description alone, and don't edit anything, just read and judge.\n\n"
+        "For EVERY finding id listed below (not just some), decide whether it is a genuine issue "
+        "worth failing the scan for (\"fail\") or a false positive / non-issue given the actual "
+        "code (\"pass\").\n\n"
+        f"{sections_text}\n\n"
+        "Respond with ONLY a single fenced ```json code block and nothing else (no other text "
+        "before or after it), containing a JSON array with exactly one object per finding id, in "
+        "this exact shape:\n"
+        '```json\n[{"id": 0, "verdict": "pass", "reason": "short reason"}, '
+        '{"id": 1, "verdict": "fail", "reason": "short reason"}]\n```\n\n'
+        f"All finding ids to cover: {all_ids}"
+    )
+
+
+def run_llm_review_backend(prompt: str, backend: str, repo_path, timeout: int, extra_args=None):
+    """Invoke `backend`'s CLI non-interactively with `prompt`, run with its
+    working directory set to `repo_path` (so it can read repo files itself
+    exactly like a normal local checkout) and `prompt` always sent over
+    stdin -- never as a CLI argument, since OS argv-length limits (e.g.
+    Linux's ~128KB per-argument `MAX_ARG_STRLEN`) made that fail on
+    essentially every real (multi-finding) review batch. Returns
+    (stdout: str, error: str | None) -- never raises; a missing binary,
+    non-zero exit, timeout, or other OS-level launch failure is reported as
+    an error string so the caller can fail soft (leave findings at
+    "Review") instead of crashing."""
+    template = LLM_REVIEW_BACKENDS.get(backend)
+    if template is None:
+        return "", f"unknown LLM review backend '{backend}' (known: {', '.join(sorted(LLM_REVIEW_BACKENDS))})"
+
+    cmd = list(template)
+    if extra_args:
+        cmd = cmd + list(extra_args)
+
+    try:
+        result = subprocess.run(
+            cmd, cwd=str(repo_path), input=prompt, capture_output=True, text=True, timeout=timeout,
+        )
+    except FileNotFoundError:
+        return "", f"'{cmd[0]}' executable not found on PATH"
+    except subprocess.TimeoutExpired:
+        return "", f"'{cmd[0]}' timed out after {timeout}s"
+    except OSError as exc:
+        return "", f"failed to launch '{cmd[0]}': {exc}"
+
+    if result.returncode != 0:
+        return result.stdout, f"'{cmd[0]}' exited {result.returncode}: {result.stderr.strip()[:500]}"
+    return result.stdout, None
+
+
+def parse_llm_review_response(raw: str) -> dict:
+    """Extract a {id: {"verdict": "pass"|"fail", "reason": str}} mapping
+    from a backend's raw stdout. Returns {} (never raises) if no valid
+    JSON verdict array can be found, so the caller can fail soft."""
+    if not raw:
+        return {}
+
+    candidates = _JSON_BLOCK_RE.findall(raw)
+    if not candidates:
+        # Fall back to the last top-level '[' ... ']' span in the text, in
+        # case the CLI didn't use a fenced code block despite being asked to.
+        start, end = raw.rfind("["), raw.rfind("]")
+        if start != -1 and end != -1 and end > start:
+            candidates = [raw[start:end + 1]]
+
+    for candidate in reversed(candidates):
+        try:
+            parsed = json.loads(candidate)
+        except json.JSONDecodeError:
+            continue
+        if not isinstance(parsed, list):
+            continue
+
+        verdicts = {}
+        for entry in parsed:
+            if not isinstance(entry, dict) or "id" not in entry or "verdict" not in entry:
+                continue
+            try:
+                finding_id = int(entry["id"])
+            except (TypeError, ValueError):
+                continue
+            verdict = str(entry["verdict"]).strip().lower()
+            if verdict not in ("pass", "fail"):
+                continue
+            verdicts[finding_id] = {"verdict": verdict, "reason": str(entry.get("reason", ""))}
+        if verdicts:
+            return verdicts
+    return {}
+
+
+def llm_review_findings(findings: list, repo_path, *, backend: str = DEFAULT_LLM_REVIEW_BACKEND,
+                         timeout: int = DEFAULT_LLM_REVIEW_TIMEOUT, prompt_path=None,
+                         response_path=None, keep_artifacts: bool = False, extra_args=None,
+                         quiet: bool = False):
+    """Send every "Review"-level entry of `findings` to `backend` for a
+    second opinion, mutating and reclassifying each to "Pass"/"Failed"
+    based on the parsed verdict (findings with no/unparseable verdict stay
+    "Review"). Returns (findings, stats) -- `findings` is mutated in place
+    and also returned for convenience; `stats` is a dict of counts.
+
+    Genuinely never raises, by design: whatever goes wrong (missing
+    binary, timeout, non-zero exit, unparseable response, or any other
+    unexpected error e.g. disk I/O while writing the prompt/response
+    files) is recorded in `stats["error"]` and leaves the affected
+    findings at their current level ("Review" for anything not resolved
+    by a verdict). This guarantees the caller can always go on to print a
+    Failed/Review report reflecting the post-LLM-review state, even when
+    the LLM step itself fails outright.
+    """
+    review_idx = [i for i, f in enumerate(findings) if f.get("level") == confidence_levels.LEVEL_REVIEW]
+    stats = {
+        "reviewed": len(review_idx),
+        "reclassified": 0,
+        "to_pass": 0,
+        "to_failed": 0,
+        "unresolved": len(review_idx),
+        "error": None,
+    }
+    if not review_idx:
+        return findings, stats
+
+    try:
+        review_findings = [findings[i] for i in review_idx]
+        prompt = build_llm_review_prompt(review_findings, repo_path)
+
+        if prompt_path:
+            prompt_file = Path(prompt_path)
+        else:
+            fd, tmp_name = tempfile.mkstemp(prefix="repo_scan_llm_review_", suffix=".prompt.txt")
+            os.close(fd)
+            prompt_file = Path(tmp_name)
+        prompt_file.write_text(prompt, encoding="utf-8")
+
+        if not quiet:
+            print(
+                f"LLM review: {len(review_idx)} 'Review'-level finding(s) -> prompt saved to "
+                f"{prompt_file}; invoking '{backend}' (timeout {timeout}s)...",
+                file=sys.stderr,
+            )
+
+        raw, error = run_llm_review_backend(prompt, backend, repo_path, timeout, extra_args)
+
+        if response_path:
+            Path(response_path).write_text(raw or "", encoding="utf-8")
+
+        if error:
+            stats["error"] = error
+            if not quiet:
+                print(f"WARNING: LLM review failed ({error}); leaving reviewed findings at 'Review'.", file=sys.stderr)
+        else:
+            verdicts = parse_llm_review_response(raw)
+            if not verdicts and not quiet:
+                print("WARNING: LLM review response could not be parsed; leaving findings at 'Review'.", file=sys.stderr)
+            for local_id, finding_idx in enumerate(review_idx):
+                verdict = verdicts.get(local_id)
+                if not verdict:
+                    continue
+                findings[finding_idx]["llm_verdict"] = verdict["verdict"]
+                findings[finding_idx]["llm_reason"] = verdict["reason"]
+                findings[finding_idx]["level"] = (
+                    confidence_levels.LEVEL_PASS if verdict["verdict"] == "pass" else confidence_levels.LEVEL_FAILED
+                )
+                stats["reclassified"] += 1
+                stats["unresolved"] -= 1
+                if verdict["verdict"] == "pass":
+                    stats["to_pass"] += 1
+                else:
+                    stats["to_failed"] += 1
+
+        if not keep_artifacts and not prompt_path:
+            prompt_file.unlink(missing_ok=True)
+    except Exception as exc:
+        # Belt-and-suspenders: anything not already handled above (e.g. an
+        # OSError writing the prompt/response file) still must not prevent
+        # the caller from reporting findings -- unresolved ones simply stay
+        # at "Review", exactly like a handled backend failure would.
+        stats["error"] = f"unexpected LLM review failure: {exc}"
+        if not quiet:
+            print(f"WARNING: LLM review failed unexpectedly ({exc}); leaving unresolved findings at 'Review'.", file=sys.stderr)
+
+    return findings, stats
+
+
+def add_llm_review_args(parser) -> None:
+    """Add the shared --llm-review* CLI flags to an argparse parser."""
+    parser.add_argument(
+        "--llm-review", action="store_true",
+        help="Send 'Review'-level findings to an external coding-agent CLI for a second opinion (off by default)",
+    )
+    parser.add_argument(
+        "--llm-review-backend", choices=sorted(LLM_REVIEW_BACKENDS), default=DEFAULT_LLM_REVIEW_BACKEND,
+        help=f"Which CLI to use for LLM review (default: {DEFAULT_LLM_REVIEW_BACKEND})",
+    )
+    parser.add_argument(
+        "--llm-review-timeout", type=int, default=DEFAULT_LLM_REVIEW_TIMEOUT,
+        help=f"Timeout in seconds for the LLM review CLI call (default: {DEFAULT_LLM_REVIEW_TIMEOUT})",
+    )
+    parser.add_argument(
+        "--llm-review-prompt-path", default=None,
+        help="Save the LLM review prompt to this path instead of an auto-cleaned temp file",
+    )
+    parser.add_argument(
+        "--llm-review-response-path", default=None,
+        help="Save the LLM review CLI's raw response to this path",
+    )
+    parser.add_argument(
+        "--llm-review-arg", action="append", default=[],
+        help="Extra raw argument to append to the LLM review CLI invocation (repeatable)",
+    )
+    parser.add_argument(
+        "--keep-llm-review-artifacts", action="store_true",
+        help="Don't delete the auto-generated prompt file afterward",
+    )
 
 
 def print_table(headers, rows) -> None:

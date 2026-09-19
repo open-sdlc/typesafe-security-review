@@ -36,6 +36,7 @@ import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
+import confidence_levels
 import router
 
 CLASSIFIERS_DIR = Path(__file__).resolve().parent / "classifiers"
@@ -100,11 +101,15 @@ def classify_one(module, text: str):
     return module, scores
 
 
-def run_all(modules, text: str, workers: int, quiet: bool = False):
+def run_all(modules, text: str, workers: int, quiet: bool = False,
+            failed_threshold: float = None, review_threshold: float = None):
     """Send `text` to every module in parallel. Returns (findings, run_errors).
 
     findings: list of dicts with keys cheatsheet, url, category, description,
-              confidence -- one per (module, category) pair scoring > 0.
+              confidence, level -- one per (module, category) pair scoring > 0.
+              `level` is one of "Pass"/"Review"/"Failed" (spec 007;
+              `failed_threshold`/`review_threshold` override the configured
+              defaults for this call only).
     run_errors: list of (cheatsheet_name, error_message) for modules whose
                 classify_with_nouls() call raised (e.g. missing API key,
                 network failure) so the rest of the run can still complete.
@@ -141,6 +146,9 @@ def run_all(modules, text: str, workers: int, quiet: bool = False):
                             "category": category,
                             "description": module.CATEGORIES.get(category, ""),
                             "confidence": confidence,
+                            "level": confidence_levels.confidence_level(
+                                confidence, failed_threshold, review_threshold
+                            ),
                         }
                     )
     if not quiet:
@@ -191,6 +199,7 @@ def main() -> int:
         default=0.35,
         help="Minimum router.py relevance probability for a classifier to run (default: 0.35)",
     )
+    confidence_levels.add_threshold_args(parser)
     args = parser.parse_args()
 
     if args.file:
@@ -233,7 +242,10 @@ def main() -> int:
     print(f"Classifying input ({len(text)} chars) against {len(modules)} classifier(s)...", file=sys.stderr)
 
     start = time.time()
-    findings, run_errors = run_all(modules, text, workers=args.workers, quiet=args.quiet)
+    findings, run_errors = run_all(
+        modules, text, workers=args.workers, quiet=args.quiet,
+        failed_threshold=args.failed_threshold, review_threshold=args.review_threshold,
+    )
     elapsed = time.time() - start
 
     findings = [f for f in findings if f["confidence"] > args.threshold]
@@ -243,20 +255,27 @@ def main() -> int:
 
     print(f"\n=== Security Classifier Findings Report ({elapsed:.1f}s) ===\n")
 
+    shown = [f for f in findings if f["level"] != confidence_levels.LEVEL_PASS]
+    hidden_pass = len(findings) - len(shown)
+
     rows = [
         (
             i + 1,
             f["cheatsheet"],
             f["category"],
             f"{f['confidence']:.3f}",
+            f["level"],
         )
-        for i, f in enumerate(findings)
+        for i, f in enumerate(shown)
     ]
-    print_table(("#", "cheat_sheet", "category", "confidence"), rows)
+    print_table(("#", "cheat_sheet", "category", "confidence", "level"), rows)
 
-    print(f"\n{len(findings)} finding(s) with confidence > {args.threshold} "
+    print(f"\n{len(shown)} finding(s) shown (Review/Failed) with confidence > {args.threshold} "
           f"out of {len(modules)} cheat sheets checked "
           f"({total_loaded} available; use --no-route to check all).")
+    if hidden_pass:
+        print(f"{hidden_pass} additional finding(s) at level 'Pass' are hidden from this table "
+              f"(below the 'Review' band; adjust --review-threshold to change this).")
 
     if run_errors:
         print(f"\n{len(run_errors)} classifier(s) failed during classification:", file=sys.stderr)

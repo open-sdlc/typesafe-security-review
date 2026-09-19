@@ -6,7 +6,8 @@ specs, one per component/feature, each in its own numbered folder as
 already-implemented codebase (they describe what the system does today, as
 a reference for future changes). Spec 006 was originally a **forward-looking
 design** for `repo_scan.py`; that design has since been implemented as
-described.
+described. Spec 007 is likewise a forward-looking design (confidence-level
+bucketing) implemented as described.
 
 | # | Spec | Status | Describes |
 |---|------|--------|-----------|
@@ -16,6 +17,7 @@ described.
 | [004](004-coordinator-cli/spec.md) | Coordinator CLI (`run_all_classifiers.py`) | Implemented | Discovery, routing, parallel execution, report generation |
 | [005](005-classifier-catalog/spec.md) | Classifier Catalog | Implemented | Inventory of all 131 classifiers and their sources (OWASP vs. CWE) |
 | [006](006-full-repo-scan/spec.md) | Full-Repo Scan with CodeGraph | Implemented (`repo_scan.py`) | Scanning an entire repository by classifying only executable, reachable code, using [CodeGraph](https://github.com/colbymchenry/codegraph) to find it |
+| [007](007-confidence-levels/spec.md) | Confidence Levels (`confidence_levels.py`) | Implemented | Shared Pass/Review/Failed bucketing of confidence scores, configurable thresholds, used by both the coordinator and repo scan |
 
 ## Conventions
 

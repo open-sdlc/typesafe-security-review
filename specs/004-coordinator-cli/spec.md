@@ -8,7 +8,8 @@ Status: Implemented (reverse-engineered from `run_all_classifiers.py`)
 given one piece of input text (or a file), it discovers every classifier
 module (spec 002), optionally narrows them via the router (spec 003),
 runs the survivors concurrently, and prints one consolidated,
-confidence-ranked findings report.
+confidence-ranked findings report (each finding also labeled with a
+`Pass`/`Review`/`Failed` level, spec 007).
 
 ## Goals
 
@@ -60,11 +61,11 @@ confidence-ranked findings report.
 
 ### Parallel classification
 
-9. `run_all(modules, text, workers, quiet)` MUST submit one
-   `classify_one(module, text)` call per module to a
-   `ThreadPoolExecutor(max_workers=max(1, workers))`, and MUST process
-   results via `as_completed` (not submission order), so slower modules
-   don't block reporting on faster ones.
+9. `run_all(modules, text, workers, quiet, failed_threshold=None,
+   review_threshold=None)` MUST submit one `classify_one(module, text)`
+   call per module to a `ThreadPoolExecutor(max_workers=max(1, workers))`,
+   and MUST process results via `as_completed` (not submission order), so
+   slower modules don't block reporting on faster ones.
 10. Default `--workers` is `16`.
 11. For each module, on success, MUST emit one finding per category where
     `confidence is not None and confidence > 0` -- categories scoring
@@ -73,7 +74,10 @@ confidence-ranked findings report.
     greater than zero).
 12. Each finding MUST have the shape `{cheatsheet: module.CHEATSHEET_NAME,
     url: module.CHEATSHEET_URL, category: <key>, description:
-    module.CATEGORIES.get(<key>, ""), confidence: <float>}`.
+    module.CATEGORIES.get(<key>, ""), confidence: <float>, level: str}`.
+    `level` is one of `"Pass"`/`"Review"`/`"Failed"`, computed via
+    `confidence_levels.confidence_level(confidence, failed_threshold,
+    review_threshold)` (spec 007).
 13. A module whose `classify_with_nouls` call raises MUST be recorded as
     `(module.CHEATSHEET_NAME, str(exc))` in `run_errors` and skipped,
     without stopping other modules' futures.
@@ -86,12 +90,13 @@ confidence-ranked findings report.
 15. Findings MUST be filtered again by `--threshold` (default `0.0`, i.e.
     strictly `> 0.0`) after collection, then sorted by descending
     `confidence`, then truncated to `--top N` if given.
-16. The report MUST be printed as a table with columns `(#, cheat_sheet,
-    category, confidence)` (confidence formatted to 3 decimals), preceded
-    by a header line `=== Security Classifier Findings Report ({elapsed}s)
-    ===` and followed by a one-line summary: `"{n} finding(s) with
-    confidence > {threshold} out of {m} classifier(s) checked ({total}
-    available; use --no-route to check all)."`.
+16. The printed table MUST exclude `level == "Pass"` findings (columns
+    `(#, cheat_sheet, category, confidence, level)`, confidence formatted
+    to 3 decimals), preceded by a header line `=== Security Classifier
+    Findings Report ({elapsed}s) ===` and followed by a summary line
+    reporting how many `Review`/`Failed` findings are shown out of the
+    total, plus (if nonzero) a second line reporting how many additional
+    `Pass`-level findings were hidden (spec 007 requirement 7).
 17. If `run_errors` is non-empty, a summary of per-module failures MUST be
     printed to stderr after the report (not mixed into the findings table).
 18. If no classifier files are found at all, the coordinator MUST print an
@@ -103,7 +108,10 @@ confidence-ranked findings report.
 19. MUST support: positional `text` (optional), `--file <path>`,
     `--workers <int>` (default 16), `--threshold <float>` (default 0.0),
     `--top <int>` (default: unlimited), `--quiet`, `--no-route`,
-    `--route-threshold <float>` (default 0.35). Exactly one of positional
+    `--route-threshold <float>` (default 0.35), `--failed-threshold
+    <float>` and `--review-threshold <float>` (spec 007,
+    `confidence_levels.add_threshold_args()`, default `None` i.e. deferred
+    to spec 007's env-var/default resolution). Exactly one of positional
     `text` / `--file` / stdin MUST supply the input; empty/whitespace-only
     resolved text MUST trigger `parser.error(...)` (exit code 2).
 
@@ -117,11 +125,12 @@ def load_classifier_module(path: Path) -> ModuleType
 def load_all_classifiers(paths) -> tuple[list[ModuleType], list[tuple[str, str]]]
 def route_modules(modules, text, threshold) -> tuple[list[ModuleType], dict[str, float], str | None]
 def classify_one(module, text) -> tuple[ModuleType, dict[str, float]]
-def run_all(modules, text, workers, quiet=False) -> tuple[list[dict], list[tuple[str, str]]]
+def run_all(modules, text, workers, quiet=False, failed_threshold=None,
+            review_threshold=None) -> tuple[list[dict], list[tuple[str, str]]]
 ```
 
 Finding dict shape: `{cheatsheet: str, url: str, category: str,
-description: str, confidence: float}`.
+description: str, confidence: float, level: str}` (`level` per spec 007).
 
 ## Behavior Notes
 
